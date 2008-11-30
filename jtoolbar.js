@@ -4,13 +4,15 @@
  */
 
 var JTB = function() {
+    /*  private members */
     var priv_var = null;
 
     function privMethod(){}
 
+    /* export public members */
     return {
         /* public constants */
-        TOOLBAR_BASIC  : "!links",
+        VERSION        : "0.1",
         DOCK_LEFT      : "left",
         DOCK_RIGHT     : "right",
         DOCK_TOP       : "top",
@@ -26,7 +28,7 @@ var JTB = function() {
         ToolbarLink : function() {
             this.name = arguments[0];
             this.link = arguments[1];
-        }
+        },
 
         /**
          * Toolbar constructor
@@ -38,7 +40,7 @@ var JTB = function() {
             this.dock           = JTB.DOCK_BOTTOM;
             this.show_pin       = true;
             this.pinned         = true;
-            this.state          = STATE_VIS;
+            this.state          = JTB.STATE_VIS;
             this.animation_time = 250;
             this.trigger_dist   = 100;
             this.links          = [];
@@ -56,16 +58,20 @@ var JTB = function() {
                 for(i=0; i<arguments.length/2; i+=1) {
                     name = arguments[2*i];
                     link = arguments[2*i+1];
-                    this.links[i] = new ToolbarLink(name, link);
+                    this.links[i] = new JTB.ToolbarLink(name, link);
 
                     div.innerHTML += this.links[i].makeLink();
                 }
             }
+
+            /* TODO: setup event handlers */
+            /* TODO: setup pin and its handler */
+            /* TODO: add toolbar to the DOM */
         },
 
         init : function() {
             /* return the HTML representation of this link object */
-            JTB.ToolbarLink.makeLink = function() {
+            JTB.ToolbarLink.prototype.makeLink = function() {
                 return '<a href="' + this.link + '">' + this.name + '</a>';
             }
         }
