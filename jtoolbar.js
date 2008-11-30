@@ -5,9 +5,26 @@
 
 var JTB = function() {
     /*  private members */
-    var priv_var = null;
 
-    function privMethod(){}
+    /** adds a toolbar to its parent */
+    function addToolbarToDOM(tb) {
+
+    }
+
+    /** adds a toolbar to its parent */
+    function removeToolbarFromDOM(tb) {
+
+    }
+
+    /** configures the pin button for the toolbar */
+    function setupPinHandler(tb) {
+
+    }
+
+    /** setup the show/hide handlers for the toolbar */
+    function setupEventHandlers(tb) {
+
+    }
 
     /* export public members */
     return {
@@ -32,10 +49,14 @@ var JTB = function() {
 
         /**
          * Toolbar constructor
-         * @param div_name  name of the div to use, or a new id for a new div
-         * @param ...       remaining arguments specify name-link pairs
+         * @param parent_name  name of the parent element
+         * @param div_name     name of the div to use, or a new id for a new div
+         * @param ...          remaining arguments specify name-link pairs
          */
-        Toolbar : function(div_name) {
+        Toolbar : function(parent_name, div_name) {
+            /* name of the element which is the toolbar's parent */
+            this.parent_id      = parent_name;
+
             /* name of the div which contains the toolbar */
             this.div_id         = div_name;
 
@@ -81,15 +102,26 @@ var JTB = function() {
             }
             this.refreshLinks();
 
-            /* TODO: setup event handlers */
-            /* TODO: setup pin and its handler */
-            /* TODO: add toolbar to the DOM */
+            setupPinHandler(this);
+            setupEventHandlers(this);
+            addToolbarToDOM(this);
         },
 
         init : function() {
             /** return the HTML representation of this link object */
             JTB.ToolbarLink.prototype.makeLink = function() {
                 return '<a href="' + this.link + '">' + this.name + '</a>';
+            };
+
+            /** return the name of the parent containing the toolbar */
+            JTB.Toolbar.prototype.getParentName = function() {
+                return this.parent_id;
+            };
+
+            /** set the name of the parent containing the toolbar */
+            JTB.Toolbar.prototype.setToolbarDiv = function(parent_name) {
+                this.parent_id = parent_name;
+                return this;
             };
 
             /** return the name of the div containing the toolbar */
@@ -104,7 +136,9 @@ var JTB = function() {
 
             /** set the name of the div containing the toolbar */
             JTB.Toolbar.prototype.setToolbarDiv = function(div_name) {
+                removeToolbarFromDOM(this);
                 this.div_id = div_name;
+                addToolbarToDOM(this);
                 return this;
             };
 
@@ -116,6 +150,7 @@ var JTB = function() {
             /** set the location of the toolbar on its parent */
             JTB.Toolbar.prototype.setDockLocation = function(dock) {
                 this.dock = dock;
+                /* TODO: put toolbar at the appropriate place */
                 return this;
             };
 
