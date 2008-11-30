@@ -89,7 +89,7 @@ var JTB = function() {
         init : function() {
             /** return the HTML representation of this link object */
             JTB.ToolbarLink.prototype.makeLink = function() {
-                return "hello";
+                return '<a href="' + this.link + '">' + this.name + '</a>';
             };
 
             /** return the name of the div containing the toolbar */
