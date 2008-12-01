@@ -58,7 +58,7 @@ var JTB = function() {
             this.parent_id      = parent_name;
 
             /* name of the div which contains the toolbar */
-            this.div_id         = div_name;
+            this.tb_id          = div_name;
 
             /* where to place our div relative to its parent */
             this.dock           = JTB.DOCK_BOTTOM;
@@ -126,18 +126,18 @@ var JTB = function() {
 
             /** return the name of the div containing the toolbar */
             JTB.Toolbar.prototype.getToolbarDiv = function() {
-                return this.div_id;
+                return this.tb_id;
             };
 
             /** return the name of the div containing the toolbar basic links */
             JTB.Toolbar.prototype.getToolbarLinksDiv = function() {
-                return this.div_id + "_links";
+                return this.tb_id + "_links";
             };
 
             /** set the name of the div containing the toolbar */
             JTB.Toolbar.prototype.setToolbarDiv = function(div_name) {
                 removeToolbarFromDOM(this);
-                this.div_id = div_name;
+                this.tb_id = div_name;
                 addToolbarToDOM(this);
                 return this;
             };
