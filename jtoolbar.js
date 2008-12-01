@@ -8,12 +8,11 @@ var JTB = function() {
 
     /** adds a toolbar to its parent */
     function addToolbarToDOM(tb) {
-        removeToolbarFromDom(tb);
+        removeToolbarFromDOM(tb);
         refreshToolbarAttrs(tb);
 
         var parent = document.getElementById(tb.parent_id);
-        var child  = document.getElementById(tb.tb_id);
-        parent.appendChild(child);
+        parent.appendChild(tb.tb_elt);
     }
 
     /** refreshes the attributes of the toolbar div */
@@ -24,8 +23,12 @@ var JTB = function() {
     /** adds a toolbar to its parent */
     function removeToolbarFromDOM(tb) {
         var parent = document.getElementById(tb.parent_id);
-        var child  = document.getElementById(tb.tb_id);
-        parent.removeChild(child);
+        try {
+            parent.removeChild(tb.tb_elt);
+        }
+        catch(err) {
+            /* ignore */
+        }
     }
 
     /** configures the pin button for the toolbar */
@@ -72,6 +75,9 @@ var JTB = function() {
             /* name of the div which contains the toolbar */
             this.tb_id          = div_name;
 
+            /* the element which is the div */
+            this.tb_elt         = null;
+
             /* where to place our div relative to its parent */
             this.dock           = JTB.DOCK_BOTTOM;
 
@@ -94,14 +100,15 @@ var JTB = function() {
             this.links          = [];
 
             /* create the div if it doesn't exist */
-            var div = document.getElementById(div_name);
-            if(div === null) {
-                div = document.createElement("div");
-                div.setAttribute('id', div_name);
+            this.tb_elt = document.getElementById(div_name);
+            if(this.tb_elt === null) {
+                this.tb_elt = document.createElement("div");
+                this.tb_elt.setAttribute('id', div_name);
             }
             var divLinks = document.createElement("div");
             divLinks.setAttribute('id', this.getToolbarLinksDiv());
-            div.appendChild(divLinks);
+            this.tb_elt.appendChild(divLinks);
+            addToolbarToDOM(this);
 
             /* create the requested links */
             if(arguments.length > 1) {
@@ -116,7 +123,6 @@ var JTB = function() {
 
             setupPinHandler(this);
             setupEventHandlers(this);
-            addToolbarToDOM(this);
         },
 
         init : function() {
@@ -273,4 +279,4 @@ var JTB = function() {
 }();
 JTB.init();
 
-var t = new JTB.Toolbar("tb", "dound", "http://www.dound.com");
+var t = new JTB.Toolbar("par", "tb", "dound", "http://www.dound.com");
