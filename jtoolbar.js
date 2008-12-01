@@ -154,6 +154,17 @@ var JTB = function() {
                 return this;
             };
 
+            /** get whether the pin icon is showing */
+            JTB.Toolbar.prototype.isShowPinIcon = function() {
+                return this.show_pin;
+            };
+
+            /** set whether the pin icon is showing */
+            JTB.Toolbar.prototype.setShowPinIcon = function(b) {
+                this.show_pin = b;
+                return this;
+            };
+
             /** get whether the toolbar is pinned */
             JTB.Toolbar.prototype.isPinned = function() {
                 return this.pinned;
