@@ -85,10 +85,10 @@ var JTB = function() {
             var div = document.getElementById(div_name);
             if(div === null) {
                 div = document.createElement("div");
-                div.id = div_name;
+                div.setAttribute('id', div_name);
             }
             var divLinks = document.createElement("div");
-            divLinks.id = this.getToolbarLinksDiv();
+            divLinks.setAttribute('id', this.getToolbarLinksDiv());
             div.appendChild(divLinks);
 
             /* create the requested links */
