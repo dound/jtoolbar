@@ -12,12 +12,25 @@ var JTB = function() {
         refreshToolbarAttrs(tb);
 
         var parent = document.getElementById(tb.parent_id);
-        parent.appendChild(tb.tb_elt);
+        parent.insertBefore(tb.tb_elt, parent.firstChild);
     }
 
     /** refreshes the attributes of the toolbar div */
     function refreshToolbarAttrs(tb) {
         /* TODO: implement me! */
+
+        /* setup the pin/unpin icon */
+        var divPinIcon = tb.tb_elt.getChild(tb.getToolbarPinIconDiv());
+        if(tb.isShowPinIcon()) {
+            /* show it */
+            var imgName = getImagePath() + (tb.isPinned()) ? 'pin.gif' : 'unpin.gif';
+            divPinIcon.setAttribute('style', 'display:yes; top:5px; left:5px; position:absolute; ' +
+                                    'background-image:' + imgName);
+        }
+        else {
+            /* hide it */
+            divPinIcon.setAttribute('style', 'display:none');
+        }
     }
 
     /** adds a toolbar to its parent */
@@ -84,6 +97,9 @@ var JTB = function() {
             /* whether to show the pin/unpin graphic */
             this.show_pin       = true;
 
+            /* path to icon location */
+            this.img_path       = 'images/';
+
             /* whether the toolbar is currently pinned */
             this.pinned         = true;
 
@@ -105,9 +121,18 @@ var JTB = function() {
                 this.tb_elt = document.createElement("div");
                 this.tb_elt.setAttribute('id', div_name);
             }
+
+            /* create a div to put the links in within the toolbar */
             var divLinks = document.createElement("div");
             divLinks.setAttribute('id', this.getToolbarLinksDiv());
             this.tb_elt.appendChild(divLinks);
+
+            /* create a div to put the pin icon in within the toolbar */
+            var divPinIcon = document.createElement("div");
+            divPinIcon.setAttribute('id', this.getToolbarPinIconDiv());
+            divPinIcon.setAttribute('onclick', 'javascript:JTB.handlePinClickEvent(' + div_name + ');');
+            this.tb_elt.appendChild(divPinIcon);
+
             addToolbarToDOM(this);
 
             /* create the requested links */
@@ -152,6 +177,11 @@ var JTB = function() {
                 return this.tb_id + "_links";
             };
 
+            /** return the name of the div containing the toolbar pin icon */
+            JTB.Toolbar.prototype.getToolbarPinIconDiv = function() {
+                return this.tb_id + "_pinicon";
+            };
+
             /** set the name of the div containing the toolbar */
             JTB.Toolbar.prototype.setToolbarDiv = function(div_name) {
                 removeToolbarFromDOM(this);
@@ -180,6 +210,17 @@ var JTB = function() {
             /** set whether the pin icon is showing */
             JTB.Toolbar.prototype.setShowPinIcon = function(b) {
                 this.show_pin = b;
+                return this;
+            };
+
+            /** get the path to the location where images are stored */
+            JTB.Toolbar.prototype.getImagePath() {
+                return this.img_path;
+            };
+
+            /** set the path to the location where images are stored */
+            JTB.Toolbar.prototype.setImagePath(path) {
+                this.img_path = path;
                 return this;
             };
 
@@ -274,6 +315,16 @@ var JTB = function() {
                     divLinks.innerHTML += this.links[i].makeLink();
                 }
             };
+
+            /** handle a click on a pin icon */
+            JTB.handlePinClickEvent = function(tb_id) {
+                var tb = document.getElementById(tb_id);
+                if(tb === null) return;
+
+                tb.pinned = !tb.pinned;
+                refreshToolbarAttrs(tb);
+            }
+
         }
     };
 }();
