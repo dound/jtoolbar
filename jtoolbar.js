@@ -113,10 +113,10 @@ var JTB = function() {
             /* create the requested links */
             if(arguments.length > 1) {
                 var i, name, link;
-                for(i=0; i<arguments.length/2; i+=1) {
+                for(i=1; i<arguments.length/2; i+=1) {
                     name = arguments[2*i];
                     link = arguments[2*i+1];
-                    this.links[i] = new JTB.ToolbarLink(name, link);
+                    this.links[i-1] = new JTB.ToolbarLink(name, link);
                 }
             }
             this.refreshLinks();
