@@ -8,22 +8,34 @@ var JTB = function() {
 
     /** adds a toolbar to its parent */
     function addToolbarToDOM(tb) {
+        removeToolbarFromDom(tb);
+        refreshToolbarAttrs(tb);
 
+        var parent = document.getElementById(tb.parent_id);
+        var child  = document.getElementById(tb.tb_id);
+        parent.appendChild(child);
+    }
+
+    /** refreshes the attributes of the toolbar div */
+    function refreshToolbarAttrs(tb) {
+        /* TODO: implement me! */
     }
 
     /** adds a toolbar to its parent */
     function removeToolbarFromDOM(tb) {
-
+        var parent = document.getElementById(tb.parent_id);
+        var child  = document.getElementById(tb.tb_id);
+        parent.removeChild(child);
     }
 
     /** configures the pin button for the toolbar */
     function setupPinHandler(tb) {
-
+        /* TODO: implement me! */
     }
 
     /** setup the show/hide handlers for the toolbar */
     function setupEventHandlers(tb) {
-
+        /* TODO: implement me! */
     }
 
     /* export public members */
