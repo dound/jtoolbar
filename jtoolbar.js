@@ -214,12 +214,12 @@ var JTB = function() {
             };
 
             /** get the path to the location where images are stored */
-            JTB.Toolbar.prototype.getImagePath() {
+            JTB.Toolbar.prototype.getImagePath = function() {
                 return this.img_path;
             };
 
             /** set the path to the location where images are stored */
-            JTB.Toolbar.prototype.setImagePath(path) {
+            JTB.Toolbar.prototype.setImagePath = function(path) {
                 this.img_path = path;
                 return this;
             };
