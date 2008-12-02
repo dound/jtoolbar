@@ -89,14 +89,21 @@ var JTB = function() {
 
         /* update position and size */
         var es = tb.tb_elt.style;
-        es.left   = (percentDone*tb.dst_left)   + ((1.0-percentDone)*tb.src_left);
-        es.top    = (percentDone*tb.dst_top)    + ((1.0-percentDone)*tb.src_top);
-        es.width  = (percentDone*tb.dst_width)  + ((1.0-percentDone)*tb.src_width);
-        es.height = (percentDone*tb.dst_height) + ((1.0-percentDone)*tb.src_height);
+        es.left   = ((percentDone*tb.dst_left)   + ((1.0-percentDone)*tb.src_left))   + 'px';
+        es.top    = ((percentDone*tb.dst_top)    + ((1.0-percentDone)*tb.src_top))    + 'px';
+        es.width  = ((percentDone*tb.dst_width)  + ((1.0-percentDone)*tb.src_width))  + 'px';
+        es.height = ((percentDone*tb.dst_height) + ((1.0-percentDone)*tb.src_height)) + 'px';
+
+        if(es.width=='0px' || es.height=='0px') {
+            es.display = 'none';
+        }
+        else {
+            es.display = 'inline';
+        }
 
         /* periodically call this method until the animation is done */
         if(percentDone < 1) {
-            setTimeout('JTB.handleAnimationCallback(' + tb.tb_id + ');', JTB.ANIM_INTERVAL_MSEC);
+            setTimeout('JTB.handleAnimationCallback("' + tb.tb_id + '");', JTB.ANIM_INTERVAL_MSEC);
         }
     }
 
