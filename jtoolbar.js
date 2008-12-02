@@ -41,12 +41,17 @@ var JTB = function() {
             /* show it */
             var imgName = tb.getImagePath() + (tb.isPinned() ? 'pin.gif' : 'unpin.gif');
             var left = tb.native_width - 17;
-            divPinIcon.setAttribute('style', 'display:inline; top:5px; left:' + left + 'px; position:absolute; ' +
-                                    'background-image:url(' + imgName + '); width:16px; height:16px');
+            divPinIcon.setAttribute('style', 'background-image: url(' + imgName + ')');
+            divPinIcon.style.display = 'inline';
+            divPinIcon.style.position = 'absolute';
+            divPinIcon.style.top = '5px';
+            divPinIcon.style.left = left + 'px';
+            divPinIcon.style.width = '16px';
+            divPinIcon.style.height = '16px';
         }
         else {
             /* hide it */
-            divPinIcon.setAttribute('style', 'display:none');
+            divPinIcon.style.display = 'none';
         }
     }
 
