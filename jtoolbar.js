@@ -25,10 +25,14 @@ var JTB = function() {
         var i;
 
         for(i=0; i<children.length; i++) {
-            var name = children[i].getAttribute('id');
-            if(name == child_name) {
-                return children[i];
+            try {
+                var c = children[i];
+                var name = c.getAttribute('id');
+                if(name == child_name) {
+                    return c;
+                }
             }
+            catch(err) {}
         }
         return null;
     }
