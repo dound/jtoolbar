@@ -68,8 +68,10 @@ var JTB = function() {
         }
     }
 
-    /** setup the show/hide handlers for the toolbar */
-    function setupEventHandlers(tb) {
+    /** setup the show/hide handler for the toolbar */
+    function setupProximityHandler(tb) {
+        var parent = document.getElementById(tb.parent_id);
+
         /* TODO: implement me! */
     }
 
@@ -168,7 +170,7 @@ var JTB = function() {
             }
             this.refreshLinks();
 
-            setupEventHandlers(this);
+            setupProximityHandler(this);
         },
 
         init : function() {
