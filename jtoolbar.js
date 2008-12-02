@@ -39,8 +39,9 @@ var JTB = function() {
         var divPinIcon = getChild(tb.tb_elt, tb.getToolbarPinIconDiv());
         if(tb.isShowPinIcon()) {
             /* show it */
-            var imgName = tb.getImagePath() + (tb.isPinned()) ? 'pin.gif' : 'unpin.gif';
-            divPinIcon.setAttribute('style', 'display:inline; top:5px; left:5px; position:absolute; ' +
+            var imgName = tb.getImagePath() + (tb.isPinned() ? 'pin.gif' : 'unpin.gif');
+            var left = tb.native_width - 17;
+            divPinIcon.setAttribute('style', 'display:inline; top:5px; left:' + left + 'px; position:absolute; ' +
                                     'background-image:url(' + imgName + '); width:16px; height:16px');
         }
         else {
@@ -173,12 +174,14 @@ var JTB = function() {
             toolbars[toolbars.length] = this;
 
             /* create the div if it doesn't exist */
+            var custom = false;
             this.tb_elt = document.getElementById(div_name);
             if(this.tb_elt === null) {
                 this.tb_elt = document.createElement("div");
                 this.tb_elt.setAttribute('id', div_name);
             }
             else {
+                custom = true;
                 this.native_width  = this.tb_elt.style.width;
                 this.native_height = this.tb_elt.style.height;
             }
@@ -207,6 +210,11 @@ var JTB = function() {
                 }
             }
             this.refreshLinks();
+            if(!custom) {
+                /* TODO: calculate these somehow? */
+                this.native_width  = 100;
+                this.native_height = 100;
+            }
 
             setupProximityHandler(this);
         },
@@ -282,6 +290,7 @@ var JTB = function() {
             /** set the path to the location where images are stored */
             JTB.Toolbar.prototype.setImagePath = function(path) {
                 this.img_path = path;
+                refreshToolbarAttrs(this);
                 return this;
             };
 
@@ -487,4 +496,4 @@ var JTB = function() {
 }();
 JTB.init();
 
-var t = new JTB.Toolbar("par", "tb", "dound", "http://www.dound.com");
+var t = new JTB.Toolbar("par", "tb", "dound", "http://www.dound.com").setImagePath('../images/');
