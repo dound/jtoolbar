@@ -5,6 +5,17 @@
 
 var JTB = function() {
     /*  private members */
+    var toolbars = [];
+
+    /** gets a toolbar object based on its name */
+    function getToolbar(name) {
+        var i;
+        for(i=0; i<toolbars.length; i++)
+            if(toolbars[i].tb_id == name)
+                return toolbars[i];
+
+        return null;
+    }
 
     /** adds a toolbar to its parent */
     function addToolbarToDOM(tb) {
@@ -128,6 +139,9 @@ var JTB = function() {
             /* array of ToolbarLink objects to show in the toolbar div */
             this.links          = [];
 
+            /* register the toolbar so we can find it later */
+            toolbars[toolbars.length] = this;
+
             /* create the div if it doesn't exist */
             this.tb_elt = document.getElementById(div_name);
             if(this.tb_elt === null) {
@@ -143,7 +157,7 @@ var JTB = function() {
             /* create a div to put the pin icon in within the toolbar */
             var divPinIcon = document.createElement("div");
             divPinIcon.setAttribute('id', this.getToolbarPinIconDiv());
-            divPinIcon.setAttribute('onclick', 'javascript:JTB.handlePinClickEvent(' + div_name + ');');
+            divPinIcon.setAttribute('onclick', 'javascript:JTB.handlePinClickEvent("' + div_name + '");');
             this.tb_elt.appendChild(divPinIcon);
 
             addToolbarToDOM(this);
@@ -331,7 +345,7 @@ var JTB = function() {
 
             /** handle a click on a pin icon */
             JTB.handlePinClickEvent = function(tb_id) {
-                var tb = document.getElementById(tb_id);
+                var tb = getToolbar(tb_id);
                 if(tb === null) return;
 
                 tb.pinned = !tb.pinned;
