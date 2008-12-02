@@ -40,8 +40,8 @@ var JTB = function() {
         if(tb.isShowPinIcon()) {
             /* show it */
             var imgName = tb.getImagePath() + (tb.isPinned()) ? 'pin.gif' : 'unpin.gif';
-            divPinIcon.setAttribute('style', 'display:yes; top:5px; left:5px; position:absolute; ' +
-                                    'background-image:' + imgName);
+            divPinIcon.setAttribute('style', 'display:inline; top:5px; left:5px; position:absolute; ' +
+                                    'background-image:url(' + imgName + ')');
         }
         else {
             /* hide it */
