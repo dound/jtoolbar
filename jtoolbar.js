@@ -10,20 +10,13 @@ var JTB = function() {
     /** gets a toolbar object based on its name */
     function getToolbar(name) {
         var i;
-        for(i=0; i<toolbars.length; i++)
-            if(toolbars[i].tb_id == name)
+        for(i=0; i<toolbars.length; i++) {
+            if(toolbars[i].tb_id == name) {
                 return toolbars[i];
+            }
+        }
 
         return null;
-    }
-
-    /** adds a toolbar to its parent */
-    function addToolbarToDOM(tb) {
-        removeToolbarFromDOM(tb);
-        refreshToolbarAttrs(tb);
-
-        var parent = document.getElementById(tb.parent_id);
-        parent.insertBefore(tb.tb_elt, parent.firstChild);
     }
 
     /** get a child element */
@@ -33,16 +26,15 @@ var JTB = function() {
 
         for(i=0; i<children.length; i++) {
             var name = children[i].getAttribute('id');
-            if(name == child_name)
+            if(name == child_name) {
                 return children[i];
+            }
         }
         return null;
     }
 
     /** refreshes the attributes of the toolbar div */
     function refreshToolbarAttrs(tb) {
-        /* TODO: implement me! */
-
         /* setup the pin/unpin icon */
         var divPinIcon = getChild(tb.tb_elt, tb.getToolbarPinIconDiv());
         if(tb.isShowPinIcon()) {
@@ -68,11 +60,39 @@ var JTB = function() {
         }
     }
 
+    /** adds a toolbar to its parent */
+    function addToolbarToDOM(tb) {
+        removeToolbarFromDOM(tb);
+        refreshToolbarAttrs(tb);
+
+        var parent = document.getElementById(tb.parent_id);
+        parent.insertBefore(tb.tb_elt, parent.firstChild);
+    }
+
     /** setup the show/hide handler for the toolbar */
     function setupProximityHandler(tb) {
         var parent = document.getElementById(tb.parent_id);
 
         /* TODO: implement me! */
+    }
+
+    /** updates the toolbar's size and position based on the ongoing animation */
+    function handleToolbarAnimation(tb) {
+        /* compute how far done (%) the animation is */
+        var millisElapsed = new Date().getTime() - tb.anim_start;
+        var percentDone = millisElapsed / tb.animation_len_msec;
+
+        /* update position and size */
+        var es = tb.tb_elt.style;
+        es.left   = (percentDone*tb.dst_left)   + ((1.0-percentDone)*tb.src_left);
+        es.top    = (percentDone*tb.dst_top)    + ((1.0-percentDone)*tb.src_top);
+        es.width  = (percentDone*tb.dst_width)  + ((1.0-percentDone)*tb.src_width);
+        es.height = (percentDone*tb.dst_height) + ((1.0-percentDone)*tb.src_height);
+
+        /* periodically call this method until the animation is done */
+        if(percentDone < 1) {
+            setTimeout('JTB.handleAnimationCallback(' + tb.tb_id + ');', JTB.ANIM_INTERVAL_MSEC);
+        }
     }
 
     /* export public members */
@@ -87,6 +107,7 @@ var JTB = function() {
         STATE_INVIS    : "invis",
         STATE_TO_VIS   : "to_vis",
         STATE_TO_INVIS : "to_invis",
+        ANIM_INTERVAL_MSEC : 25,
 
         /**
          * Toolbar link constructor
@@ -111,6 +132,19 @@ var JTB = function() {
 
             /* the element which is the div */
             this.tb_elt         = null;
+
+            /* where the tb is coming from / heading (position and size) */
+            this.src_left       = 0;
+            this.src_top        = 0;
+            this.src_width      = 0;
+            this.src_height     = 0;
+            this.dst_left       = 0;
+            this.dst_top        = 0;
+            this.dst_width      = 0;
+            this.dst_height     = 0;
+
+            /* time the toolbar animation started */
+            this.anim_start     = -1;
 
             /* where to place our div relative to its parent */
             this.dock           = JTB.DOCK_BOTTOM;
@@ -145,6 +179,7 @@ var JTB = function() {
                 this.tb_elt = document.createElement("div");
                 this.tb_elt.setAttribute('id', div_name);
             }
+            this.setDockLocation(JTB.DOCK_BOTTOM);
 
             /* create a div to put the links in within the toolbar */
             var divLinks = document.createElement("div");
@@ -154,7 +189,8 @@ var JTB = function() {
             /* create a div to put the pin icon in within the toolbar */
             var divPinIcon = document.createElement("div");
             divPinIcon.setAttribute('id', this.getToolbarPinIconDiv());
-            divPinIcon.setAttribute('onclick', 'javascript:JTB.handlePinClickEvent("' + div_name + '");');
+            var onclickCode = 'JTB.handlePinClickEvent("' + div_name + '");';
+            divPinIcon.setAttribute('onclick', onclickCode);
             this.tb_elt.appendChild(divPinIcon);
 
             addToolbarToDOM(this);
@@ -339,15 +375,46 @@ var JTB = function() {
                 }
             };
 
+            /**
+             * start a toolbar animation (any negatively-valued parameter means
+             * don't change that field)
+             */
+            JTB.Toolbar.prototype.animate = function(l, t, w, h) {
+                var es = this.tb_elt.style;
+                this.src_left   = es.left;
+                this.src_top    = es.top;
+                this.src_width  = es.width;
+                this.src_height = es.height;
+
+                this.dst_left   = ((l == -1) ? this.src_left   : l);
+                this.dst_top    = ((t == -1) ? this.src_top    : l);
+                this.dst_width  = ((w == -1) ? this.src_width  : l);
+                this.dst_height = ((h == -1) ? this.src_height : l);
+
+                this.anim_start = new Date().getTime();
+                handleToolbarAnimation(this);
+            };
+
             /** handle a click on a pin icon */
             JTB.handlePinClickEvent = function(tb_id) {
                 var tb = getToolbar(tb_id);
-                if(tb === null) return;
+                if(tb === null) {
+                    return;
+                }
 
                 tb.pinned = !tb.pinned;
                 refreshToolbarAttrs(tb);
-            }
+            };
 
+            /** handle callback for an animation event */
+            JTB.handleAnimationCallback = function(tb_id) {
+                var tb = getToolbar(tb_id);
+                if(tb === null) {
+                    return;
+                }
+
+                handleToolbarAnimation(tb);
+            };
         }
     };
 }();
