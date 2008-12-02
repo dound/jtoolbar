@@ -186,16 +186,10 @@ var JTB = function() {
             toolbars[toolbars.length] = this;
 
             /* create the div if it doesn't exist */
-            var custom = false;
             this.tb_elt = document.getElementById(div_name);
             if(this.tb_elt === null) {
                 this.tb_elt = document.createElement("div");
                 this.tb_elt.setAttribute('id', div_name);
-            }
-            else {
-                custom = true;
-                this.native_width  = this.tb_elt.style.width;
-                this.native_height = this.tb_elt.style.height;
             }
             this.setDockLocation(JTB.DOCK_BOTTOM);
 
@@ -222,12 +216,6 @@ var JTB = function() {
                 }
             }
             this.refreshLinks();
-            if(!custom) {
-                /* TODO: calculate these somehow? */
-                this.native_width  = 100;
-                this.native_height = 100;
-            }
-
             setupProximityHandler(this);
         },
 
@@ -396,6 +384,9 @@ var JTB = function() {
                 for(i=0; i<len; i++) {
                     divLinks.innerHTML += this.links[i].makeLink();
                 }
+
+                this.native_width  = this.tb_elt.offsetWidth;
+                this.native_height = this.tb_elt.offsetHeight;
             };
 
             /**
