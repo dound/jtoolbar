@@ -191,6 +191,10 @@ var JTB = function() {
                 this.tb_elt = document.createElement("div");
                 this.tb_elt.setAttribute('id', div_name);
             }
+            else {
+                /* remove the toolbar from its current parent */
+                this.tb_elt.parentNode.removeChild(this.tb_elt);
+            }
             this.setDockLocation(JTB.DOCK_BOTTOM);
 
             /* create a div to put the links in within the toolbar */
