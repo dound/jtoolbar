@@ -502,5 +502,3 @@ var JTB = function() {
     };
 }();
 JTB.init();
-
-var t = new JTB.Toolbar("par", "tb", "dound", "http://www.dound.com").setImagePath('../images/');
