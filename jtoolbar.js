@@ -72,8 +72,7 @@ var JTB = function() {
     /** setup the show/hide handler for the toolbar */
     function setupProximityHandler(tb) {
         var parent = document.getElementById(tb.parent_id);
-
-        /* TODO: implement me! */
+        parent.setAttribute('onmousemove', 'JTB.handleMouseMove("' + tb.tb_id + '", event);');
     }
 
     /** updates the toolbar's size and position based on the ongoing animation */
@@ -105,8 +104,6 @@ var JTB = function() {
         DOCK_BOTTOM    : "bottom",
         STATE_VIS      : "vis",
         STATE_INVIS    : "invis",
-        STATE_TO_VIS   : "to_vis",
-        STATE_TO_INVIS : "to_invis",
         ANIM_INTERVAL_MSEC : 25,
 
         /**
@@ -142,6 +139,8 @@ var JTB = function() {
             this.dst_top        = 0;
             this.dst_width      = 0;
             this.dst_height     = 0;
+            this.native_width   = 0;
+            this.native_height  = 0;
 
             /* time the toolbar animation started */
             this.anim_start     = -1;
@@ -179,6 +178,10 @@ var JTB = function() {
                 this.tb_elt = document.createElement("div");
                 this.tb_elt.setAttribute('id', div_name);
             }
+            else {
+                this.native_width  = this.tb_elt.style.width;
+                this.native_height = this.tb_elt.style.height;
+            }
             this.setDockLocation(JTB.DOCK_BOTTOM);
 
             /* create a div to put the links in within the toolbar */
@@ -189,8 +192,7 @@ var JTB = function() {
             /* create a div to put the pin icon in within the toolbar */
             var divPinIcon = document.createElement("div");
             divPinIcon.setAttribute('id', this.getToolbarPinIconDiv());
-            var onclickCode = 'JTB.handlePinClickEvent("' + div_name + '");';
-            divPinIcon.setAttribute('onclick', onclickCode);
+            divPinIcon.setAttribute('onclick', 'JTB.handlePinClickEvent("' + div_name + '");');
             this.tb_elt.appendChild(divPinIcon);
 
             addToolbarToDOM(this);
@@ -395,6 +397,70 @@ var JTB = function() {
                 handleToolbarAnimation(this);
             };
 
+            /** called when the mouse moves on the toolbar's parent */
+            JTB.handleMouseMove = function(tb_id, event) {
+                var tb = getToolbar(tb_id);
+                if(tb === null || tb.pinned) {
+                    return; /* do nothing if tb is pinned */
+                }
+
+                /* determine if we should be showing the toolbar and how to
+                 * animate it into the correct position */
+                var parent = document.getElementById(tb.parent_id);
+                var show = false;
+                var l=0, t=0, w=0, h=0;
+                switch(tb.dock) {
+                case JTB.DOCK_TOP:
+                    if(tb.trigger_dist <= event.offsetY) {
+                        show = true;
+                    }
+                    else {
+                        w = tb.native_width;
+                    }
+                    break;
+                case JTB.DOCK_BOTTOM:
+                    if(tb.trigger_dist <= (tb.tb_elt.style.height - event.offsetY)) {
+                        show = true;
+                        t = parent.style.height - tb.native_height;
+                    }
+                    else {
+                        t = parent.style.height;
+                        w = tb.native_width;
+                        h = 0;
+                    }
+                    break;
+                case JTB.DOCK_LEFT:
+                    if(tb.trigger_dist <= event.offsetX) {
+                        show = true;
+                    }
+                    else {
+                        h = tb.native_height;
+                    }
+                    break;
+                case JTB.DOCK_RIGHT:
+                    if(tb.trigger_dist <= (tb.tb_elt.style.width - event.offsetX)) {
+                        show = true;
+                        l = parent.style.width - tb.native_width;
+                    }
+                    else {
+                        l = parent.style.width;
+                        w = 0;
+                        h = tb.native_height;
+                    }
+                    break;
+                }
+
+                /* if the state changed, update it and perform an animation */
+                if(show && tb.state!=JTB.STATE_VIS) {
+                    tb.setState(JTB.STATE_VIS);
+                    tb.animate(l, t, tb.native_width, tb.native_height);
+                }
+                else if(!show && tb.state!=JTB.STATE_INVIS) {
+                    tb.setState(JTB.STATE_INVIS);
+                    tb.animate(l, t, w, h);
+                }
+            };
+
             /** handle a click on a pin icon */
             JTB.handlePinClickEvent = function(tb_id) {
                 var tb = getToolbar(tb_id);
@@ -403,6 +469,7 @@ var JTB = function() {
                 }
 
                 tb.pinned = !tb.pinned;
+                tb.state = JTB.STATE_VIS;
                 refreshToolbarAttrs(tb);
             };
 
