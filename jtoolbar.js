@@ -40,7 +40,7 @@ var JTB = function() {
     /** refreshes the attributes of the toolbar div */
     function refreshToolbarAttrs(tb) {
         /* setup the pin/unpin icon */
-        var divPinIcon = getChild(tb.tb_elt, tb.getToolbarPinIconDiv());
+        var divPinIcon = getChild(tb.tb_elt, tb.getToolbarPinIconEltName());
         if(tb.isShowPinIcon()) {
             /* show it */
             var imgName = tb.getImagePath() + (tb.isPinned() ? 'pin.gif' : 'unpin.gif');
@@ -61,7 +61,7 @@ var JTB = function() {
 
     /** adds a toolbar to its parent */
     function removeToolbarFromDOM(tb) {
-        var parent = document.getElementById(tb.parent_id);
+        var parent = document.getElementById(tb.content_id);
         try {
             parent.removeChild(tb.tb_elt);
         }
@@ -75,13 +75,13 @@ var JTB = function() {
         removeToolbarFromDOM(tb);
         refreshToolbarAttrs(tb);
 
-        var parent = document.getElementById(tb.parent_id);
+        var parent = document.getElementById(tb.content_id);
         parent.insertBefore(tb.tb_elt, parent.firstChild);
     }
 
     /** setup the show/hide handler for the toolbar */
     function setupProximityHandler(tb) {
-        var parent = document.getElementById(tb.parent_id);
+        var parent = document.getElementById(tb.content_id);
         parent.setAttribute('onmousemove', 'JTB.handleMouseMove("' + tb.tb_id + '", event);');
     }
 
@@ -133,16 +133,16 @@ var JTB = function() {
 
         /**
          * Toolbar constructor
-         * @param parent_name  name of the parent element
-         * @param div_name     name of the div to use, or a new id for a new div
-         * @param ...          remaining arguments specify name-link pairs
+         * @param content_name  name of the element the toolbar is attached to
+         * @param tb_name       name of the element to use or make for the toolbar
+         * @param ...           remaining arguments specify name-link pairs
          */
-        Toolbar : function(parent_name, div_name) {
-            /* name of the element which is the toolbar's parent */
-            this.parent_id      = parent_name;
+        Toolbar : function(content_name, tb_name) {
+            /* name of the element which is the toolbar is attached to */
+            this.content_id     = content_name;
 
             /* name of the div which contains the toolbar */
-            this.tb_id          = div_name;
+            this.tb_id          = tb_name;
 
             /* the element which is the div */
             this.tb_elt         = null;
@@ -190,10 +190,10 @@ var JTB = function() {
             toolbars[toolbars.length] = this;
 
             /* create the div if it doesn't exist */
-            this.tb_elt = document.getElementById(div_name);
+            this.tb_elt = document.getElementById(tb_name);
             if(this.tb_elt === null) {
                 this.tb_elt = document.createElement("div");
-                this.tb_elt.setAttribute('id', div_name);
+                this.tb_elt.setAttribute('id', tb_name);
             }
             else {
                 /* remove the toolbar from its current parent */
@@ -203,13 +203,13 @@ var JTB = function() {
 
             /* create a div to put the links in within the toolbar */
             var divLinks = document.createElement("div");
-            divLinks.setAttribute('id', this.getToolbarLinksDiv());
+            divLinks.setAttribute('id', this.getToolbarLinksEltName());
             this.tb_elt.appendChild(divLinks);
 
             /* create a div to put the pin icon in within the toolbar */
             var divPinIcon = document.createElement("div");
-            divPinIcon.setAttribute('id', this.getToolbarPinIconDiv());
-            divPinIcon.setAttribute('onclick', 'JTB.handlePinClickEvent("' + div_name + '");');
+            divPinIcon.setAttribute('id', this.getToolbarPinIconEltName());
+            divPinIcon.setAttribute('onclick', 'JTB.handlePinClickEvent("' + tb_name + '");');
             this.tb_elt.appendChild(divPinIcon);
 
             addToolbarToDOM(this);
@@ -233,36 +233,47 @@ var JTB = function() {
                 return '<a href="' + this.link + '">' + this.name + '</a>';
             };
 
-            /** return the name of the parent containing the toolbar */
-            JTB.Toolbar.prototype.getParentName = function() {
-                return this.parent_id;
+            /** get the name of the element the toolbar is attached to */
+            JTB.Toolbar.prototype.getContentName = function() {
+                return this.content_id;
             };
 
-            /** set the name of the parent containing the toolbar */
-            JTB.Toolbar.prototype.setToolbarDiv = function(parent_name) {
-                this.parent_id = parent_name;
+            /** set the name of the element the toolbar is attached to */
+            JTB.Toolbar.prototype.setContentName = function(content_name) {
+                this.content_id = content_name;
                 return this;
             };
 
-            /** return the name of the div containing the toolbar */
-            JTB.Toolbar.prototype.getToolbarDiv = function() {
+            /** return the name of the element containing the toolbar */
+            JTB.Toolbar.prototype.getToolbarName = function() {
                 return this.tb_id;
             };
 
-            /** return the name of the div containing the toolbar basic links */
-            JTB.Toolbar.prototype.getToolbarLinksDiv = function() {
+            /** return the name of the element containing the basic links */
+            JTB.Toolbar.prototype.getToolbarLinksEltName = function() {
                 return this.tb_id + "_links";
             };
 
+            /** return the name of the element containing the attached content */
+            JTB.Toolbar.prototype.getToolbarContentContainerEltName = function() {
+                return this.tb_id + "_content";
+            };
+
             /** return the name of the div containing the toolbar pin icon */
-            JTB.Toolbar.prototype.getToolbarPinIconDiv = function() {
+            JTB.Toolbar.prototype.getToolbarPinIconEltName = function() {
                 return this.tb_id + "_pinicon";
             };
 
-            /** set the name of the div containing the toolbar */
-            JTB.Toolbar.prototype.setToolbarDiv = function(div_name) {
+            /** set the name of the element containing the toolbar */
+            JTB.Toolbar.prototype.setToolbarName = function(tb_name) {
+                var tb = document.getElementById(tb_name);
+                if(tb == null) {
+                    return;
+                }
+
                 removeToolbarFromDOM(this);
-                this.tb_id = div_name;
+                this.tb_id = tb_name;
+                this.tb_elt = tb;
                 addToolbarToDOM(this);
                 return this;
             };
@@ -385,7 +396,7 @@ var JTB = function() {
             JTB.Toolbar.prototype.refreshLinks = function() {
                 var i, len, divLinks;
 
-                divLinks = document.getElementById(this.getToolbarLinksDiv());
+                divLinks = document.getElementById(this.getToolbarLinksEltName());
                 divLinks.innerHTML = "";
 
                 len = this.links.length;
@@ -426,7 +437,7 @@ var JTB = function() {
 
                 /* determine if we should be showing the toolbar and how to
                  * animate it into the correct position */
-                var parent = document.getElementById(tb.parent_id);
+                var parent = document.getElementById(tb.content_id);
                 var show = false;
                 var l=0, t=0, w=0, h=0;
                 switch(tb.dock) {
