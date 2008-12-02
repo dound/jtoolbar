@@ -466,11 +466,11 @@ var JTB = function() {
 
                 /* if the state changed, update it and perform an animation */
                 if(show && tb.state!=JTB.STATE_VIS) {
-                    tb.setState(JTB.STATE_VIS);
+                    tb.state = JTB.STATE_VIS;
                     tb.animate(l, t, tb.native_width, tb.native_height);
                 }
                 else if(!show && tb.state!=JTB.STATE_INVIS) {
-                    tb.setState(JTB.STATE_INVIS);
+                    tb.state = JTB.STATE_INVIS;
                     tb.animate(l, t, w, h);
                 }
             };
