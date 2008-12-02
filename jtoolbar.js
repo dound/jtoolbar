@@ -15,15 +15,28 @@ var JTB = function() {
         parent.insertBefore(tb.tb_elt, parent.firstChild);
     }
 
+    /** get a child element */
+    function getChild(elt, child_name) {
+        var children = elt.childNodes;
+        var i;
+
+        for(i=0; i<children.length; i++) {
+            var name = children[i].getAttribute('id');
+            if(name == child_name)
+                return children[i];
+        }
+        return null;
+    }
+
     /** refreshes the attributes of the toolbar div */
     function refreshToolbarAttrs(tb) {
         /* TODO: implement me! */
 
         /* setup the pin/unpin icon */
-        var divPinIcon = tb.tb_elt.getChild(tb.getToolbarPinIconDiv());
+        var divPinIcon = getChild(tb.tb_elt, tb.getToolbarPinIconDiv());
         if(tb.isShowPinIcon()) {
             /* show it */
-            var imgName = getImagePath() + (tb.isPinned()) ? 'pin.gif' : 'unpin.gif';
+            var imgName = tb.getImagePath() + (tb.isPinned()) ? 'pin.gif' : 'unpin.gif';
             divPinIcon.setAttribute('style', 'display:yes; top:5px; left:5px; position:absolute; ' +
                                     'background-image:' + imgName);
         }
