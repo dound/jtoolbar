@@ -68,11 +68,6 @@ var JTB = function() {
         }
     }
 
-    /** configures the pin button for the toolbar */
-    function setupPinHandler(tb) {
-        /* TODO: implement me! */
-    }
-
     /** setup the show/hide handlers for the toolbar */
     function setupEventHandlers(tb) {
         /* TODO: implement me! */
@@ -173,7 +168,6 @@ var JTB = function() {
             }
             this.refreshLinks();
 
-            setupPinHandler(this);
             setupEventHandlers(this);
         },
 
