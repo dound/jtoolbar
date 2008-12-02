@@ -41,7 +41,7 @@ var JTB = function() {
             /* show it */
             var imgName = tb.getImagePath() + (tb.isPinned()) ? 'pin.gif' : 'unpin.gif';
             divPinIcon.setAttribute('style', 'display:inline; top:5px; left:5px; position:absolute; ' +
-                                    'background-image:url(' + imgName + ')');
+                                    'background-image:url(' + imgName + '); width:16px; height:16px');
         }
         else {
             /* hide it */
