@@ -137,7 +137,7 @@ var JTB = function() {
             this.anim_start     = -1;
 
             /* where to place our div relative to its parent */
-            this.dock           = JTB.DOCK_BOTTOM;
+            this.dock           = JTB.DOCK_LEFT;
 
             /* whether to show the pin/unpin graphic */
             this.show_pin       = true;
@@ -245,7 +245,26 @@ var JTB = function() {
             /** set the location of the toolbar on its parent */
             JTB.Toolbar.prototype.setDockLocation = function(dock) {
                 this.dock = dock;
+                this.refreshToolbarGfx();
+                return this;
+            };
+
+            JTB.Toolbar.prototype.refreshToolbarGfx = function() {
                 /* TODO: put toolbar at the appropriate place */
+
+                switch(this.dock) {
+                case JTB.DOCK_LEFT:
+                    this.tb_elt.style.cssFloat = 'left';
+                    break;
+                case JTB.DOCK_RIGHT:
+                    this.tb_elt.style.cssFloat = 'right';
+                    break;
+                default:
+                    this.tb_elt.style.cssFloat = 'none';
+                    break;
+                }
+
+                this.refreshLinks();
                 return this;
             };
 
@@ -413,11 +432,7 @@ var JTB = function() {
                 /* setup the show/hide handler for the toolbar */
                 divContainer.setAttribute('onmousemove', 'JTB.handleMouseMove("' + this.tb_id + '", event);');
 
-                /* add the links */
-                this.refreshLinks();
-
-                /* setup the size/position of the toolbar and its attached content */
-                this.setDockLocation(JTB.DOCK_BOTTOM);
+                this.refreshToolbarGfx();
             };
 
             /** unhook the toolbar from the UI (assumes it is currently hooked in) */
