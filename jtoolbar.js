@@ -37,28 +37,6 @@ var JTB = function() {
         return null;
     }
 
-    /** refreshes the attributes of the toolbar div */
-    function refreshToolbarAttrs(tb) {
-        /* setup the pin/unpin icon */
-        var divPinIcon = getChild(tb.tb_elt, tb.getToolbarPinIconEltName());
-        if(tb.isShowPinIcon()) {
-            /* show it */
-            var imgName = tb.getImagePath() + (tb.isPinned() ? 'pin.gif' : 'unpin.gif');
-            var left = tb.tb_width - 17;
-            divPinIcon.setAttribute('style', 'background-image: url(' + imgName + ')');
-            divPinIcon.style.display = 'inline';
-            divPinIcon.style.position = 'absolute';
-            divPinIcon.style.top = '5px';
-            divPinIcon.style.left = left + 'px';
-            divPinIcon.style.width = '16px';
-            divPinIcon.style.height = '16px';
-        }
-        else {
-            /* hide it */
-            divPinIcon.style.display = 'none';
-        }
-    }
-
     /** updates the toolbar's size and position based on the ongoing animation */
     function handleToolbarAnimation(tb) {
         /* compute how far done (%) the animation is */
@@ -254,22 +232,57 @@ var JTB = function() {
                 return this;
             };
 
+            /** set toolbar attributes so it displays according to the current Toolbar state */
             JTB.Toolbar.prototype.refreshToolbarGfx = function() {
-                /* TODO: put toolbar at the appropriate place */
+                var container = this.getContainer();
+                var display   = '';
 
+                /* put the toolbar and content in correct order in container */
                 switch(this.dock) {
                 case JTB.DOCK_LEFT:
-                    this.tb_elt.style.cssFloat = 'left';
+                case JTB.DOCK_TOP:
+                    var content = this.getContent();
+                    container.appendChild(content); /* make sure content is at the end */
+                    display = ((this.dock == JTB.DOCK_LEFT) ? 'table-cell' : 'table-row');
                     break;
+
                 case JTB.DOCK_RIGHT:
-                    this.tb_elt.style.cssFloat = 'right';
-                    break;
-                default:
-                    this.tb_elt.style.cssFloat = 'none';
+                case JTB.DOCK_BOTTOM:
+                    container.appendChild(this.tb_elt); /* make sure toolbar is at the end */
+                    display = ((this.dock == JTB.DOCK_RIGHT) ? 'table-cell' : 'table-row');
                     break;
                 }
+                this.tb_elt.style.display = display;
+                content.style.display = display;
 
+                /* setup the pin/unpin icon */
+                this.refreshPinGfx();
+
+                /* rebuild the links */
                 this.refreshLinks();
+                return this;
+            };
+
+            /** set pin icon attributes so it displays according to the current Toolbar state */
+            JTB.Toolbar.prototype.refreshPinGfx = function() {
+                var divPinIcon = getChild(this.tb_elt, this.getToolbarPinIconEltName());
+                if(this.isShowPinIcon()) {
+                    /* show it */
+                    var imgName = this.getImagePath() + (this.isPinned() ? 'pin.gif' : 'unpin.gif');
+                    var left = this.tb_width - 17;
+                    divPinIcon.setAttribute('style', 'background-image: url(' + imgName + ')');
+                    divPinIcon.style.display = 'inline';
+                    divPinIcon.style.position = 'absolute';
+                    divPinIcon.style.top = '5px';
+                    divPinIcon.style.left = left + 'px';
+                    divPinIcon.style.width = '16px';
+                    divPinIcon.style.height = '16px';
+                }
+                else {
+                    /* hide it */
+                    divPinIcon.style.display = 'none';
+                }
+
                 return this;
             };
 
@@ -292,7 +305,7 @@ var JTB = function() {
             /** set the path to the location where images are stored */
             JTB.Toolbar.prototype.setImagePath = function(path) {
                 this.img_path = path;
-                refreshToolbarAttrs(this);
+                this.refreshPinGfx();
                 return this;
             };
 
@@ -537,8 +550,7 @@ var JTB = function() {
                 }
 
                 tb.pinned = !tb.pinned;
-                tb.state = JTB.STATE_VIS;
-                refreshToolbarAttrs(tb);
+                this.refreshPinGfx();
             };
 
             /** handle callback for an animation event */
