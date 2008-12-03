@@ -269,14 +269,8 @@ var JTB = function() {
                 if(this.isShowPinIcon()) {
                     /* show it */
                     var imgName = this.getImagePath() + (this.isPinned() ? 'pin.gif' : 'unpin.gif');
-                    var left = this.tb_width - 17;
-                    divPinIcon.setAttribute('style', 'background-image: url(' + imgName + ')');
-                    divPinIcon.style.display = 'inline';
-                    divPinIcon.style.position = 'absolute';
-                    divPinIcon.style.top = '5px';
-                    divPinIcon.style.left = left + 'px';
-                    divPinIcon.style.width = '16px';
-                    divPinIcon.style.height = '16px';
+                    divPinIcon.style.backgroundImage = 'url(' + imgName + ')';
+                    divPinIcon.style.display = 'block';
                 }
                 else {
                     /* hide it */
@@ -450,7 +444,13 @@ var JTB = function() {
                 var divPinIcon = document.createElement("div");
                 divPinIcon.setAttribute('id', this.getToolbarPinIconEltName());
                 divPinIcon.setAttribute('onclick', "JTB.handlePinClickEvent('" + this.tb_id + "');");
-                this.tb_elt.appendChild(divPinIcon);
+                divPinIcon.style.backgroundRepeat = 'no-repeat';
+                divPinIcon.style.border = '1px solid black';
+                divPinIcon.style.width = '16px';
+                divPinIcon.style.height = '16px';
+                divPinIcon.style.cssFloat = 'right';
+                divPinIcon.style.margin = '3px 3px 3px 3px';
+                this.tb_elt.insertBefore(divPinIcon, this.tb_elt.childNodes[0]);
 
                 /* setup the show/hide handler for the toolbar */
                 divContainer.setAttribute('onmousemove', "JTB.handleMouseMove('" + this.tb_id + "', event);");
