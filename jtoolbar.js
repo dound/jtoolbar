@@ -431,11 +431,11 @@ var JTB = function() {
                 /* create a div to put the pin icon in within the toolbar */
                 var divPinIcon = document.createElement("div");
                 divPinIcon.setAttribute('id', this.getToolbarPinIconEltName());
-                divPinIcon.setAttribute('onclick', 'JTB.handlePinClickEvent("' + this.tb_id + '");');
+                divPinIcon.setAttribute('onclick', "JTB.handlePinClickEvent('" + this.tb_id + "');");
                 this.tb_elt.appendChild(divPinIcon);
 
                 /* setup the show/hide handler for the toolbar */
-                divContainer.setAttribute('onmousemove', 'JTB.handleMouseMove("' + this.tb_id + '", event);');
+                divContainer.setAttribute('onmousemove', "JTB.handleMouseMove('" + this.tb_id + "', event);");
 
                 this.refreshToolbarGfx();
             };
