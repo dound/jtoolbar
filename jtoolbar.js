@@ -203,6 +203,11 @@ var JTB = function() {
                 return document.getElementById(this.getToolbarContainerEltName());
             };
 
+            /** get the content element to which the toolbar is attached */
+            JTB.Toolbar.prototype.getContent = function() {
+                return document.getElementById(this.getContentName());
+            };
+
             /** return the name of the element containing the toolbar */
             JTB.Toolbar.prototype.getToolbarName = function() {
                 return this.tb_id;
