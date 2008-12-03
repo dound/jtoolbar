@@ -418,23 +418,28 @@ var JTB = function() {
                     this.tb_elt.parentNode.removeChild(this.tb_elt);
                 }
 
-                /* get the parent the toolbar and the content live in */
-                var oldContentElt = document.getElementById(this.content_id);
-                var parent = oldContentElt.parentNode;
-
-                /* replace the content with a container */
-                var divNewContentElt = document.createElement("div");
-                divNewContentElt.setAttribute('id', this.content_id);
-                divNewContentElt.innerHTML = oldContentElt.innerHTML;
-
+                /* create a div to hold the toolbar and its attached content */
                 var divContainer = document.createElement("div");
                 divContainer.setAttribute('id', this.getToolbarContainerEltName());
-                divContainer.setAttribute('style', oldContentElt.getAttribute('style'));
-                divContainer.appendChild(this.tb_elt);
-                divContainer.appendChild(divNewContentElt);
 
-                parent.removeChild(oldContentElt);
-                parent.appendChild(divContainer);
+                /* remove the content for now */
+                var divContent = document.getElementById(this.content_id);
+                var parent = divContent.parentNode;
+                parent.removeChild(divContent);
+
+                /* give container position, size, and layout properties of orig content */
+                divContainer.style.display = divContent.style.display;
+                divContainer.style.height  = divContent.style.height;
+                divContainer.style.left    = divContent.style.left;
+                divContainer.style.top     = divContent.style.top;
+                divContainer.style.width   = divContent.style.width;
+
+                /* clear the copied properties from the content */
+                divContent.style.display = '';
+                divContent.style.height  = '';
+                divContent.style.left    = '';
+                divContent.style.top     = '';
+                divContent.style.width   = '';
 
                 /* create a div to put the links in within the toolbar */
                 var divLinks = document.createElement("div");
@@ -449,6 +454,11 @@ var JTB = function() {
 
                 /* setup the show/hide handler for the toolbar */
                 divContainer.setAttribute('onmousemove', "JTB.handleMouseMove('" + this.tb_id + "', event);");
+
+                /* put our new elements into the DOM */
+                divContainer.appendChild(this.tb_elt);
+                divContainer.appendChild(divContent);
+                parent.appendChild(divContainer);
 
                 this.refreshToolbarGfx();
             };
