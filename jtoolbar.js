@@ -307,6 +307,9 @@ var JTB = function() {
                 if(this.getState() == JTB.STATE_VIS) {
                     this.tb_elt.style.display = display;
                 }
+                else {
+                    this.tb_elt.style.display = 'none';
+                }
                 content.style.display = display;
 
                 /* setup the pin/unpin icon */
