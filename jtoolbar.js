@@ -280,13 +280,13 @@ var JTB = function() {
             /** set toolbar attributes so it displays according to the current Toolbar state */
             JTB.Toolbar.prototype.refreshToolbarGfx = function() {
                 var container = this.getContainer();
+                var content = this.getContent();
                 var display   = '';
 
                 /* put the toolbar and content in correct order in container */
                 switch(this.dock) {
                 case JTB.DOCK_LEFT:
                 case JTB.DOCK_TOP:
-                    var content = this.getContent();
                     container.appendChild(content); /* make sure content is at the end */
                     display = ((this.dock == JTB.DOCK_LEFT) ? 'table-cell' : 'table-row');
                     break;
@@ -297,7 +297,9 @@ var JTB = function() {
                     display = ((this.dock == JTB.DOCK_RIGHT) ? 'table-cell' : 'table-row');
                     break;
                 }
-                this.tb_elt.style.display = display;
+                if(this.getState() == JTB.STATE_VIS) {
+                    this.tb_elt.style.display = display;
+                }
                 content.style.display = display;
 
                 /* setup the pin/unpin icon */
