@@ -90,13 +90,6 @@ var JTB = function() {
         es.width  = ((percentDone*tb.dst_width)  + ((1.0-percentDone)*tb.src_width))  + 'px';
         es.height = ((percentDone*tb.dst_height) + ((1.0-percentDone)*tb.src_height)) + 'px';
 
-        if(es.width=='0px' || es.height=='0px') {
-            es.display = 'none';
-        }
-        else {
-            es.display = 'inline';
-        }
-
         /* periodically call this method until the animation is done */
         if(percentDone < 1) {
             setTimeout('JTB.handleAnimationCallback("' + tb.tb_id + '");', JTB.ANIM_INTERVAL_MSEC);
