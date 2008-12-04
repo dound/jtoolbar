@@ -93,7 +93,7 @@ var JTB = function() {
         }
 
         /* update position and size */
-        var es = tb.tb_elt.style;
+        var es = tb.e_tb.style;
         if(percentDone <= animSplit) {
             var p = percentDone / animSplit;
             es.left   = parseInt((p*tb.int_left)   + ((1.0-p)*tb.src_left))   + 'px';
@@ -151,8 +151,12 @@ var JTB = function() {
             /* name of the div which contains the toolbar */
             this.tb_id          = tb_name;
 
-            /* the element which is the div */
-            this.tb_elt         = null;
+            /* elements which compose the toolbar */
+            this.e_container      = null;
+            this.e_content        = null;
+            this.e_tb             = null;
+            this.e_icon_pin       = null;
+            this.e_links       = null;
 
             /* where the tb is coming from / heading (position and size) */
             this.src_left       = 0;
@@ -235,37 +239,22 @@ var JTB = function() {
 
             /** get the parent element of the toolbar and its attached content */
             JTB.Toolbar.prototype.getParent = function() {
-                return document.getElementById(this.content_id).parentNode;
+                return this.e_content.parentNode;
             };
 
             /** get the container element which holds toolbar and its attached content */
             JTB.Toolbar.prototype.getContainer = function() {
-                return document.getElementById(this.getToolbarContainerEltName());
+                return this.e_container;
             };
 
             /** get the content element to which the toolbar is attached */
             JTB.Toolbar.prototype.getContent = function() {
-                return document.getElementById(this.getContentName());
+                return this.e_content;
             };
 
             /** return the name of the element containing the toolbar */
             JTB.Toolbar.prototype.getToolbarName = function() {
                 return this.tb_id;
-            };
-
-            /** return the name of the element containing the basic links */
-            JTB.Toolbar.prototype.getToolbarLinksEltName = function() {
-                return this.tb_id + "_links";
-            };
-
-            /** return the name of the element containing the toolbar and attached content */
-            JTB.Toolbar.prototype.getToolbarContainerEltName = function() {
-                return this.tb_id + "_container";
-            };
-
-            /** return the name of the div containing the toolbar pin icon */
-            JTB.Toolbar.prototype.getToolbarPinIconEltName = function() {
-                return this.tb_id + "_pinicon";
             };
 
             /** set the name of the element containing the toolbar */
@@ -276,8 +265,8 @@ var JTB = function() {
                 }
 
                 this.tb_id = tb_name;
-                this.getContainer().replaceChild(tb, this.tb_elt);
-                this.tb_elt = tb;
+                this.getContainer().replaceChild(tb, this.e_tb);
+                this.e_tb = tb;
 
                 return this;
             };
@@ -310,15 +299,15 @@ var JTB = function() {
 
                 case JTB.DOCK_RIGHT:
                 case JTB.DOCK_BOTTOM:
-                    container.appendChild(this.tb_elt); /* make sure toolbar is at the end */
+                    container.appendChild(this.e_tb); /* make sure toolbar is at the end */
                     display = ((this.dock == JTB.DOCK_RIGHT) ? 'table-cell' : 'table-row');
                     break;
                 }
                 if(this.getState() == JTB.STATE_VIS) {
-                    this.tb_elt.style.display = display;
+                    this.e_tb.style.display = display;
                 }
                 else {
-                    this.tb_elt.style.display = 'none';
+                    this.e_tb.style.display = 'none';
                 }
                 content.style.display = display;
 
@@ -332,16 +321,15 @@ var JTB = function() {
 
             /** set pin icon attributes so it displays according to the current Toolbar state */
             JTB.Toolbar.prototype.refreshPinGfx = function() {
-                var divPinIcon = getChild(this.tb_elt, this.getToolbarPinIconEltName());
                 if(this.isShowPinIcon()) {
                     /* show it */
                     var imgName = this.getImagePath() + (this.isPinned() ? 'pin.gif' : 'unpin.gif');
-                    divPinIcon.style.backgroundImage = 'url(' + imgName + ')';
-                    divPinIcon.style.display = 'block';
+                    this.e_icon_pin.style.backgroundImage = 'url(' + imgName + ')';
+                    this.e_icon_pin.style.display = 'block';
                 }
                 else {
                     /* hide it */
-                    divPinIcon.style.display = 'none';
+                    this.e_icon_pin.style.display = 'none';
                 }
 
                 return this;
@@ -433,8 +421,8 @@ var JTB = function() {
                 /* determine the max deviation from the top-left corner of the toolbar */
                 var maxdx, maxdy;
                 if(this.getState() == JTB.STATE_VIS) {
-                    maxdx = this.tb_elt.offsetWidth;
-                    maxdy = this.tb_elt.offsetHeight;
+                    maxdx = this.e_tb.offsetWidth;
+                    maxdy = this.e_tb.offsetHeight;
                 }
                 else {
                     maxdx = this.trigger_dist;
@@ -442,8 +430,8 @@ var JTB = function() {
                 }
 
                 /* get the position of the toolbar */
-                var x = findPosX(this.tb_elt);
-                var y = findPosY(this.tb_elt);
+                var x = findPosX(this.e_tb);
+                var y = findPosY(this.e_tb);
 
                 /* display the toolbar iff the mouse is within the maximum deviation */
                 this.setVisible(mouseX>=x && mouseX<x+maxdx && mouseY>=y && mouseY<y+maxdy);
@@ -525,19 +513,18 @@ var JTB = function() {
 
             /** refresh the links shown in the toolbar */
             JTB.Toolbar.prototype.refreshLinks = function() {
-                var i, len, divLinks;
+                var i, len;
 
-                divLinks = document.getElementById(this.getToolbarLinksEltName());
-                divLinks.innerHTML = "";
+                this.e_links.innerHTML = "";
 
                 len = this.links.length;
                 for(i=0; i<len; i++) {
-                    divLinks.innerHTML += this.links[i].makeLink();
+                    this.e_links.innerHTML += this.links[i].makeLink();
                 }
 
                 if(this.getState() == JTB.STATE_VIS) {
-                    this.tb_width  = this.tb_elt.offsetWidth;
-                    this.tb_height = this.tb_elt.offsetHeight;
+                    this.tb_width  = this.e_tb.offsetWidth;
+                    this.tb_height = this.e_tb.offsetHeight;
 
                     debug('tb_w/h = ' + this.tb_width + ' x ' + this.tb_height);
                 }
@@ -546,67 +533,67 @@ var JTB = function() {
             /* create and hook the toolbar into the UI (assumes it is not already hooked in */
             JTB.Toolbar.prototype.hookup = function() {
                 /* get the toolbar element */
-                this.tb_elt = document.getElementById(this.tb_id);
-                if(this.tb_elt === null) {
+                this.e_tb = document.getElementById(this.tb_id);
+                if(this.e_tb === null) {
                     /* create the toolbar if it doesn't exist */
-                    this.tb_elt = document.createElement("div");
-                    this.tb_elt.setAttribute('id', this.tb_id);
+                    this.e_tb = document.createElement("div");
+                    this.e_tb.setAttribute('id', this.tb_id);
                 }
                 else {
                     /* remove the toolbar from its current parent */
-                    this.tb_elt.parentNode.removeChild(this.tb_elt);
+                    this.e_tb.parentNode.removeChild(this.e_tb);
                 }
 
                 /* crop overflow so animation can smoothly reduce size */
-                this.tb_elt.style.overflow = 'hidden';
+                this.e_tb.style.overflow = 'hidden';
 
                 /* create a div to hold the toolbar and its attached content */
-                var divContainer = document.createElement("div");
-                divContainer.setAttribute('id', this.getToolbarContainerEltName());
+                this.e_container = document.createElement("div");
+                this.e_container.setAttribute('id', this.tb_id + "_container");
 
                 /* remove the content for now */
-                var divContent = document.getElementById(this.content_id);
-                var parent = divContent.parentNode;
-                parent.removeChild(divContent);
+                this.e_content = document.getElementById(this.content_id);
+                var parent = this.e_content.parentNode;
+                parent.removeChild(this.e_content);
 
                 /* give container position, size, and layout properties of orig content */
-                divContainer.style.display = divContent.style.display;
-                divContainer.style.height  = divContent.style.height;
-                divContainer.style.left    = divContent.style.left;
-                divContainer.style.top     = divContent.style.top;
-                divContainer.style.width   = divContent.style.width;
+                this.e_container.style.display = this.e_content.style.display;
+                this.e_container.style.height  = this.e_content.style.height;
+                this.e_container.style.left    = this.e_content.style.left;
+                this.e_container.style.top     = this.e_content.style.top;
+                this.e_container.style.width   = this.e_content.style.width;
 
                 /* clear the copied properties from the content */
-                divContent.style.display = '';
-                divContent.style.height  = '';
-                divContent.style.left    = '';
-                divContent.style.top     = '';
-                divContent.style.width   = '';
+                this.e_content.style.display = '';
+                this.e_content.style.height  = '';
+                this.e_content.style.left    = '';
+                this.e_content.style.top     = '';
+                this.e_content.style.width   = '';
 
                 /* create a div to put the links in within the toolbar */
-                var divLinks = document.createElement("div");
-                divLinks.setAttribute('id', this.getToolbarLinksEltName());
-                this.tb_elt.appendChild(divLinks);
+                this.e_links = document.createElement("div");
+                this.e_links.setAttribute('id', this.tb_id + "_links");
+                this.e_tb.appendChild(this.e_links);
 
                 /* create a div to put the pin icon in within the toolbar */
-                var divPinIcon = document.createElement("div");
-                divPinIcon.setAttribute('id', this.getToolbarPinIconEltName());
-                divPinIcon.setAttribute('onclick', "JTB.handlePinClickEvent('" + this.tb_id + "');");
-                divPinIcon.style.backgroundRepeat = 'no-repeat';
-                divPinIcon.style.border = '1px solid black';
-                divPinIcon.style.width = '16px';
-                divPinIcon.style.height = '16px';
-                divPinIcon.style.cssFloat = 'right';
-                divPinIcon.style.margin = '3px 3px 3px 3px';
-                this.tb_elt.insertBefore(divPinIcon, this.tb_elt.childNodes[0]);
+                this.e_icon_pin = document.createElement("div");
+                this.e_icon_pin.setAttribute('id', this.tb_id + "_icon_pin");
+                this.e_icon_pin.setAttribute('onclick', "JTB.handlePinClickEvent('" + this.tb_id + "');");
+                this.e_icon_pin.style.backgroundRepeat = 'no-repeat';
+                this.e_icon_pin.style.border = '1px solid black';
+                this.e_icon_pin.style.width = '16px';
+                this.e_icon_pin.style.height = '16px';
+                this.e_icon_pin.style.cssFloat = 'right';
+                this.e_icon_pin.style.margin = '3px 3px 3px 3px';
+                this.e_tb.insertBefore(this.e_icon_pin, this.e_tb.childNodes[0]);
 
                 /* setup the show/hide handler for the toolbar */
-                divContainer.setAttribute('onmousemove', "JTB.handleMouseMove('" + this.tb_id + "', event);");
+                this.e_container.setAttribute('onmousemove', "JTB.handleMouseMove('" + this.tb_id + "', event);");
 
                 /* put our new elements into the DOM */
-                divContainer.appendChild(this.tb_elt);
-                divContainer.appendChild(divContent);
-                parent.appendChild(divContainer);
+                this.e_container.appendChild(this.e_tb);
+                this.e_container.appendChild(this.e_content);
+                parent.appendChild(this.e_container);
 
                 this.refreshToolbarGfx();
             };
@@ -621,7 +608,7 @@ var JTB = function() {
              * don't change that field)
              */
             JTB.Toolbar.prototype.animate = function(l, t, w, h, springAnim) {
-                var e = this.tb_elt;
+                var e = this.e_tb;
                 this.src_left   = findPosX(e);
                 this.src_top    = findPosY(e);
                 this.src_width  = e.offsetWidth;
@@ -666,7 +653,7 @@ var JTB = function() {
                 debug(document.getElementById('custom_toolbar').offsetHeight + ' / ' + document.getElementById('tempest').offsetHeight);
 
                 this.anim_start = new Date().getTime();
-                this.tb_elt.style.display = 'block';
+                this.e_tb.style.display = 'block';
                 handleToolbarAnimation(this);
             };
 
