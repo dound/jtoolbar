@@ -192,7 +192,7 @@ var JTB = function() {
             this.anim_start     = -1;
 
             /* where to place our div relative to its parent */
-            this.dock           = JTB.DOCK_RIGHT;
+            this.dock           = JTB.DOCK_LEFT;
 
             /* whether to show the pin/unpin graphic */
             this.show_pin       = true;
@@ -459,6 +459,14 @@ var JTB = function() {
                 /* get the position of the toolbar */
                 var x = findPosX(this.e_tb);
                 var y = findPosY(this.e_tb);
+
+                /* adjust based on docking location */
+                if(this.dock == JTB.DOCK_RIGHT) {
+                    x += this.e_content.offsetWidth - this.tb_width;
+                }
+                if(this.dock == JTB.DOCK_BOTTOM) {
+                    y += this.e_content.offsetHeight - this.tb_height;
+                }
 
                 /* display the toolbar iff the mouse is within the maximum deviation */
                 this.setVisible(mouseX>=x && mouseX<x+maxdx && mouseY>=y && mouseY<y+maxdy);
