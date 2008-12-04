@@ -170,7 +170,7 @@ var JTB = function() {
             this.e_content        = null;
             this.e_tb             = null;
             this.e_icon_pin       = null;
-            this.e_links       = null;
+            this.e_links          = null;
 
             /* where the tb is coming from / heading (position and size) */
             this.src_left       = 0;
@@ -428,7 +428,7 @@ var JTB = function() {
                 }
 
                 /* perform the transition animation */
-                this.animate(-1, -1, w, h, this.anim_springy);
+                this.animate(-1, -1, w, h, this.anim_springy, true);
             };
 
             /** sets the visibility of the toolbar based on the mouse location */
@@ -440,8 +440,9 @@ var JTB = function() {
                 }
 
                 /* determine the max deviation from the top-left corner of the toolbar */
+                var vis = (this.getState() == JTB.STATE_VIS);
                 var maxdx, maxdy;
-                if(this.getState() == JTB.STATE_VIS) {
+                if(vis) {
                     maxdx = this.e_tb.offsetWidth;
                     maxdy = this.e_tb.offsetHeight;
                 }
@@ -462,10 +463,22 @@ var JTB = function() {
 
                 /* adjust based on docking location */
                 if(this.dock == JTB.DOCK_RIGHT) {
-                    x += this.e_content.offsetWidth - this.tb_width;
+                    if(vis) {
+                        x -= this.tb_width;
+                        maxdx += this.tb_width;
+                    }
+                    else {
+                        x = findPosX(this.e_content) + this.e_content.offsetWidth - this.tb_width;
+                    }
                 }
-                if(this.dock == JTB.DOCK_BOTTOM) {
-                    y += this.e_content.offsetHeight - this.tb_height;
+                else if(this.dock == JTB.DOCK_BOTTOM) {
+                    if(vis) {
+                        y -= this.tb_height;
+                        maxdy += this.tb_height;
+                    }
+                    else {
+                        y = findPosY(this.e_content) + this.e_content.offsetHeight - this.tb_height;
+                    }
                 }
 
                 /* display the toolbar iff the mouse is within the maximum deviation */
@@ -661,7 +674,7 @@ var JTB = function() {
              * start a toolbar animation (any negatively-valued parameter means
              * don't change that field)
              */
-            JTB.Toolbar.prototype.animate = function(l, t, w, h, springAnim) {
+            JTB.Toolbar.prototype.animate = function(l, t, w, h, springAnim, onlyInDockDir) {
                 var e = this.e_tb;
                 this.src_left   = findPosX(e);
                 this.src_top    = findPosY(e);
@@ -700,6 +713,16 @@ var JTB = function() {
                     }
                 }
                 animSplit = 0.5;
+
+                /* restrict animation to a single direction if requested to do so */
+                if(onlyInDockDir === true) {
+                    if(this.dock==JTB.DOCK_LEFT || this.dock==JTB.DOCK_RIGHT) {
+                        this.src_height = this.int_height = this.dst_height;
+                    }
+                    else {
+                        this.src_width = this.int_width = this.dst_width;
+                    }
+                }
 
                 debug(this.src_left + ',' + this.src_top + ' ' + this.src_width + '-' + this.src_height + ' ---- ' +
                       this.dst_left + ',' + this.dst_top + ' ' + this.dst_width + '-' + this.dst_height);
