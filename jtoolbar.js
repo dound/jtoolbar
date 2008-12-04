@@ -692,10 +692,10 @@ var JTB = function() {
                         this.int_width  = this.dst_width;
                         this.int_height = this.dst_height;
                     }
-                    if(this.src_width != this.dst_width) {
+                    if(this.dock==JTB.DOCK_LEFT || this.dock==JTB.DOCK_RIGHT) {
                         this.int_width *= 1.3;
                     }
-                    if(this.src_height != this.dst_height) {
+                    else {
                         this.int_height *= 1.3;
                     }
                 }
