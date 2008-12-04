@@ -440,8 +440,8 @@ var JTB = function() {
                 }
 
                 /* get the position of the toolbar */
-                var x = findPosX(e);
-                var y = findPosY(e);
+                var x = findPosX(this.tb_elt);
+                var y = findPosY(this.tb_elt);
 
                 /* display the toolbar iff the mouse is within the maximum deviation */
                 this.setVisible(mouseX>=x && mouseX<x+maxdx && mouseY>=y && mouseY<y+maxdy);
