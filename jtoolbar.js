@@ -679,8 +679,8 @@ var JTB = function() {
 
             /** called when the mouse moves on the toolbar's parent */
             JTB.handleMouseMove = function(tb_id, event) {
-                mouseX = event.offsetX;
-                mouseY = event.offsetY;
+                mouseX = event.clientX;
+                mouseY = event.clientY;
 
                 var tb = getToolbar(tb_id);
                 if(tb !== null && !tb.pinned) {
