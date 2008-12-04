@@ -10,10 +10,22 @@ var JTB = function() {
     var animSplit = 0.0;
 
 
-    var DEBUG = false;
-    function debug(str) {
+    var DEBUG = true;
+    var MAX_DEBUG_LINES = 5;
+    var debugLines = [MAX_DEBUG_LINES];
+    function debug(newstr) {
+        var i, str="";
+        for(i=MAX_DEBUG_LINES-2; i>=0; i--) {
+            if(debugLines[i] !== undefined) {
+                str = '<br/>' + debugLines[i] + str;
+                debugLines[i+1] = debugLines[i];
+            }
+        }
+        str = '<br/>' + newstr + str;
+        debugLines[0] = newstr;
+
         if(DEBUG) {
-            document.getElementById('debug').innerHTML += '<br/>' + str;
+            document.getElementById('debug').innerHTML = str;
         }
     }
 
