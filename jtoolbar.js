@@ -536,6 +536,9 @@ var JTB = function() {
                     this.tb_elt.parentNode.removeChild(this.tb_elt);
                 }
 
+                /* crop overflow so animation can smoothly reduce size */
+                this.tb_elt.style.overflow = 'hidden';
+
                 /* create a div to hold the toolbar and its attached content */
                 var divContainer = document.createElement("div");
                 divContainer.setAttribute('id', this.getToolbarContainerEltName());
