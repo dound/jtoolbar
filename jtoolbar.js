@@ -94,19 +94,20 @@ var JTB = function() {
 
         /* update position and size */
         var es = tb.e_tb.style;
+        var p;
         if(percentDone <= animSplit) {
-            var p = percentDone / animSplit;
-            es.left   = parseInt((p*tb.int_left)   + ((1.0-p)*tb.src_left))   + 'px';
-            es.top    = parseInt((p*tb.int_top)    + ((1.0-p)*tb.src_top))    + 'px';
-            es.width  = parseInt((p*tb.int_width)  + ((1.0-p)*tb.src_width))  + 'px';
-            es.height = parseInt((p*tb.int_height) + ((1.0-p)*tb.src_height)) + 'px';
+            p = percentDone / animSplit;
+            es.left   = parseInt((p*tb.int_left)   + ((1.0-p)*tb.src_left),   10) + 'px';
+            es.top    = parseInt((p*tb.int_top)    + ((1.0-p)*tb.src_top),    10) + 'px';
+            es.width  = parseInt((p*tb.int_width)  + ((1.0-p)*tb.src_width),  10) + 'px';
+            es.height = parseInt((p*tb.int_height) + ((1.0-p)*tb.src_height), 10) + 'px';
         }
         else {
-            var p = (percentDone - animSplit) / (1.0 - animSplit);
-            es.left   = parseInt((p*tb.dst_left)   + ((1.0-p)*tb.int_left))   + 'px';
-            es.top    = parseInt((p*tb.dst_top)    + ((1.0-p)*tb.int_top))    + 'px';
-            es.width  = parseInt((p*tb.dst_width)  + ((1.0-p)*tb.int_width))  + 'px';
-            es.height = parseInt((p*tb.dst_height) + ((1.0-p)*tb.int_height)) + 'px';
+            p = (percentDone - animSplit) / (1.0 - animSplit);
+            es.left   = parseInt((p*tb.dst_left)   + ((1.0-p)*tb.int_left),   10) + 'px';
+            es.top    = parseInt((p*tb.dst_top)    + ((1.0-p)*tb.int_top),    10) + 'px';
+            es.width  = parseInt((p*tb.dst_width)  + ((1.0-p)*tb.int_width),  10) + 'px';
+            es.height = parseInt((p*tb.dst_height) + ((1.0-p)*tb.int_height), 10) + 'px';
         }
 
         /* periodically call this method until the animation is done */
