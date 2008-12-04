@@ -79,6 +79,9 @@ var JTB = function() {
         /* compute how far done (%) the animation is */
         var millisElapsed = new Date().getTime() - tb.anim_start;
         var percentDone = millisElapsed / tb.animation_len_msec;
+        if(percentDone > 1.0) {
+            percentDone = 1.0;
+        }
 
         /* update position and size */
         var es = tb.tb_elt.style;
