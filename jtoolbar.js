@@ -8,6 +8,13 @@ var JTB = function() {
     var toolbars = [];
     var mouseX, mouseY;
 
+    var DEBUG = false;
+    function debug(str) {
+        if(DEBUG) {
+            document.getElementById('debug').innerHTML += '<br/>' + str;
+        }
+    }
+
     function findPosX(obj) {
         var curleft = 0;
         if(obj.offsetParent) {
@@ -508,8 +515,7 @@ var JTB = function() {
                     this.tb_width  = this.tb_elt.offsetWidth;
                     this.tb_height = this.tb_elt.offsetHeight;
 
-                    document.getElementById('debug').innerHTML += '<br/>tb_w/h = ' +
-                    this.tb_width + ' x ' + this.tb_height;
+                    debug('tb_w/h = ' + this.tb_width + ' x ' + this.tb_height);
                 }
             };
 
@@ -599,13 +605,13 @@ var JTB = function() {
                 this.dst_width  = ((w == -1) ? this.src_width  : w);
                 this.dst_height = ((h == -1) ? this.src_height : h);
 
-                document.getElementById('debug').innerHTML += '<br/>' +
-                  this.src_left + ',' + this.src_top + ' ' + this.src_width + '-' + this.src_height + ' ---- ' +
-                  this.dst_left + ',' + this.dst_top + ' ' + this.dst_width + '-' + this.dst_height;
+                debug(this.src_left + ',' + this.src_top + ' ' + this.src_width + '-' + this.src_height + ' ---- ' +
+                      this.dst_left + ',' + this.dst_top + ' ' + this.dst_width + '-' + this.dst_height);
+
+                debug(document.getElementById('custom_toolbar').offsetHeight + ' / ' + document.getElementById('tempest').offsetHeight);
 
                 this.anim_start = new Date().getTime();
-                this.savedInnerHTML = this.tb_elt.innerHTML;
-                this.tb_elt.innerHTML = '<div style="display:none;">' + this.tb_elt.innerHTML + '</div>';
+                this.tb_elt.style.display = 'block';
                 handleToolbarAnimation(this);
             };
 
