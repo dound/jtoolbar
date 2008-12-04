@@ -7,6 +7,8 @@ var JTB = function() {
     /*  private members */
     var toolbars = [];
     var mouseX, mouseY;
+    var animSplit = 0.0;
+
 
     var DEBUG = false;
     function debug(str) {
@@ -92,10 +94,20 @@ var JTB = function() {
 
         /* update position and size */
         var es = tb.tb_elt.style;
-        es.left   = parseInt((percentDone*tb.dst_left)   + ((1.0-percentDone)*tb.src_left))   + 'px';
-        es.top    = parseInt((percentDone*tb.dst_top)    + ((1.0-percentDone)*tb.src_top))    + 'px';
-        es.width  = parseInt((percentDone*tb.dst_width)  + ((1.0-percentDone)*tb.src_width))  + 'px';
-        es.height = parseInt((percentDone*tb.dst_height) + ((1.0-percentDone)*tb.src_height)) + 'px';
+        if(percentDone <= animSplit) {
+            var p = percentDone / animSplit;
+            es.left   = parseInt((p*tb.int_left)   + ((1.0-p)*tb.src_left))   + 'px';
+            es.top    = parseInt((p*tb.int_top)    + ((1.0-p)*tb.src_top))    + 'px';
+            es.width  = parseInt((p*tb.int_width)  + ((1.0-p)*tb.src_width))  + 'px';
+            es.height = parseInt((p*tb.int_height) + ((1.0-p)*tb.src_height)) + 'px';
+        }
+        else {
+            var p = (percentDone - animSplit) / (1.0 - animSplit);
+            es.left   = parseInt((p*tb.dst_left)   + ((1.0-p)*tb.int_left))   + 'px';
+            es.top    = parseInt((p*tb.dst_top)    + ((1.0-p)*tb.int_top))    + 'px';
+            es.width  = parseInt((p*tb.dst_width)  + ((1.0-p)*tb.int_width))  + 'px';
+            es.height = parseInt((p*tb.dst_height) + ((1.0-p)*tb.int_height)) + 'px';
+        }
 
         /* periodically call this method until the animation is done */
         if(percentDone < 1) {
@@ -147,12 +159,16 @@ var JTB = function() {
             this.src_top        = 0;
             this.src_width      = 0;
             this.src_height     = 0;
+            this.int_left       = 0;
+            this.int_top        = 0;
+            this.int_width      = 0;
+            this.int_height     = 0;
             this.dst_left       = 0;
             this.dst_top        = 0;
             this.dst_width      = 0;
             this.dst_height     = 0;
-            this.tb_width   = 0;
-            this.tb_height  = 0;
+            this.tb_width       = 0;
+            this.tb_height      = 0;
 
             /* time the toolbar animation started */
             this.anim_start     = -1;
@@ -173,7 +189,10 @@ var JTB = function() {
             this.state          = JTB.STATE_VIS;
 
             /* number of milliseconds for the toolbar to slide in/out */
-            this.animation_len_msec = 150;
+            this.animation_len_msec = 400;
+
+            /* whether to use the spring animation or not */
+            this.anim_springy   = true;
 
             /* pixels from the edge which triggers the toolbar to show */
             this.trigger_dist   = 100;
@@ -400,7 +419,7 @@ var JTB = function() {
                 }
 
                 /* perform the transition animation */
-                this.animate(-1, -1, w, h);
+                this.animate(-1, -1, w, h, this.anim_springy);
             };
 
             /** sets the visibility of the toolbar based on the mouse location */
@@ -438,6 +457,17 @@ var JTB = function() {
             /** set the number of milliseconds the animation will last */
             JTB.Toolbar.prototype.setAnimationLength = function(msec) {
                 this.animation_len_msec = msec;
+                return this;
+            };
+
+            /** get whether animations will be springy */
+            JTB.Toolbar.prototype.isAnimationSpringy = function() {
+                return this.anim_springy;
+            };
+
+            /** set whether animations will be springy */
+            JTB.Toolbar.prototype.setAnimationSpringy = function(b) {
+                this.anim_springy = b;
                 return this;
             };
 
@@ -590,7 +620,7 @@ var JTB = function() {
              * start a toolbar animation (any negatively-valued parameter means
              * don't change that field)
              */
-            JTB.Toolbar.prototype.animate = function(l, t, w, h) {
+            JTB.Toolbar.prototype.animate = function(l, t, w, h, springAnim) {
                 var e = this.tb_elt;
                 this.src_left   = findPosX(e);
                 this.src_top    = findPosY(e);
@@ -601,6 +631,34 @@ var JTB = function() {
                 this.dst_top    = ((t == -1) ? this.src_top    : t);
                 this.dst_width  = ((w == -1) ? this.src_width  : w);
                 this.dst_height = ((h == -1) ? this.src_height : h);
+
+                if(springAnim === false) {
+                    this.int_left   = (this.src_left   + this.dst_left)   / 2;
+                    this.int_top    = (this.src_top    + this.dst_top)    / 2;
+                    this.int_width  = (this.src_width  + this.dst_width)  / 2;
+                    this.int_height = (this.src_height + this.dst_height) / 2;
+                }
+                else {
+                    if(this.src_width > this.dst_width || this.src_height > this.dst_height) {
+                        this.int_left   = this.src_left;
+                        this.int_top    = this.src_top;
+                        this.int_width  = this.src_width;
+                        this.int_height = this.src_height;
+                    }
+                    else {
+                        this.int_left   = this.dst_left;
+                        this.int_top    = this.dst_top;
+                        this.int_width  = this.dst_width;
+                        this.int_height = this.dst_height;
+                    }
+                    if(this.src_width != this.dst_width) {
+                        this.int_width *= 1.3;
+                    }
+                    if(this.src_height != this.dst_height) {
+                        this.int_height *= 1.3;
+                    }
+                }
+                animSplit = 0.5;
 
                 debug(this.src_left + ',' + this.src_top + ' ' + this.src_width + '-' + this.src_height + ' ---- ' +
                       this.dst_left + ',' + this.dst_top + ' ' + this.dst_width + '-' + this.dst_height);
