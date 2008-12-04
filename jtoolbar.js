@@ -6,6 +6,7 @@
 var JTB = function() {
     /*  private members */
     var toolbars = [];
+    var mouseX, mouseY;
 
     /** gets a toolbar object based on its name */
     function getToolbar(name) {
@@ -173,7 +174,7 @@ var JTB = function() {
 
             /** get the parent element of the toolbar and its attached content */
             JTB.Toolbar.prototype.getParent = function() {
-                return document.getElementById(tb.content_id).parentNode;
+                return document.getElementById(this.content_id).parentNode;
             };
 
             /** get the container element which holds toolbar and its attached content */
@@ -209,7 +210,7 @@ var JTB = function() {
             /** set the name of the element containing the toolbar */
             JTB.Toolbar.prototype.setToolbarName = function(tb_name) {
                 var tb = document.getElementById(tb_name);
-                if(tb == null) {
+                if(tb === null) {
                     return;
                 }
 
@@ -317,6 +318,107 @@ var JTB = function() {
             /** get the state of the toolbar's visibility */
             JTB.Toolbar.prototype.getState = function() {
                 return this.state;
+            };
+
+            /** hide the toolbar */
+            JTB.Toolbar.prototype.hide = function() {
+                this.setState(JTB.STATE_INVIS);
+                return this;
+            };
+
+            /** show the toolbar */
+            JTB.Toolbar.prototype.show = function() {
+                this.setState(JTB.STATE_VIS);
+                return this;
+            };
+
+            /** update the state and make the transition as appropriate */
+            JTB.Toolbar.prototype.setState = function(newState) {
+                /* do nothing if the state has not changed */
+                if(newState == this.state) {
+                    return this;
+                }
+                this.state = newState;
+
+                /* determine how to animate it into the correct position */
+                var container = this.getContainer();
+                var l=0, t=0, w=0, h=0;
+                switch(this.dock) {
+                case JTB.DOCK_TOP:
+                    if(this.trigger_dist > mouseY) {
+                        w = this.tb_width;
+                    }
+                    break;
+                case JTB.DOCK_BOTTOM:
+                    if(this.trigger_dist <= (this.tb_elt.offsetHeight - mouseY)) {
+                        t = container.offsetHeight - this.tb_height;
+                    }
+                    else {
+                        t = container.offsetHeight;
+                        w = this.tb_width;
+                        h = 0;
+                    }
+                    break;
+                case JTB.DOCK_LEFT:
+                    if(this.trigger_dist > mouseX) {
+                        h = this.tb_height;
+                    }
+                    break;
+                case JTB.DOCK_RIGHT:
+                    if(this.trigger_dist <= (this.tb_elt.offsetWidth - mouseX)) {
+                        l = container.offsetWidth - this.tb_width;
+                    }
+                    else {
+                        l = container.offsetWidth;
+                        w = 0;
+                        h = this.tb_height;
+                    }
+                    break;
+                }
+
+                /* perform the transition animation */
+                if(this.state == JTB.STATE_VIS) {
+                    this.animate(l, t, this.tb_width, this.tb_height);
+                }
+                else {
+                    this.animate(l, t, w, h);
+                }
+            };
+
+            /** sets the visibility of the toolbar based on the mouse location */
+            JTB.Toolbar.prototype.setStateBasedOnMouse = function() {
+                /* determine if we should be showing the toolbar */
+                var container = this.getContainer();
+                var show = false;
+                switch(this.dock) {
+                case JTB.DOCK_TOP:
+                    if(this.trigger_dist <= mouseY) {
+                        show = true;
+                    }
+                    break;
+                case JTB.DOCK_BOTTOM:
+                    if(this.trigger_dist <= (this.tb_elt.offsetHeight - mouseY)) {
+                        show = true;
+                    }
+                    break;
+                case JTB.DOCK_LEFT:
+                    if(this.trigger_dist <= mouseX) {
+                        show = true;
+                    }
+                    break;
+                case JTB.DOCK_RIGHT:
+                    if(this.trigger_dist <= (this.tb_elt.offsetWidth - mouseX)) {
+                        show = true;
+                    }
+                    break;
+                }
+
+                if(show) {
+                    this.show();
+                }
+                else {
+                    this.hide();
+                }
             };
 
             /** get the number of milliseconds the animation will last */
@@ -490,65 +592,12 @@ var JTB = function() {
 
             /** called when the mouse moves on the toolbar's parent */
             JTB.handleMouseMove = function(tb_id, event) {
+                mouseX = event.offsetX;
+                mouseY = event.offsetY;
+
                 var tb = getToolbar(tb_id);
-                if(tb === null || tb.pinned) {
-                    return; /* do nothing if tb is pinned */
-                }
-
-                /* determine if we should be showing the toolbar and how to
-                 * animate it into the correct position */
-                var container = tb.getContainer();
-                var show = false;
-                var l=0, t=0, w=0, h=0;
-                switch(tb.dock) {
-                case JTB.DOCK_TOP:
-                    if(tb.trigger_dist <= event.offsetY) {
-                        show = true;
-                    }
-                    else {
-                        w = tb.tb_width;
-                    }
-                    break;
-                case JTB.DOCK_BOTTOM:
-                    if(tb.trigger_dist <= (tb.tb_elt.offsetHeight - event.offsetY)) {
-                        show = true;
-                        t = container.offsetHeight - tb.tb_height;
-                    }
-                    else {
-                        t = container.offsetHeight;
-                        w = tb.tb_width;
-                        h = 0;
-                    }
-                    break;
-                case JTB.DOCK_LEFT:
-                    if(tb.trigger_dist <= event.offsetX) {
-                        show = true;
-                    }
-                    else {
-                        h = tb.tb_height;
-                    }
-                    break;
-                case JTB.DOCK_RIGHT:
-                    if(tb.trigger_dist <= (tb.tb_elt.offsetWidth - event.offsetX)) {
-                        show = true;
-                        l = container.offsetWidth - tb.tb_width;
-                    }
-                    else {
-                        l = container.offsetWidth;
-                        w = 0;
-                        h = tb.tb_height;
-                    }
-                    break;
-                }
-
-                /* if the state changed, update it and perform an animation */
-                if(show && tb.state!=JTB.STATE_VIS) {
-                    tb.state = JTB.STATE_VIS;
-                    tb.animate(l, t, tb.tb_width, tb.tb_height);
-                }
-                else if(!show && tb.state!=JTB.STATE_INVIS) {
-                    tb.state = JTB.STATE_INVIS;
-                    tb.animate(l, t, w, h);
+                if(tb !== null && !tb.pinned) {
+                    tb.setStateBasedOnMouse();
                 }
             };
 
@@ -561,6 +610,13 @@ var JTB = function() {
 
                 tb.pinned = !tb.pinned;
                 this.refreshPinGfx();
+
+                if(tb.pinned) {
+                    tb.show();
+                }
+                else {
+                    tb.setStateBasedOnMouse();
+                }
             };
 
             /** handle callback for an animation event */
