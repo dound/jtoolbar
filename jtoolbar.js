@@ -609,7 +609,7 @@ var JTB = function() {
                 }
 
                 tb.pinned = !tb.pinned;
-                this.refreshPinGfx();
+                tb.refreshPinGfx();
 
                 if(tb.pinned) {
                     tb.show();
