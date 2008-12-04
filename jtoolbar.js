@@ -102,16 +102,7 @@ var JTB = function() {
             setTimeout('JTB.handleAnimationCallback("' + tb.tb_id + '");', JTB.ANIM_INTERVAL_MSEC);
         }
         else {
-            var isHidden = (es.width=='0px' || es.height=='0px');
-            if(isHidden) {
-                tb.tb_elt.style.display = 'none';
-            }
-
-            tb.tb_elt.innerHTML = tb.savedInnerHTML;
-
-            if(!isHidden) {
-                tb.refreshToolbarGfx();
-            }
+            tb.refreshToolbarGfx();
         }
     }
 
