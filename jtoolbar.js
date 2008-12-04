@@ -94,6 +94,18 @@ var JTB = function() {
         if(percentDone < 1) {
             setTimeout('JTB.handleAnimationCallback("' + tb.tb_id + '");', JTB.ANIM_INTERVAL_MSEC);
         }
+        else {
+            var isHidden = (es.width=='0px' || es.height=='0px');
+            if(isHidden) {
+                tb.tb_elt.style.display = 'none';
+            }
+
+            tb.tb_elt.innerHTML = tb.savedInnerHTML;
+
+            if(!isHidden) {
+                tb.refreshToolbarGfx();
+            }
+        }
     }
 
     /* export public members */
@@ -613,6 +625,8 @@ var JTB = function() {
                   this.dst_left + ',' + this.dst_top + ' ' + this.dst_width + '-' + this.dst_height;
 
                 this.anim_start = new Date().getTime();
+                this.savedInnerHTML = this.tb_elt.innerHTML;
+                this.tb_elt.innerHTML = '<div style="display:none;">' + this.tb_elt.innerHTML + '</div>';
                 handleToolbarAnimation(this);
             };
 
