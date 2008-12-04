@@ -182,7 +182,7 @@ var JTB = function() {
             this.state          = JTB.STATE_VIS;
 
             /* number of milliseconds for the toolbar to slide in/out */
-            this.animation_len_msec = 250;
+            this.animation_len_msec = 150;
 
             /* pixels from the edge which triggers the toolbar to show */
             this.trigger_dist   = 100;
