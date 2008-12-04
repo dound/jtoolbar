@@ -552,9 +552,22 @@ var JTB = function() {
                 this.e_container = document.createElement("div");
                 this.e_container.setAttribute('id', this.tb_id + "_container");
 
-                /* remove the content for now */
+                /* get the content and its parent */
                 this.e_content = document.getElementById(this.content_id);
                 var parent = this.e_content.parentNode;
+
+                /* determine where in the parent's list of children the content is */
+                var childIndex, nextChild = null;
+                for(childIndex=0; childIndex<parent.childNodes.length; childIndex++) {
+                    if(parent.childNodes[childIndex] == this.e_content) {
+                        if(parent.childNodes.length > childIndex + 1) {
+                            nextChild = parent.childNodes[childIndex + 1];
+                        }
+                        break;
+                    }
+                }
+
+                /* remove the content for now */
                 parent.removeChild(this.e_content);
 
                 /* give container position, size, and layout properties of orig content */
@@ -594,7 +607,13 @@ var JTB = function() {
                 /* put our new elements into the DOM */
                 this.e_container.appendChild(this.e_tb);
                 this.e_container.appendChild(this.e_content);
-                parent.appendChild(this.e_container);
+
+                if(nextChild === null) {
+                    parent.appendChild(this.e_container);
+                }
+                else {
+                    parent.insertBefore(this.e_container, nextChild);
+                }
 
                 this.refreshGfx();
             };
