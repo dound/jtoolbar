@@ -737,7 +737,7 @@ var JTB = function() {
             /** set whether debug mode is on */
             JTB.Toolbar.prototype.setDebugMode = function(b) {
                 debugMode = b;
-            }
+            };
 
             /** called when the mouse moves on the toolbar's parent */
             JTB.handleMouseMove = function(tb_id, event) {
