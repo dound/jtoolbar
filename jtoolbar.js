@@ -438,8 +438,14 @@ var JTB = function() {
                     maxdy = this.e_tb.offsetHeight;
                 }
                 else {
-                    maxdx = this.trigger_dist;
-                    maxdy = this.trigger_dist;
+                    if(this.dock==JTB.DOCK_LEFT || this.dock==JTB.DOCK_RIGHT) {
+                        maxdx = this.trigger_dist;
+                        maxdy = this.tb_height;
+                    }
+                    else {
+                        maxdx = this.tb_width;
+                        maxdy = this.trigger_dist;
+                    }
                 }
 
                 /* get the position of the toolbar */
