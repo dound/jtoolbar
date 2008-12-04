@@ -504,8 +504,13 @@ var JTB = function() {
                     divLinks.innerHTML += this.links[i].makeLink();
                 }
 
-                this.tb_width  = this.tb_elt.offsetWidth;
-                this.tb_height = this.tb_elt.offsetHeight;
+                if(this.getState() == JTB.STATE_VIS) {
+                    this.tb_width  = this.tb_elt.offsetWidth;
+                    this.tb_height = this.tb_elt.offsetHeight;
+
+                    document.getElementById('debug').innerHTML += '<br/>tb_w/h = ' +
+                    this.tb_width + ' x ' + this.tb_height;
+                }
             };
 
             /* create and hook the toolbar into the UI (assumes it is not already hooked in */
