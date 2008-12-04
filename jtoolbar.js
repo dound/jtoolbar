@@ -10,7 +10,7 @@ var JTB = function() {
     var animSplit = 0.0;
 
 
-    var DEBUG = false;
+    var debugMode = false;
     var MAX_DEBUG_LINES = 5;
     var debugLines = [MAX_DEBUG_LINES];
     function debug(newstr) {
@@ -24,7 +24,7 @@ var JTB = function() {
         str = '<br/>' + newstr + str;
         debugLines[0] = newstr;
 
-        if(DEBUG) {
+        if(debugMode) {
             document.getElementById('debug').innerHTML = str;
         }
     }
@@ -192,7 +192,7 @@ var JTB = function() {
             this.anim_start     = -1;
 
             /* where to place our div relative to its parent */
-            this.dock           = JTB.DOCK_LEFT;
+            this.dock           = JTB.DOCK_RIGHT;
 
             /* whether to show the pin/unpin graphic */
             this.show_pin       = true;
@@ -702,6 +702,11 @@ var JTB = function() {
                 this.e_tb.style.display = 'block';
                 handleToolbarAnimation(this);
             };
+
+            /** set whether debug mode is on */
+            JTB.Toolbar.prototype.setDebugMode = function(b) {
+                debugMode = b;
+            }
 
             /** called when the mouse moves on the toolbar's parent */
             JTB.handleMouseMove = function(tb_id, event) {
