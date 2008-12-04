@@ -114,7 +114,7 @@ var JTB = function() {
             setTimeout('JTB.handleAnimationCallback("' + tb.tb_id + '");', JTB.ANIM_INTERVAL_MSEC);
         }
         else {
-            tb.refreshToolbarGfx();
+            tb.refreshGfx();
         }
     }
 
@@ -279,12 +279,12 @@ var JTB = function() {
             /** set the location of the toolbar on its parent */
             JTB.Toolbar.prototype.setDockLocation = function(dock) {
                 this.dock = dock;
-                this.refreshToolbarGfx();
+                this.refreshGfx();
                 return this;
             };
 
             /** set toolbar attributes so it displays according to the current Toolbar state */
-            JTB.Toolbar.prototype.refreshToolbarGfx = function() {
+            JTB.Toolbar.prototype.refreshGfx = function() {
                 var container = this.getContainer();
                 var content = this.getContent();
                 var display   = '';
@@ -595,7 +595,7 @@ var JTB = function() {
                 this.e_container.appendChild(this.e_content);
                 parent.appendChild(this.e_container);
 
-                this.refreshToolbarGfx();
+                this.refreshGfx();
             };
 
             /** unhook the toolbar from the UI (assumes it is currently hooked in) */
