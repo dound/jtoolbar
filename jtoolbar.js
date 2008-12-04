@@ -8,6 +8,42 @@ var JTB = function() {
     var toolbars = [];
     var mouseX, mouseY;
 
+    function findPosX(obj) {
+        var curleft = 0;
+        if(obj.offsetParent) {
+            while(1) {
+                curleft += obj.offsetLeft;
+                if(!obj.offsetParent) {
+                    break;
+                }
+                obj = obj.offsetParent;
+            }
+        }
+        else if(obj.x) {
+            curleft += obj.x;
+        }
+
+        return curleft;
+    }
+
+    function findPosY(obj) {
+        var curtop = 0;
+        if(obj.offsetParent) {
+            while(1) {
+                curtop += obj.offsetTop;
+                if(!obj.offsetParent) {
+                    break;
+                }
+                obj = obj.offsetParent;
+            }
+        }
+        else if(obj.y) {
+            curtop += obj.y;
+        }
+
+        return curtop;
+    }
+
     /** gets a toolbar object based on its name */
     function getToolbar(name) {
         var i;
@@ -320,15 +356,14 @@ var JTB = function() {
                 return this.state;
             };
 
-            /** hide the toolbar */
-            JTB.Toolbar.prototype.hide = function() {
-                this.setState(JTB.STATE_INVIS);
-                return this;
-            };
-
-            /** show the toolbar */
-            JTB.Toolbar.prototype.show = function() {
-                this.setState(JTB.STATE_VIS);
+            /** show or hide the toolbar */
+            JTB.Toolbar.prototype.setVisible = function(b) {
+                if(b) {
+                    this.setState(JTB.STATE_VIS);
+                }
+                else {
+                    this.setState(JTB.STATE_INVIS);
+                }
                 return this;
             };
 
@@ -387,38 +422,29 @@ var JTB = function() {
 
             /** sets the visibility of the toolbar based on the mouse location */
             JTB.Toolbar.prototype.setStateBasedOnMouse = function() {
-                /* determine if we should be showing the toolbar */
-                var container = this.getContainer();
-                var show = false;
-                switch(this.dock) {
-                case JTB.DOCK_TOP:
-                    if(this.trigger_dist <= mouseY) {
-                        show = true;
-                    }
-                    break;
-                case JTB.DOCK_BOTTOM:
-                    if(this.trigger_dist <= (this.tb_elt.offsetHeight - mouseY)) {
-                        show = true;
-                    }
-                    break;
-                case JTB.DOCK_LEFT:
-                    if(this.trigger_dist <= mouseX) {
-                        show = true;
-                    }
-                    break;
-                case JTB.DOCK_RIGHT:
-                    if(this.trigger_dist <= (this.tb_elt.offsetWidth - mouseX)) {
-                        show = true;
-                    }
-                    break;
+                /* always show if pinned */
+                if(this.pinned) {
+                    this.setVisible(true);
+                    return;
                 }
 
-                if(show) {
-                    this.show();
+                /* determine the max deviation from the top-left corner of the toolbar */
+                var maxdx, maxdy;
+                if(this.getState() == JTB.STATE_VIS) {
+                    maxdx = this.tb_elt.offsetWidth;
+                    maxdy = this.tb_elt.offsetHeight;
                 }
                 else {
-                    this.hide();
+                    maxdx = this.trigger_dist;
+                    maxdy = this.trigger_dist;
                 }
+
+                /* get the position of the toolbar */
+                var x = findPosX(e);
+                var y = findPosY(e);
+
+                /* display the toolbar iff the mouse is within the maximum deviation */
+                this.setVisible(mouseX>=x && mouseX<x+maxdx && mouseY>=y && mouseY<y+maxdy);
             };
 
             /** get the number of milliseconds the animation will last */
@@ -575,16 +601,20 @@ var JTB = function() {
              * don't change that field)
              */
             JTB.Toolbar.prototype.animate = function(l, t, w, h) {
-                var es = this.tb_elt.style;
-                this.src_left   = es.left;
-                this.src_top    = es.top;
-                this.src_width  = es.width;
-                this.src_height = es.height;
+                var e = this.tb_elt;
+                this.src_left   = findPosX(e);
+                this.src_top    = findPosY(e);
+                this.src_width  = e.offsetWidth;
+                this.src_height = e.offsetHeight;
 
                 this.dst_left   = ((l == -1) ? this.src_left   : l);
-                this.dst_top    = ((t == -1) ? this.src_top    : l);
-                this.dst_width  = ((w == -1) ? this.src_width  : l);
-                this.dst_height = ((h == -1) ? this.src_height : l);
+                this.dst_top    = ((t == -1) ? this.src_top    : t);
+                this.dst_width  = ((w == -1) ? this.src_width  : w);
+                this.dst_height = ((h == -1) ? this.src_height : h);
+
+                document.getElementById('debug').innerHTML += '<br/>' +
+                  this.src_left + ',' + this.src_top + ' ' + this.src_width + '-' + this.src_height + ' ---- ' +
+                  this.dst_left + ',' + this.dst_top + ' ' + this.dst_width + '-' + this.dst_height;
 
                 this.anim_start = new Date().getTime();
                 handleToolbarAnimation(this);
@@ -610,13 +640,7 @@ var JTB = function() {
 
                 tb.pinned = !tb.pinned;
                 tb.refreshPinGfx();
-
-                if(tb.pinned) {
-                    tb.show();
-                }
-                else {
-                    tb.setStateBasedOnMouse();
-                }
+                tb.setStateBasedOnMouse();
             };
 
             /** handle callback for an animation event */
