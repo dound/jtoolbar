@@ -10,7 +10,7 @@ var JTB = function() {
     var animSplit = 0.0;
 
 
-    var DEBUG = true;
+    var DEBUG = false;
     var MAX_DEBUG_LINES = 5;
     var debugLines = [MAX_DEBUG_LINES];
     function debug(newstr) {
