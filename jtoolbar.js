@@ -128,6 +128,7 @@ var JTB = function() {
         }
         else {
             tb.refreshGfx();
+            tb.anim_start = -1;
         }
     }
 
@@ -316,6 +317,7 @@ var JTB = function() {
                     display = ((this.dock == JTB.DOCK_RIGHT) ? 'table-cell' : 'table-row');
                     break;
                 }
+
                 if(this.getState() == JTB.STATE_VIS) {
                     this.e_tb.style.display = display;
                 }
@@ -404,6 +406,12 @@ var JTB = function() {
                 if(newState == this.state) {
                     return this;
                 }
+
+                /* reject state changes which try to occur during an animation */
+                if(this.anim_start != -1) {
+                    return false;
+                }
+
                 this.state = newState;
 
                 /* determine how to animate it into the correct position */
@@ -701,7 +709,7 @@ var JTB = function() {
                 mouseY = event.clientY;
 
                 var tb = getToolbar(tb_id);
-                if(tb !== null && !tb.pinned) {
+                if(tb !== null && !tb.pinned && tb.anim_start==-1) {
                     tb.setStateBasedOnMouse();
                 }
             };
