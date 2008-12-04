@@ -386,48 +386,20 @@ var JTB = function() {
                 this.state = newState;
 
                 /* determine how to animate it into the correct position */
-                var container = this.getContainer();
-                var l=0, t=0, w=0, h=0;
-                switch(this.dock) {
-                case JTB.DOCK_TOP:
-                    if(this.trigger_dist > mouseY) {
-                        w = this.tb_width;
-                    }
-                    break;
-                case JTB.DOCK_BOTTOM:
-                    if(this.trigger_dist <= (this.tb_elt.offsetHeight - mouseY)) {
-                        t = container.offsetHeight - this.tb_height;
-                    }
-                    else {
-                        t = container.offsetHeight;
-                        w = this.tb_width;
+                var w, h;
+                w = this.tb_width;
+                h = this.tb_height;
+                if(newState != JTB.STATE_VIS) {
+                    if(this.dock==JTB.DOCK_TOP || this.dock==JTB.DOCK_BOTTOM) {
                         h = 0;
                     }
-                    break;
-                case JTB.DOCK_LEFT:
-                    if(this.trigger_dist > mouseX) {
-                        h = this.tb_height;
-                    }
-                    break;
-                case JTB.DOCK_RIGHT:
-                    if(this.trigger_dist <= (this.tb_elt.offsetWidth - mouseX)) {
-                        l = container.offsetWidth - this.tb_width;
-                    }
                     else {
-                        l = container.offsetWidth;
                         w = 0;
-                        h = this.tb_height;
                     }
-                    break;
                 }
 
                 /* perform the transition animation */
-                if(this.state == JTB.STATE_VIS) {
-                    this.animate(l, t, this.tb_width, this.tb_height);
-                }
-                else {
-                    this.animate(l, t, w, h);
-                }
+                this.animate(-1, -1, w, h);
             };
 
             /** sets the visibility of the toolbar based on the mouse location */
