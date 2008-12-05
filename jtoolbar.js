@@ -737,8 +737,8 @@ var JTB = function() {
                     }
                 }
                 else {
-                    tx = floatx;
-                    ty = floaty;
+                    tx = this.floatx;
+                    ty = this.floaty;
                 }
 
                 /* compute the content's size */
