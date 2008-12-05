@@ -268,8 +268,8 @@ var JTB = function() {
             this.e_links          = null;
 
             /* toolbar hierarchy support */
-            this.e_tb_parent      = null;
-            this.e_tb_child       = null;
+            this.tb_parent        = null;
+            this.tb_child         = null;
 
             /* sizing information helpers */
             this.sz_container     = null;
