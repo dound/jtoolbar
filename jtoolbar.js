@@ -829,7 +829,7 @@ var JTB = function() {
                     this.e_links.innerHTML += this.links[i].makeLink();
                 }
 
-                this.sz_tb.refershSizeData();
+                this.sz_tb.refreshSizeData();
                 this.refreshGfx();
             };
 
