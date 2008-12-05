@@ -516,6 +516,11 @@ var JTB = function() {
                 return this.dock;
             };
 
+            /** returns true if the toolbar is side-docked */
+            JTB.Toolbar.prototype.isSideDocked = function() {
+                return (this.dock==JTB.DOCK_LEFT || this.dock==JTB.DOCK_RIGHT);
+            };
+
             /** set the location of the toolbar on its parent */
             JTB.Toolbar.prototype.setDockLocation = function(dock) {
                 this.dock = dock;
