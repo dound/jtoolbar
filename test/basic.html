@@ -37,8 +37,9 @@
   <script>
     var parentName  = "tempest";
     var toolbarName = "custom_toolbar";
-    new JTB.Toolbar(parentName, toolbarName,
-                    "dound", "http://www.dound.com").setImagePath('../images/').setDebugMode(false).setFloatPos(50,50).setDocked(false);
+    var t = new JTB.Toolbar(parentName, toolbarName, "dound", "http://www.dound.com");
+    t.setImagePath('../images/').setDebugMode(false);
+    //t.setFloatPos(50,50).setDocked(false);
   </script>
 </body>
 </html>
