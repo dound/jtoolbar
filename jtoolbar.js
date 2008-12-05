@@ -584,7 +584,7 @@ var JTB = function() {
 
             /** set the float x offset of this toolbar from its parent */
             JTB.Toolbar.prototype.setFloatPosX = function(x) {
-                this.floatx = x;
+                this.setFloatPos(x, this.floaty);
                 return this;
             };
 
@@ -595,7 +595,7 @@ var JTB = function() {
 
             /** set the float y offset of this toolbar from its parent */
             JTB.Toolbar.prototype.setFloatPosY = function(y) {
-                this.floaty = y;
+                this.setFloatPos(this.floatx, y);
                 return this;
             };
 
@@ -603,6 +603,7 @@ var JTB = function() {
             JTB.Toolbar.prototype.setFloatPos = function(x, y) {
                 this.floatx = x;
                 this.floaty = y;
+                this.refreshGfx();
                 return this;
             };
 
