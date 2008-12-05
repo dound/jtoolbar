@@ -921,8 +921,8 @@ var JTB = function() {
                 }
 
                 /* create size helpers */
-                this.sz_container = new JTB.SizeHelper(this.container);
-                this.sz_tb = new JTB.SizeHelper(this.tb);
+                this.sz_container = new JTB.SizeHelper(this.e_container);
+                this.sz_tb = new JTB.SizeHelper(this.e_tb);
 
                 this.refreshGfx();
             };
