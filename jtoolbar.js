@@ -987,7 +987,13 @@ var JTB = function() {
 
             /* install a function which lets us know when the window is resized */
             var onresize = document.body.getAttribute('onresize');
-            onresize += '; JTB.handleWindowResizeEvent();';
+            if(onresize === null) {
+                onresize = '';
+            }
+            else {
+                onresize += '; ';
+            }
+            onresize += 'JTB.handleWindowResizeEvent();';
             document.body.setAttribute('onresize', onresize);
         }
     };
