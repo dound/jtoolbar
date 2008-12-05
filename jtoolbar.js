@@ -339,7 +339,10 @@ var JTB = function() {
 
             /** require the element to have the specified width */
             JTB.SizeHelper.prototype.forceWidth = function(w) {
-                if(!this.forced_width || this.width!=w) {
+                if(w === '') {
+                    this.useNaturalWidth();
+                }
+                else if(!this.forced_width || this.width!=w) {
                     this.forced_width = true;
                     this.width = w;
                     this.refreshSizeData();
@@ -348,7 +351,10 @@ var JTB = function() {
 
             /** require the element to have the specified height */
             JTB.SizeHelper.prototype.forceHeight = function(h) {
-                if(!this.forced_height || this.height!=h) {
+                if(h === '') {
+                    this.useNaturalHeight();
+                }
+                else if(!this.forced_height || this.height!=h) {
                     this.forced_height = true;
                     this.height = h;
                     this.refreshSizeData();
