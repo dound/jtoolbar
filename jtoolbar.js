@@ -69,7 +69,7 @@ var JTB = function() {
     function findZIndex(obj) {
         var z = obj.style.zIndex;
         if(z === '') {
-            if(obj.parentNode==document.body || obj.prentNode===null) {
+            if(obj.parentNode==document.body || obj.parentNode===null) {
                 return 0;
             }
             else {
