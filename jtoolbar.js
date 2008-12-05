@@ -66,18 +66,23 @@ var JTB = function() {
     }
 
     /** returns the effective value of a property of obj */
-    function findValue(obj, propName) {
+    function findValue(obj, propName, inheritedIsDefault) {
         var v = eval('obj.' + propName);
-        if(v === '' || v == 'inherit') {
-            if(obj.parentNode==document.body || obj.parentNode===null) {
+
+        if(v === '') {
+            if(!inheritedIsDefault) {
                 return 0;
             }
-            else {
-                return findValue(obj.parentNode, propName);
-            }
+        }
+        else if(v != 'inherit') {
+            return v;
+        }
+
+        if(obj.parentNode==document.body || obj.parentNode===null) {
+            return 0;
         }
         else {
-            return v;
+            return findValue(obj.parentNode, propName);
         }
     }
 
@@ -87,12 +92,12 @@ var JTB = function() {
      */
     function getExtraWidth(e) {
         var ret = 0;
-        ret += parseInt(findValue(e, 'style.paddingLeft'), 10);
-        ret += parseInt(findValue(e, 'style.paddingRight'), 10);
-        ret += parseInt(findValue(e, 'style.marginLeft'), 10);
-        ret += parseInt(findValue(e, 'style.marginRight'), 10);
-        ret += parseInt(findValue(e, 'style.borderLeftWidth'), 10);
-        ret += parseInt(findValue(e, 'style.borderRightWidth'), 10);
+        ret += parseInt(findValue(e, 'style.paddingLeft',      false), 10);
+        ret += parseInt(findValue(e, 'style.paddingRight',     false), 10);
+        ret += parseInt(findValue(e, 'style.marginLeft',       false), 10);
+        ret += parseInt(findValue(e, 'style.marginRight',      false), 10);
+        ret += parseInt(findValue(e, 'style.borderLeftWidth',  false), 10);
+        ret += parseInt(findValue(e, 'style.borderRightWidth', false), 10);
         debug('ex => ' + ret);
         return ret;
     }
@@ -103,12 +108,12 @@ var JTB = function() {
      */
     function getExtraHeight(e) {
         var ret = 0;
-        ret += parseInt(findValue(e, 'style.paddingTop'), 10);
-        ret += parseInt(findValue(e, 'style.paddingBottom'), 10);
-        ret += parseInt(findValue(e, 'style.marginTop'), 10);
-        ret += parseInt(findValue(e, 'style.marginBottom'), 10);
-        ret += parseInt(findValue(e, 'style.borderTopWidth'), 10);
-        ret += parseInt(findValue(e, 'style.borderBottomWidth'), 10);
+        ret += parseInt(findValue(e, 'style.paddingTop',        false), 10);
+        ret += parseInt(findValue(e, 'style.paddingBottom',     false), 10);
+        ret += parseInt(findValue(e, 'style.marginTop',         false), 10);
+        ret += parseInt(findValue(e, 'style.marginBottom',      false), 10);
+        ret += parseInt(findValue(e, 'style.borderTopWidth',    false), 10);
+        ret += parseInt(findValue(e, 'style.borderBottomWidth', false), 10);
         return ret;
     }
 
