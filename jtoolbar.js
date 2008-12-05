@@ -489,21 +489,76 @@ var JTB = function() {
             /** set the location of the toolbar on its parent */
             JTB.Toolbar.prototype.setDockLocation = function(dock) {
                 this.dock = dock;
+
+                /* coerce the toolbar to a reasonable size */
+                if(dock==JTB.DOCK_LEFT || dock==JTB.DOCK_RIGHT) {
+                    this.sz_tb.resetToDefaultWidth();
+                    this.sz_tb.forceHeight(this.sz_container.height);
+                } else {
+                    this.sz_tb.forceWidth(this.sz_container.width);
+                    this.sz_tb.resetToDefaultHeight();
+                }
+
                 this.refreshGfx();
                 return this;
             };
 
             /** set toolbar attributes so it displays according to the current Toolbar state */
             JTB.Toolbar.prototype.refreshGfx = function() {
-                var container = this.getContainer();
-                var content = this.getContent();
-
                 /* efficiency: hide the toolbar container while we arrange it */
+                var container = this.e_container;
                 var origDisp = container.style.display;
                 container.style.display = '';
 
                 /* show/hide toolbar based on its state */
                 this.e_tb.style.display = ((this.getState() == JTB.STATE_VIS) ? 'block' : 'none');
+
+                /* determine where in the container the toolbar should be positioned */
+                var tx, ty; // toolbar position
+                var cx=0, cy=0; // content position
+                switch(this.dock) {
+                case JTB.DOCK_LEFT:
+                    tx = 0;
+                    ty = 0;
+                    if(this.isShiftContent()) {
+                        cx = this.sz_tb.width;
+                    }
+                    break;
+
+                case JTB.DOCK_RIGHT:
+                    tx = this.sz_container.width - this.sz_tb.width;
+                    ty = 0;
+                    break;
+
+                case JTB.DOCK_TOP:
+                    tx = 0;
+                    ty = 0;
+                    if(this.isShiftContent()) {
+                        cy = this.sz_tb.height;
+                    }
+                    break;
+
+                case JTB.DOCK_BOTTOM:
+                    tx = 0;
+                    ty = this.sz_container.height - this.sz_tb.height;
+                    break;
+                }
+
+                /* compute the content's size */
+                var cw = ((cx < tx) ? (tx - cx) : (this.sz_container.width  - cx));
+                var ch = ((cy < ty) ? (ty - cy) : (this.sz_container.height - cy));
+
+                /* set the toolbar's and content's sizes and positions */
+                var px = container.offsetLeft;
+                var py = container.offsetTop;
+
+                this.e_tb.style.left = (px + tx) + 'px';
+                this.e_tb.style.top  = (py + ty) + 'px';
+
+                this.e_content.style.left   = (px + cx) + 'px';
+                this.e_content.style.top    = (py + cy) + 'px';
+                this.e_content.style.width  = cw + 'px';
+                this.e_content.style.height = ch + 'px';
 
                 /* setup the pin/unpin icon */
                 this.refreshPinGfx();
