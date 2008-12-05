@@ -865,6 +865,11 @@ var JTB = function() {
                 /* setup the pin/unpin icon */
                 this.refreshIconsGfx();
 
+                /* refresh child toolbars */
+                if(this.vis_tb_child !== null) {
+                    this.vis_tb_child.refreshGfx();
+                }
+
                 /* show it again */
                 container.style.display = origDisp;
 
