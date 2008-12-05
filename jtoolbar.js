@@ -708,10 +708,10 @@ var JTB = function() {
                 else {
                     if(this.dock==JTB.DOCK_LEFT || this.dock==JTB.DOCK_RIGHT) {
                         maxdx = this.trigger_dist;
-                        maxdy = this.sz_tb.getHeight();
+                        maxdy = this.sz_tb.height;
                     }
                     else {
-                        maxdx = this.sz_tb.getWidth();
+                        maxdx = this.sz_tb.width;
                         maxdy = this.trigger_dist;
                     }
                 }
@@ -723,20 +723,20 @@ var JTB = function() {
                 /* adjust based on docking location */
                 if(this.dock == JTB.DOCK_RIGHT) {
                     if(vis) {
-                        x -= this.sz_tb.getWidth();
-                        maxdx += this.sz_tb.getWidth();
+                        x -= this.sz_tb.width;
+                        maxdx += this.sz_tb.width;
                     }
                     else {
-                        x = findPosX(this.e_content) + this.e_content.offsetWidth - this.sz_tb.getWidth();
+                        x = findPosX(this.e_content) + this.e_content.offsetWidth - this.sz_tb.width;
                     }
                 }
                 else if(this.dock == JTB.DOCK_BOTTOM) {
                     if(vis) {
-                        y -= this.sz_tb.getHeight();
-                        maxdy += this.sz_tb.getHeight();
+                        y -= this.sz_tb.height;
+                        maxdy += this.sz_tb.height;
                     }
                     else {
-                        y = findPosY(this.e_content) + this.e_content.offsetHeight - this.sz_tb.getHeight();
+                        y = findPosY(this.e_content) + this.e_content.offsetHeight - this.sz_tb.height;
                     }
                 }
 
