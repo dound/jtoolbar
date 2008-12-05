@@ -702,37 +702,43 @@ var JTB = function() {
                 /* determine where in the container the toolbar should be positioned */
                 var tx, ty; // toolbar position
                 var cx=0, cy=0; // content position
-                switch(this.orient) {
-                case JTB.ORIENT_LEFT:
-                    tx = 0;
-                    ty = 0;
-                    if(this.isShiftContent()) {
-                        cx = tw;
+                if(this.docked) {
+                    switch(this.orient) {
+                    case JTB.ORIENT_LEFT:
+                        tx = 0;
+                        ty = 0;
+                        if(this.isShiftContent()) {
+                            cx = tw;
+                        }
+                        break;
+
+                    case JTB.ORIENT_RIGHT:
+                        tx = this.sz_container.width - tw + extraW;
+                        ty = 0;
+                        break;
+
+                    case JTB.ORIENT_TOP:
+                        tx = 0;
+                        ty = 0;
+                        if(this.isShiftContent()) {
+                            cy = th;
+                        }
+                        break;
+
+                    case JTB.ORIENT_BOTTOM:
+                        tx = 0;
+                        ty = this.sz_container.height - th + extraH;
+                        break;
                     }
-                    break;
-
-                case JTB.ORIENT_RIGHT:
-                    tx = this.sz_container.width - tw + extraW;
-                    ty = 0;
-                    break;
-
-                case JTB.ORIENT_TOP:
-                    tx = 0;
-                    ty = 0;
-                    if(this.isShiftContent()) {
-                        cy = th;
-                    }
-                    break;
-
-                case JTB.ORIENT_BOTTOM:
-                    tx = 0;
-                    ty = this.sz_container.height - th + extraH;
-                    break;
+                }
+                else {
+                    tx = floatx;
+                    ty = floaty;
                 }
 
                 /* compute the content's size */
                 var cw, ch;
-                if(vis && this.isShiftContent()) {
+                if(vis && this.docked && this.isShiftContent()) {
                     cw = ((cx < tx) ? (tx - cx) : (this.sz_container.width  - cx));
                     ch = ((cy < ty) ? (ty - cy) : (this.sz_container.height - cy));
                 }
@@ -745,15 +751,20 @@ var JTB = function() {
                 var px = container.offsetLeft;
                 var py = container.offsetTop;
 
-                this.e_tb.style.left = (px + tx) + 'px';
-                this.e_tb.style.top  = (py + ty) + 'px';
-                this.e_tb.style.width  = tw + 'px';
-                this.e_tb.style.height = th + 'px';
-
                 this.e_content.style.left   = (px + cx) + 'px';
                 this.e_content.style.top    = (py + cy) + 'px';
                 this.e_content.style.width  = cw + 'px';
                 this.e_content.style.height = ch + 'px';
+
+                /* use offset relative to parent toolbar if there is one (vice container) */
+                if(this.tb_parent !== null) {
+                    px = this.tb_parent.e_tb.offsetLeft;
+                    py = this.tb_parent.e_tb.offsetTop;
+                }
+                this.e_tb.style.left = (px + tx) + 'px';
+                this.e_tb.style.top  = (py + ty) + 'px';
+                this.e_tb.style.width  = tw + 'px';
+                this.e_tb.style.height = th + 'px';
 
                 /* setup the pin/unpin icon */
                 this.refreshPinGfx();
