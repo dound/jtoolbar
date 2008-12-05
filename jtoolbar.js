@@ -539,7 +539,7 @@ var JTB = function() {
             };
 
             /** shows a child toolbar */
-            JTB.Toolbar.prototype.showChildToolbar = function(parentName, childName, x, y) {
+            JTB.Toolbar.prototype.showChildToolbar = function(childToolbar, x, y) {
                 /* TODO */
             };
 
@@ -1254,6 +1254,17 @@ var JTB = function() {
                 for(i=0; i<toolbars.length; i++) {
                     toolbars[i].handleMouseUp();
                 }
+            };
+
+            /** shows a child toolbar */
+            JTB.Toolbar.showChildToolbar = function(parentToolbarName, childToolbarName, x, y) {
+                var p = getToolbar(parentToolbarName);
+                var c = getToolbar(childToolbarName);
+                if(p===null || c===null) {
+                    return;
+                }
+
+                p.showChildToolbar(c, x, y);
             };
 
             /* install a function which lets us know when the window is resized */
