@@ -738,7 +738,7 @@ var JTB = function() {
 
                 /* compute the content's size */
                 var cw, ch;
-                if(vis && this.docked && this.isShiftContent()) {
+                if(vis && this.isShiftContent()) {
                     cw = ((cx < tx) ? (tx - cx) : (this.sz_container.width  - cx));
                     ch = ((cy < ty) ? (ty - cy) : (this.sz_container.height - cy));
                 }
@@ -857,10 +857,14 @@ var JTB = function() {
                 return this;
             };
 
-            /** get whether the toolbar takes up space (versus being in front
-             * of the content).  Always true if pinned. */
+            /**
+             * get whether the toolbar takes up space (versus being in front of
+             * the content).  Always false unless docked.  Otherwise this
+             * returns true if the toolbar is pinned or should 'always' shift
+             * content.
+             */
             JTB.Toolbar.prototype.isShiftContent = function() {
-                return this.pinned || this.alwaysShiftContent;
+                return this.docked && (this.pinned || this.alwaysShiftContent);
             };
 
             /** set whether the toolbar takes up space even when it isn't pinned. */
