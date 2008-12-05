@@ -239,8 +239,6 @@ var JTB = function() {
             this.dst_top        = 0;
             this.dst_width      = 0;
             this.dst_height     = 0;
-            this.tb_width       = 0;
-            this.tb_height      = 0;
 
             /* time the toolbar animation started */
             this.anim_start     = -1;
@@ -474,34 +472,16 @@ var JTB = function() {
                 var content = this.getContent();
                 var display   = '';
 
-                /* put the toolbar and content in correct order in container */
-                switch(this.dock) {
-                case JTB.DOCK_LEFT:
-                case JTB.DOCK_TOP:
-                    container.appendChild(content); /* make sure content is at the end */
-                    display = ((this.dock == JTB.DOCK_LEFT) ? 'table-cell' : 'table-row');
-                    break;
-
-                case JTB.DOCK_RIGHT:
-                case JTB.DOCK_BOTTOM:
-                    container.appendChild(this.e_tb); /* make sure toolbar is at the end */
-                    display = ((this.dock == JTB.DOCK_RIGHT) ? 'table-cell' : 'table-row');
-                    break;
-                }
-
                 if(this.getState() == JTB.STATE_VIS) {
-                    this.e_tb.style.display = display;
+                    this.e_tb.style.display = 'block';
                 }
                 else {
                     this.e_tb.style.display = 'none';
                 }
-                content.style.display = display;
 
                 /* setup the pin/unpin icon */
                 this.refreshPinGfx();
 
-                /* rebuild the links */
-                this.refreshLinks();
                 return this;
             };
 
@@ -587,8 +567,8 @@ var JTB = function() {
 
                 /* determine how to animate it into the correct position */
                 var w, h;
-                w = this.tb_width;
-                h = this.tb_height;
+                w = this.sz_tb.getWidth();
+                h = this.sz_tb.getHeight();
                 if(newState != JTB.STATE_VIS) {
                     if(this.dock==JTB.DOCK_TOP || this.dock==JTB.DOCK_BOTTOM) {
                         h = 0;
@@ -620,10 +600,10 @@ var JTB = function() {
                 else {
                     if(this.dock==JTB.DOCK_LEFT || this.dock==JTB.DOCK_RIGHT) {
                         maxdx = this.trigger_dist;
-                        maxdy = this.tb_height;
+                        maxdy = this.sz_tb.getHeight();
                     }
                     else {
-                        maxdx = this.tb_width;
+                        maxdx = this.sz_tb.getWidth();
                         maxdy = this.trigger_dist;
                     }
                 }
@@ -635,20 +615,20 @@ var JTB = function() {
                 /* adjust based on docking location */
                 if(this.dock == JTB.DOCK_RIGHT) {
                     if(vis) {
-                        x -= this.tb_width;
-                        maxdx += this.tb_width;
+                        x -= this.sz_tb.getWidth();
+                        maxdx += this.sz_tb.getWidth();
                     }
                     else {
-                        x = findPosX(this.e_content) + this.e_content.offsetWidth - this.tb_width;
+                        x = findPosX(this.e_content) + this.e_content.offsetWidth - this.sz_tb.getWidth();
                     }
                 }
                 else if(this.dock == JTB.DOCK_BOTTOM) {
                     if(vis) {
-                        y -= this.tb_height;
-                        maxdy += this.tb_height;
+                        y -= this.sz_tb.getHeight();
+                        maxdy += this.sz_tb.getHeight();
                     }
                     else {
-                        y = findPosY(this.e_content) + this.e_content.offsetHeight - this.tb_height;
+                        y = findPosY(this.e_content) + this.e_content.offsetHeight - this.sz_tb.getHeight();
                     }
                 }
 
@@ -741,12 +721,8 @@ var JTB = function() {
                     this.e_links.innerHTML += this.links[i].makeLink();
                 }
 
-                if(this.getState() == JTB.STATE_VIS) {
-                    this.tb_width  = this.e_tb.offsetWidth;
-                    this.tb_height = this.e_tb.offsetHeight;
-
-                    debug('tb_w/h = ' + this.tb_width + ' x ' + this.tb_height);
-                }
+                this.sz_tb.refershSizeData();
+                this.refreshGfx();
             };
 
             /* create and hook the toolbar into the UI (assumes it is not already hooked in */
