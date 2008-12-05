@@ -7,8 +7,8 @@ var JTB = function() {
     /*  private members */
     var toolbars = [];
     var mouseX, mouseY;
-    var animSplit = 0.5;
     var SPRINGINESS_FACTOR = 1.3;
+    var SPLIT_CLOSE = 1.0 - (1.0 / SPRINGINESS_FACTOR);
 
     var debugMode = false;
     var MAX_DEBUG_LINES = 5;
@@ -211,6 +211,9 @@ var JTB = function() {
 
             /* time the toolbar animation started */
             this.anim_start     = -1;
+
+            /* % of time for the first half of the animation */
+            this.anim_split     = 0;
 
             /* src width and height of an animation */
             this.anim_src_width  = 0;
@@ -504,9 +507,9 @@ var JTB = function() {
 
                         /* set the actual toolbar size based on the animation */
                         var p, nextw=tw, nexth=th;
-                        if(percentDone <= animSplit) {
+                        if(percentDone <= this.anim_split) {
                             /* first part of animation: go beyond normal max size */
-                            p = percentDone / animSplit;
+                            p = percentDone / this.anim_split;
                             if(sideDock) {
                                 nextw *= mult;
                             }
@@ -705,6 +708,7 @@ var JTB = function() {
                 this.anim_src_width = this.sz_tb.getCurWidth();
                 this.anim_src_height = this.sz_tb.getCurHeight();
                 this.anim_first_half = true;
+                this.anim_split = ((newState==JTB.STATE_VIS) ? (1.0-SPLIT_CLOSE) : SPLIT_CLOSE);
                 handleToolbarAnimation(this);
                 return this;
             };
