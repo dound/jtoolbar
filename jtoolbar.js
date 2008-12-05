@@ -163,13 +163,15 @@ var JTB = function() {
             /* set the forced sizes if they exist */
             if(e.style.width !== '') {
                 this.forced_width = true;
-                this.width = e.style.width;
-                this.default_width = e.style.width;
+                var w = parseInt(e.style.width, 10);
+                this.width = w;
+                this.default_width = w;
             }
             if(e.style.height !== '') {
                 this.forced_height = true;
-                this.height = e.style.height;
-                this.default_height = e.style.height;
+                var h = parseInt(e.style.height, 10);
+                this.height = h;
+                this.default_height = h;
             }
 
             this.refreshSizeData();
