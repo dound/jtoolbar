@@ -358,6 +358,12 @@ var JTB = function() {
                 }
             };
 
+            /** update the size of the element based on our data */
+            JTB.SizeHelper.prototype.setToBestSize = function() {
+                this.e.style.width  = this.width  + 'px';
+                this.e.style.height = this.height + 'px';
+            };
+
             /** gets the width the element uses when it is visible */
             JTB.SizeHelper.prototype.getVisWidth = function() {
                 return this.width;
