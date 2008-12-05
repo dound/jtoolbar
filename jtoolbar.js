@@ -496,49 +496,54 @@ var JTB = function() {
 
             /** get the name of the element the toolbar is attached to */
             JTB.Toolbar.prototype.getContentName = function() {
-                return this.content_id;
+                if(this.tb_parent === null) {
+                    return this.content_id;
+                }
+                else {
+                    return this.tb_parent.getContentName();
+                }
             };
 
             /** set the name of the element the toolbar is attached to */
             JTB.Toolbar.prototype.setContentName = function(content_name) {
-                this.content_id = content_name;
+                if(this.tb_parent === null) {
+                    this.content_id = content_name;
+                }
+                else {
+                    this.tb_parent.setContentName(content_name);
+                }
                 return this;
             };
 
             /** get the parent element of the toolbar and its attached content */
             JTB.Toolbar.prototype.getParent = function() {
-                return this.e_content.parentNode;
+                return this.getContent().parentNode;
             };
 
             /** get the container element which holds toolbar and its attached content */
             JTB.Toolbar.prototype.getContainer = function() {
-                return this.e_container;
+                if(this.tb_parent === null) {
+                    return this.e_container;
+                }
+                else {
+                    return this.tb_parent.getContainer();
+                }
             };
 
             /** get the content element to which the toolbar is attached */
             JTB.Toolbar.prototype.getContent = function() {
-                return this.e_content;
+                if(this.tb_parent === null) {
+                    return this.e_content;
+                }
+                else {
+                    return this.tb_parent.getContent();
+                }
             };
 
             /** return the name of the element containing the toolbar */
             JTB.Toolbar.prototype.getToolbarName = function() {
                 return this.tb_id;
             };
-
-            /** set the name of the element containing the toolbar */
-            JTB.Toolbar.prototype.setToolbarName = function(tb_name) {
-                var tb = document.getElementById(tb_name);
-                if(tb === null) {
-                    return;
-                }
-
-                this.tb_id = tb_name;
-                this.getContainer().replaceChild(tb, this.e_tb);
-                this.e_tb = tb;
-
-                return this;
-            };
-
 
             /** shows a child toolbar (makes childToolbar a child if it isn't already one) */
             JTB.Toolbar.prototype.showChildToolbar = function(childToolbar, x, y) {
@@ -548,6 +553,7 @@ var JTB = function() {
                 }
 
                 this.vis_tb_child = childToolbar;
+                this.refreshGfx();
 
                 return this;
             };
@@ -562,6 +568,7 @@ var JTB = function() {
                 /* add the child toolbar to our list of toolbars */
                 this.tb_children[this.tb_children.length] = childToolbar;
                 childToolbar.tb_parent = this;
+                return this;
             };
 
             /** gets whether e is a child toolbar of this toolbar */
@@ -683,8 +690,8 @@ var JTB = function() {
             /** set toolbar attributes so it displays according to the current Toolbar state */
             JTB.Toolbar.prototype.refreshGfx = function() {
                 /* efficiency: hide the toolbar container while we arrange it */
-                var container = this.e_container;
-                var content = this.e_content;
+                var container = this.getContainer();
+                var content = this.getContent();
                 var origDisp = container.style.display;
                 container.style.display = '';
 
@@ -818,10 +825,10 @@ var JTB = function() {
                 var px = container.offsetLeft;
                 var py = container.offsetTop;
 
-                this.e_content.style.left   = (px + cx) + 'px';
-                this.e_content.style.top    = (py + cy) + 'px';
-                this.e_content.style.width  = cw + 'px';
-                this.e_content.style.height = ch + 'px';
+                content.style.left   = (px + cx) + 'px';
+                content.style.top    = (py + cy) + 'px';
+                content.style.width  = cw + 'px';
+                content.style.height = ch + 'px';
 
                 /* use offset relative to parent toolbar if there is one (vice container) */
                 if(this.tb_parent !== null) {
@@ -974,10 +981,10 @@ var JTB = function() {
                 this.anim_start = new Date().getTime();
                 if(this.isSideOriented()) {
                     this.anim_src_width = this.sz_tb.getCurWidth();
-                    this.anim_src_height = this.sz_container.height + getExtraHeight(this.e_content);
+                    this.anim_src_height = this.sz_container.height + getExtraHeight(this.getContent());
                 }
                 else {
-                    this.anim_src_width = this.sz_container.width + getExtraWidth(this.e_content);
+                    this.anim_src_width = this.sz_container.width + getExtraWidth(this.getContent());
                     this.anim_src_height = this.sz_tb.getCurHeight();
                 }
                 this.anim_first_half = true;
@@ -1017,11 +1024,12 @@ var JTB = function() {
                 var y = findPosY(this.e_tb);
 
                 /* adjust based on orientation */
+                var content = this.getContent();
                 if(this.orient == JTB.ORIENT_RIGHT) {
-                    x = findPosX(this.e_content) + this.e_content.offsetWidth - this.sz_tb.width;
+                    x = findPosX(content) + content.offsetWidth - this.sz_tb.width;
                 }
                 else if(this.orient == JTB.ORIENT_BOTTOM) {
-                    y = findPosY(this.e_content) + this.e_content.offsetHeight - this.sz_tb.height;
+                    y = findPosY(content) + content.offsetHeight - this.sz_tb.height;
                 }
 
                 /* display the toolbar iff the mouse is within the maximum deviation */
