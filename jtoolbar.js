@@ -1192,6 +1192,7 @@ var JTB = function() {
             /** set whether debug mode is on */
             JTB.Toolbar.prototype.setDebugMode = function(b) {
                 debugMode = b;
+                return this;
             };
 
             /** called when the mouse moves on the toolbar's parent */
