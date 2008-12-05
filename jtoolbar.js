@@ -478,8 +478,8 @@ var JTB = function() {
                     this.e_tb.style.display = 'block';
 
                     /* compute how far done (%) the animation is */
-                    var millisElapsed = new Date().getTime() - tb.anim_start;
-                    var percentDone = millisElapsed / tb.animation_len_msec;
+                    var millisElapsed = new Date().getTime() - this.anim_start;
+                    var percentDone = millisElapsed / this.animation_len_msec;
 
                     if(percentDone >= 1.0) {
                         percentDone = 1.0;
