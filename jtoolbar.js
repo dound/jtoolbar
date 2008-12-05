@@ -181,14 +181,22 @@ var JTB = function() {
             /** the height of this element when it is visible */
             this.height = 0;
 
+            /** the default width of this element when it is visible */
+            this.default_width = '';
+
+            /** the default height of this element when it is visible */
+            this.default_height = '';
+
             /* set the forced sizes if they exist */
             if(e.style.width !== '') {
                 this.forced_width = true;
                 this.width = e.style.width;
+                this.default_width = e.style.width;
             }
             if(e.style.height !== '') {
                 this.forced_height = true;
-                this.forced_height = e.style.height;
+                this.height = e.style.height;
+                this.default_height = e.style.height;
             }
 
             this.refreshSizeData();
@@ -358,6 +366,16 @@ var JTB = function() {
             JTB.SizeHelper.prototype.forceCurrent = function() {
                 this.forceCurrentWidth();
                 this.forceCurrentHeight();
+            };
+
+            /** make the current forced width the default width */
+            JTB.SizeHelper.prototype.resetToDefaultWidth = function() {
+                this.forceWidth(this.default_width);
+            };
+
+            /** make the current forced height the default height */
+            JTB.SizeHelper.prototype.resetToDefaultHeight = function() {
+                this.forceHeight(this.default_height);
             };
 
             /** make the element use whatever its natural width is */
