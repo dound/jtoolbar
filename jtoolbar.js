@@ -186,10 +186,10 @@ var JTB = function() {
     return {
         /* public constants */
         VERSION        : "0.1",
-        DOCK_LEFT      : "left",
-        DOCK_RIGHT     : "right",
-        DOCK_TOP       : "top",
-        DOCK_BOTTOM    : "bottom",
+        ORIENT_LEFT    : "left",
+        ORIENT_RIGHT   : "right",
+        ORIENT_TOP     : "top",
+        ORIENT_BOTTOM  : "bottom",
         STATE_VIS      : "vis",
         STATE_INVIS    : "invis",
         ANIM_INTERVAL_MSEC : 25,
@@ -284,7 +284,7 @@ var JTB = function() {
             this.anim_first_half = true;
 
             /* where to place our div relative to its parent */
-            this.dock           = null;
+            this.orient           = null;
 
             /* whether to show the drag graphic */
             this.show_drag      = true;
@@ -529,18 +529,18 @@ var JTB = function() {
             };
 
             /** get the location of the toolbar on its parent */
-            JTB.Toolbar.prototype.getDockLocation = function() {
-                return this.dock;
+            JTB.Toolbar.prototype.getOrientation = function() {
+                return this.orient;
             };
 
-            /** returns true if the toolbar is side-docked */
-            JTB.Toolbar.prototype.isSideDocked = function() {
-                return (this.dock==JTB.DOCK_LEFT || this.dock==JTB.DOCK_RIGHT);
+            /** returns true if the toolbar is side-oriented */
+            JTB.Toolbar.prototype.isSideOriented = function() {
+                return (this.orient==JTB.ORIENT_LEFT || this.orient==JTB.ORIENT_RIGHT);
             };
 
             /** set the location of the toolbar on its parent */
-            JTB.Toolbar.prototype.setDockLocation = function(dock) {
-                this.dock = dock;
+            JTB.Toolbar.prototype.setOrientation = function(orient) {
+                this.orient = orient;
                 this.refreshGfx();
                 return this;
             };
@@ -562,8 +562,8 @@ var JTB = function() {
                 var extraH = getExtraHeight(content);
 
                 /* coerce the toolbar to a reasonable size */
-                var sideDock = (this.dock==JTB.DOCK_LEFT || this.dock==JTB.DOCK_RIGHT);
-                if(sideDock) {
+                var sideOriented = this.isSideOriented();
+                if(sideOriented) {
                     this.sz_tb.resetToDefaultWidth();
                     this.sz_tb.forceHeight(this.sz_container.height + extraH);
                 } else {
@@ -596,7 +596,7 @@ var JTB = function() {
                         if(percentDone <= this.anim_split) {
                             /* first part of animation: go beyond normal max size */
                             p = percentDone / this.anim_split;
-                            if(sideDock) {
+                            if(sideOriented) {
                                 nextw *= mult;
                             }
                             else {
@@ -613,7 +613,7 @@ var JTB = function() {
                             /* second part: go to final dst */
                             p = (percentDone - this.anim_split) / (1.0 - this.anim_split);
                             if(!vis) {
-                                if(sideDock) {
+                                if(sideOriented) {
                                     nextw = 0;
                                 }
                                 else {
@@ -639,8 +639,8 @@ var JTB = function() {
                 /* determine where in the container the toolbar should be positioned */
                 var tx, ty; // toolbar position
                 var cx=0, cy=0; // content position
-                switch(this.dock) {
-                case JTB.DOCK_LEFT:
+                switch(this.orient) {
+                case JTB.ORIENT_LEFT:
                     tx = 0;
                     ty = 0;
                     if(this.isShiftContent()) {
@@ -648,12 +648,12 @@ var JTB = function() {
                     }
                     break;
 
-                case JTB.DOCK_RIGHT:
+                case JTB.ORIENT_RIGHT:
                     tx = this.sz_container.width - tw + extraW;
                     ty = 0;
                     break;
 
-                case JTB.DOCK_TOP:
+                case JTB.ORIENT_TOP:
                     tx = 0;
                     ty = 0;
                     if(this.isShiftContent()) {
@@ -661,7 +661,7 @@ var JTB = function() {
                     }
                     break;
 
-                case JTB.DOCK_BOTTOM:
+                case JTB.ORIENT_BOTTOM:
                     tx = 0;
                     ty = this.sz_container.height - th + extraH;
                     break;
@@ -704,7 +704,7 @@ var JTB = function() {
             /** set pin icon attributes so it displays according to the current Toolbar state */
             JTB.Toolbar.prototype.refreshPinGfx = function() {
                 var imgName;
-                var display = (this.isSideDocked() ? 'table-cell' : 'block');
+                var display = (this.isSideOriented() ? 'table-cell' : 'block');
 
                 var esd = this.e_icon_drag.style;
                 if(this.isShowDragIcon()) {
@@ -827,7 +827,7 @@ var JTB = function() {
 
                 /* perform the transition animation */
                 this.anim_start = new Date().getTime();
-                if(this.dock==JTB.DOCK_LEFT || this.dock==JTB.DOCK_RIGHT) {
+                if(this.isSideOriented()) {
                     this.anim_src_width = this.sz_tb.getCurWidth();
                     this.anim_src_height = this.sz_container.height + getExtraHeight(this.e_content);
                 }
@@ -857,7 +857,7 @@ var JTB = function() {
                     maxdy = this.e_tb.offsetHeight;
                 }
                 else {
-                    if(this.dock==JTB.DOCK_LEFT || this.dock==JTB.DOCK_RIGHT) {
+                    if(this.isSideOriented()) {
                         maxdx = this.trigger_dist;
                         maxdy = this.sz_tb.height;
                     }
@@ -871,11 +871,11 @@ var JTB = function() {
                 var x = findPosX(this.e_tb);
                 var y = findPosY(this.e_tb);
 
-                /* adjust based on docking location */
-                if(this.dock == JTB.DOCK_RIGHT) {
+                /* adjust based on orientation */
+                if(this.orient == JTB.ORIENT_RIGHT) {
                     x = findPosX(this.e_content) + this.e_content.offsetWidth - this.sz_tb.width;
                 }
-                else if(this.dock == JTB.DOCK_BOTTOM) {
+                else if(this.orient == JTB.ORIENT_BOTTOM) {
                     y = findPosY(this.e_content) + this.e_content.offsetHeight - this.sz_tb.height;
                 }
 
@@ -1077,8 +1077,8 @@ var JTB = function() {
                 this.sz_container = new JTB.SizeHelper(this.e_container);
                 this.sz_tb = new JTB.SizeHelper(this.e_tb);
 
-                /* default docking location */
-                this.setDockLocation(JTB.DOCK_LEFT);
+                /* default orientation */
+                this.setOrientation(JTB.ORIENT_LEFT);
 
                 /* build the toolbar links (triggers a ui redraw too) */
                 this.refreshLinks();
