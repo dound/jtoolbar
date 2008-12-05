@@ -1001,7 +1001,7 @@ var JTB = function() {
                 }
 
                 tb.pinned = !tb.pinned;
-                tb.refreshPinGfx();
+                tb.refreshGfx();
                 tb.setStateBasedOnMouse();
             };
 
