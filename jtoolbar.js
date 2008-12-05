@@ -524,7 +524,8 @@ var JTB = function() {
                     }
                 }
                 else {
-                    this.e_tb.style.overflow = 'scroll';
+                    /* always crop overflow: some users may want scroll here */
+                    this.e_tb.style.overflow = 'hidden';
                 }
 
                 /* show/hide toolbar based on its state if there is no anim */
