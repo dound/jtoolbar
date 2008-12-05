@@ -206,6 +206,10 @@ var JTB = function() {
             this.e_icon_pin       = null;
             this.e_links          = null;
 
+            /* sizing information helpers */
+            this.sz_container     = null;
+            this.sz_tb            = null;
+
             /* where the tb is coming from / heading (position and size) */
             this.src_left       = 0;
             this.src_top        = 0;
@@ -813,6 +817,10 @@ var JTB = function() {
                     parent.insertBefore(this.e_container, nextChild);
                 }
 
+                /* create size helpers */
+                this.sz_container = new JTB.SizeHelper(this.container);
+                this.sz_tb = new JTB.SizeHelper(this.tb);
+
                 this.refreshGfx();
             };
 
@@ -922,6 +930,21 @@ var JTB = function() {
 
                 handleToolbarAnimation(tb);
             };
+
+            /** handle the callback for the window being resized */
+            JTB.handleWindowResizeEvent = function() {
+                var i;
+                for(i=0; i<toolbars.length; i++) {
+                    toolbars[i].sz_container.refreshSizeData();
+                    toolbars[i].sz_tb.refreshSizeData();
+                    toolbars[i].refreshGfx();
+                }
+            };
+
+            /* install a function which lets us know when the window is resized */
+            var onresize = document.body.getAttribute('onresize');
+            onresize += '; JTB.handleWindowResizeEvent();';
+            document.body.setAttribute('onresize', onresize);
         }
     };
 }();
