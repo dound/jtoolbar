@@ -1125,20 +1125,8 @@ var JTB = function() {
                 this.refreshGfx();
             };
 
-            /* create and hook the toolbar into the UI (assumes it is not already hooked in */
-            JTB.Toolbar.prototype.hookup = function() {
-                /* get the toolbar element */
-                this.e_tb = document.getElementById(this.tb_id);
-                if(this.e_tb === null) {
-                    /* create the toolbar if it doesn't exist */
-                    this.e_tb = document.createElement("div");
-                    this.e_tb.setAttribute('id', this.tb_id);
-                }
-                else {
-                    /* remove the toolbar from its current parent */
-                    this.e_tb.parentNode.removeChild(this.e_tb);
-                }
-
+            /** initialize the container and content divs */
+            JTB.Toolbar.prototype.initContainerAndContent = function() {
                 /* create a div to hold the toolbar and its attached content */
                 this.e_container = document.createElement("div");
                 this.e_container.setAttribute('id', this.tb_id + "_container");
@@ -1176,6 +1164,45 @@ var JTB = function() {
                 this.e_content.style.top     = '';
                 this.e_content.style.width   = '';
 
+                /* setup the show/hide handler for the toolbar */
+                this.e_container.setAttribute('onmousemove', "JTB.handleMouseMove('" + this.tb_id + "', event);");
+                this.e_container.setAttribute('onmouseup', 'JTB.handleMouseUp(event);');
+
+                this.e_content.style.position = 'absolute';
+
+                /* put our new elements into the DOM */
+                this.e_container.appendChild(this.e_tb);
+                this.e_container.appendChild(this.e_content);
+
+                if(nextChild === null) {
+                    parent.appendChild(this.e_container);
+                }
+                else {
+                    parent.insertBefore(this.e_container, nextChild);
+                }
+
+                this.sz_container = new JTB.SizeHelper(this.e_container);
+            };
+
+            /* create and hook the toolbar into the UI (assumes it is not already hooked in */
+            JTB.Toolbar.prototype.hookup = function() {
+                /* get the toolbar element */
+                this.e_tb = document.getElementById(this.tb_id);
+                if(this.e_tb === null) {
+                    /* create the toolbar if it doesn't exist */
+                    this.e_tb = document.createElement("div");
+                    this.e_tb.setAttribute('id', this.tb_id);
+                }
+                else {
+                    /* remove the toolbar from its current parent */
+                    this.e_tb.parentNode.removeChild(this.e_tb);
+                }
+
+                var hasContent = (this.content_id !== null);
+                if(hasContent) {
+                    this.initContainerAndContent();
+                }
+
                 /* create a div to put the links in within the toolbar */
                 this.e_links = document.createElement("div");
                 this.e_links.setAttribute('id', this.tb_id + "_links");
@@ -1202,32 +1229,17 @@ var JTB = function() {
                 setupIconDiv(this.e_icon_pin);
                 this.e_icons.appendChild(this.e_icon_pin);
 
-                /* setup the show/hide handler for the toolbar */
-                this.e_container.setAttribute('onmousemove', "JTB.handleMouseMove('" + this.tb_id + "', event);");
-                this.e_container.setAttribute('onmouseup', 'JTB.handleMouseUp(event);');
-
                 /* toolbar and content will be absolutely positioned within the container */
                 this.e_tb.style.position = 'absolute';
-                this.e_content.style.position = 'absolute';
 
                 /* toolbar just in front of the content */
                 var z = findZIndex(this.e_content);
                 this.e_tb.style.zIndex = z + 1;
-                this.e_content.style.zIndex = z;
-
-                /* put our new elements into the DOM */
-                this.e_container.appendChild(this.e_tb);
-                this.e_container.appendChild(this.e_content);
-
-                if(nextChild === null) {
-                    parent.appendChild(this.e_container);
-                }
-                else {
-                    parent.insertBefore(this.e_container, nextChild);
+                if(hasContent) {
+                    this.e_content.style.zIndex = z;
                 }
 
                 /* create size helpers */
-                this.sz_container = new JTB.SizeHelper(this.e_container);
                 this.sz_tb = new JTB.SizeHelper(this.e_tb);
 
                 /* default orientation */
