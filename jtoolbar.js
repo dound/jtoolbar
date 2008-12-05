@@ -565,6 +565,11 @@ var JTB = function() {
                 return this.docked;
             };
 
+            /** get whether the toolbar is floating */
+            JTB.Toolbar.prototype.isFloating = function() {
+                return !this.docked;
+            };
+
             /** set whether the toolbar is docked */
             JTB.Toolbar.prototype.setDocked = function(b) {
                 this.docked = b;
