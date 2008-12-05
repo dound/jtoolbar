@@ -263,6 +263,9 @@ var JTB = function() {
             /* whether the toolbar is currently pinned */
             this.pinned         = true;
 
+            /** whether the toolbar always takes up space (even when unpinned) */
+            this.alwaysShiftContent = false;
+
             /* whether the toolbar is visible, invis, or transitioning */
             this.state          = JTB.STATE_VIS;
 
