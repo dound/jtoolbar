@@ -799,7 +799,7 @@ var JTB = function() {
                 }
 
                 var esp = this.e_icon_pin.style;
-                if(this.isShowPinIcon()) {
+                if(this.isShowPinIcon() && this.docked) {
                     /* show it */
                     imgName = this.getImagePath() + (this.isPinned() ? 'pin.gif' : 'unpin.gif');
                     esp.backgroundImage = 'url(' + imgName + ')';
