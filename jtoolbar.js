@@ -476,6 +476,7 @@ var JTB = function() {
                 if(this.anim_start != -1) {
                     /* always visible during the animation */
                     this.e_tb.style.display = 'block';
+                    this.e_tb.style.overflow = 'hidden';
 
                     /* compute how far done (%) the animation is */
                     var millisElapsed = new Date().getTime() - this.anim_start;
@@ -519,6 +520,9 @@ var JTB = function() {
                         tw  = parseInt((p*tw) + ((1.0-p)*nextw), 10);
                         th = parseInt((p*th) + ((1.0-p)*nexth), 10);
                     }
+                }
+                else {
+                    this.e_tb.style.overflow = 'scroll';
                 }
 
                 /* show/hide toolbar based on its state if there is no anim */
@@ -839,9 +843,6 @@ var JTB = function() {
                     /* remove the toolbar from its current parent */
                     this.e_tb.parentNode.removeChild(this.e_tb);
                 }
-
-                /* crop overflow so animation can smoothly reduce size */
-                this.e_tb.style.overflow = 'hidden';
 
                 /* create a div to hold the toolbar and its attached content */
                 this.e_container = document.createElement("div");
