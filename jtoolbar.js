@@ -525,21 +525,19 @@ var JTB = function() {
                             }
 
                             /* second part: go to final dst */
-                            p = (percentDone - animSplit) / (1.0 - animSplit);
+                            p = (percentDone - this.anim_split) / (1.0 - this.anim_split);
                             if(!vis) {
                                 if(sideDock) {
-                                    tw *= mult;
                                     nextw = 0;
                                 }
                                 else {
-                                    th *= mult;
                                     nexth = 0;
                                 }
                             }
                         }
 
-                        tw = parseInt((p*this.anim_src_width)  + ((1.0-p)*nextw), 10);
-                        th = parseInt((p*this.anim_src_height) + ((1.0-p)*nexth), 10);
+                        tw = parseInt(p*nextw + (1.0-p)*this.anim_src_width,  10);
+                        th = parseInt(p*nexth + (1.0-p)*this.anim_src_height, 10);
                     }
                 }
                 else {
