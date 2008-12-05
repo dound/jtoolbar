@@ -514,16 +514,6 @@ var JTB = function() {
             /** set the location of the toolbar on its parent */
             JTB.Toolbar.prototype.setDockLocation = function(dock) {
                 this.dock = dock;
-
-                /* coerce the toolbar to a reasonable size */
-                if(dock==JTB.DOCK_LEFT || dock==JTB.DOCK_RIGHT) {
-                    this.sz_tb.resetToDefaultWidth();
-                    this.sz_tb.forceHeight(this.sz_container.height);
-                } else {
-                    this.sz_tb.forceWidth(this.sz_container.width);
-                    this.sz_tb.resetToDefaultHeight();
-                }
-
                 this.refreshGfx();
                 return this;
             };
@@ -537,8 +527,19 @@ var JTB = function() {
             JTB.Toolbar.prototype.refreshGfx = function() {
                 /* efficiency: hide the toolbar container while we arrange it */
                 var container = this.e_container;
+                var content = this.e_content;
                 var origDisp = container.style.display;
                 container.style.display = '';
+
+                /* coerce the toolbar to a reasonable size */
+                var sideDock = (this.dock==JTB.DOCK_LEFT || this.dock==JTB.DOCK_RIGHT);
+                if(sideDock) {
+                    this.sz_tb.resetToDefaultWidth();
+                    this.sz_tb.forceHeight(this.sz_container.height + getExtraHeight(content));
+                } else {
+                    this.sz_tb.forceWidth(this.sz_container.width + getExtraWidth(content));
+                    this.sz_tb.resetToDefaultHeight();
+                }
 
                 /* determine the toolbar's current size */
                 var tw = this.sz_tb.width;
@@ -558,7 +559,6 @@ var JTB = function() {
                         this.anim_start = -1;
                     }
                     else {
-                        var sideDock = (this.dock==JTB.DOCK_LEFT || this.dock==JTB.DOCK_RIGHT);
                         var mult = (this.anim_springy ? SPRINGINESS_FACTOR : 0.5);
 
                         /* set the actual toolbar size based on the animation */
