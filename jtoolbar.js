@@ -771,8 +771,14 @@ var JTB = function() {
 
                 /* perform the transition animation */
                 this.anim_start = new Date().getTime();
-                this.anim_src_width = this.sz_tb.getCurWidth();
-                this.anim_src_height = this.sz_tb.getCurHeight();
+                if(this.dock==JTB.DOCK_LEFT || this.dock==JTB.DOCK_RIGHT) {
+                    this.anim_src_width = this.sz_tb.getCurWidth();
+                    this.anim_src_height = this.sz_container.height + getExtraHeight(this.e_content);
+                }
+                else {
+                    this.anim_src_width = this.sz_container.width + getExtraWidth(this.e_content);
+                    this.anim_src_height = this.sz_tb.getCurHeight();
+                }
                 this.anim_first_half = true;
                 this.anim_split = ((newState==JTB.STATE_VIS) ? (1.0-SPLIT_CLOSE) : SPLIT_CLOSE);
                 handleToolbarAnimation(this);
