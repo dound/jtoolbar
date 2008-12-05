@@ -536,11 +536,14 @@ var JTB = function() {
                 var origDisp = container.style.display;
                 container.style.display = '';
 
+                var extraW = getExtraWidth(content);
+                var extraH = getExtraHeight(content);
+
                 /* coerce the toolbar to a reasonable size */
                 var sideDock = (this.dock==JTB.DOCK_LEFT || this.dock==JTB.DOCK_RIGHT);
                 if(sideDock) {
                     this.sz_tb.resetToDefaultWidth();
-                    this.sz_tb.forceHeight(this.sz_container.height + getExtraHeight(content));
+                    this.sz_tb.forceHeight(this.sz_container.height + extraH);
                 } else {
                     this.sz_tb.forceWidth(this.sz_container.width + getExtraWidth(content));
                     this.sz_tb.resetToDefaultHeight();
@@ -624,7 +627,7 @@ var JTB = function() {
                     break;
 
                 case JTB.DOCK_RIGHT:
-                    tx = this.sz_container.width - tw;
+                    tx = this.sz_container.width - tw + extraW;
                     ty = 0;
                     break;
 
@@ -638,7 +641,7 @@ var JTB = function() {
 
                 case JTB.DOCK_BOTTOM:
                     tx = 0;
-                    ty = this.sz_container.height - th;
+                    ty = this.sz_container.height - th + extraH;
                     break;
                 }
 
