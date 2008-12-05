@@ -931,7 +931,8 @@ var JTB = function() {
                 /* default docking location */
                 this.setDockLocation(JTB.DOCK_LEFT);
 
-                this.refreshGfx();
+                /* build the toolbar links (triggers a ui redraw too) */
+                this.refreshLinks();
             };
 
             /** unhook the toolbar from the UI (assumes it is currently hooked in) */
