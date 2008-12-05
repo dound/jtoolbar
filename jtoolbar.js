@@ -811,22 +811,10 @@ var JTB = function() {
 
                 /* adjust based on docking location */
                 if(this.dock == JTB.DOCK_RIGHT) {
-                    if(vis) {
-                        x -= this.sz_tb.width;
-                        maxdx += this.sz_tb.width;
-                    }
-                    else {
-                        x = findPosX(this.e_content) + this.e_content.offsetWidth - this.sz_tb.width;
-                    }
+                    x = findPosX(this.e_content) + this.e_content.offsetWidth - this.sz_tb.width;
                 }
                 else if(this.dock == JTB.DOCK_BOTTOM) {
-                    if(vis) {
-                        y -= this.sz_tb.height;
-                        maxdy += this.sz_tb.height;
-                    }
-                    else {
-                        y = findPosY(this.e_content) + this.e_content.offsetHeight - this.sz_tb.height;
-                    }
+                    y = findPosY(this.e_content) + this.e_content.offsetHeight - this.sz_tb.height;
                 }
 
                 /* display the toolbar iff the mouse is within the maximum deviation */
