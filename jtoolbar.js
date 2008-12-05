@@ -773,7 +773,7 @@ var JTB = function() {
                 this.e_tb.style.height = th + 'px';
 
                 /* setup the pin/unpin icon */
-                this.refreshPinGfx();
+                this.refreshIconsGfx();
 
                 /* show it again */
                 container.style.display = origDisp;
@@ -782,7 +782,7 @@ var JTB = function() {
             };
 
             /** set pin icon attributes so it displays according to the current Toolbar state */
-            JTB.Toolbar.prototype.refreshPinGfx = function() {
+            JTB.Toolbar.prototype.refreshIconsGfx = function() {
                 var imgName;
                 var display = (this.isSideOriented() ? 'table-cell' : 'block');
 
@@ -843,7 +843,7 @@ var JTB = function() {
             /** set the path to the location where images are stored */
             JTB.Toolbar.prototype.setImagePath = function(path) {
                 this.img_path = path;
-                this.refreshPinGfx();
+                this.refreshIconsGfx();
                 return this;
             };
 
