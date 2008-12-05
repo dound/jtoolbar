@@ -212,6 +212,11 @@ var JTB = function() {
             /* time the toolbar animation started */
             this.anim_start     = -1;
 
+            /* src width and height of an animation */
+            this.anim_src_width  = 0;
+            this.anim_src_height = 0;
+            this.anim_first_half = true;
+
             /* where to place our div relative to its parent */
             this.dock           = null;
 
@@ -505,6 +510,12 @@ var JTB = function() {
                             }
                         }
                         else {
+                            if(this.anim_first_half) {
+                                this.anim_first_half = false;
+                                this.anim_src_width = this.sz_tb.getCurWidth();
+                                this.anim_src_height = this.sz_tb.getCurHeight();
+                            }
+
                             /* second part: go to final dst */
                             p = (percentDone - animSplit) / (1.0 - animSplit);
                             if(!vis) {
@@ -519,8 +530,8 @@ var JTB = function() {
                             }
                         }
 
-                        tw  = parseInt((p*tw) + ((1.0-p)*nextw), 10);
-                        th = parseInt((p*th) + ((1.0-p)*nexth), 10);
+                        tw = parseInt((p*this.anim_src_width)  + ((1.0-p)*nextw), 10);
+                        th = parseInt((p*this.anim_src_height) + ((1.0-p)*nexth), 10);
                     }
                 }
                 else {
@@ -686,6 +697,9 @@ var JTB = function() {
 
                 /* perform the transition animation */
                 this.anim_start = new Date().getTime();
+                this.anim_src_width = this.sz_tb.getCurWidth();
+                this.anim_src_height = this.sz_tb.getCurHeight();
+                this.anim_first_half = true;
                 handleToolbarAnimation(this);
                 return this;
             };
