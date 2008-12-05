@@ -7,8 +7,8 @@ var JTB = function() {
     /*  private members */
     var toolbars = [];
     var mouseX, mouseY;
-    var animSplit = 0.0;
-
+    var animSplit = 0.5;
+    var SPRINGINESS_FACTOR = 1.3;
 
     var debugMode = false;
     var MAX_DEBUG_LINES = 5;
@@ -113,38 +113,11 @@ var JTB = function() {
 
     /** updates the toolbar's size and position based on the ongoing animation */
     function handleToolbarAnimation(tb) {
-        /* compute how far done (%) the animation is */
-        var millisElapsed = new Date().getTime() - tb.anim_start;
-        var percentDone = millisElapsed / tb.animation_len_msec;
-        if(percentDone > 1.0) {
-            percentDone = 1.0;
-        }
-
-        /* update position and size */
-        var es = tb.e_tb.style;
-        var p;
-        if(percentDone <= animSplit) {
-            p = percentDone / animSplit;
-            es.left   = parseInt((p*tb.int_left)   + ((1.0-p)*tb.src_left),   10) + 'px';
-            es.top    = parseInt((p*tb.int_top)    + ((1.0-p)*tb.src_top),    10) + 'px';
-            es.width  = parseInt((p*tb.int_width)  + ((1.0-p)*tb.src_width),  10) + 'px';
-            es.height = parseInt((p*tb.int_height) + ((1.0-p)*tb.src_height), 10) + 'px';
-        }
-        else {
-            p = (percentDone - animSplit) / (1.0 - animSplit);
-            es.left   = parseInt((p*tb.dst_left)   + ((1.0-p)*tb.int_left),   10) + 'px';
-            es.top    = parseInt((p*tb.dst_top)    + ((1.0-p)*tb.int_top),    10) + 'px';
-            es.width  = parseInt((p*tb.dst_width)  + ((1.0-p)*tb.int_width),  10) + 'px';
-            es.height = parseInt((p*tb.dst_height) + ((1.0-p)*tb.int_height), 10) + 'px';
-        }
+        tb.refreshGfx();
 
         /* periodically call this method until the animation is done */
-        if(percentDone < 1) {
+        if(tb.anim_start != -1) {
             setTimeout('JTB.handleAnimationCallback("' + tb.tb_id + '");', JTB.ANIM_INTERVAL_MSEC);
-        }
-        else {
-            tb.refreshGfx();
-            tb.anim_start = -1;
         }
     }
 
@@ -233,20 +206,6 @@ var JTB = function() {
             /* sizing information helpers */
             this.sz_container     = null;
             this.sz_tb            = null;
-
-            /* where the tb is coming from / heading (position and size) */
-            this.src_left       = 0;
-            this.src_top        = 0;
-            this.src_width      = 0;
-            this.src_height     = 0;
-            this.int_left       = 0;
-            this.int_top        = 0;
-            this.int_width      = 0;
-            this.int_height     = 0;
-            this.dst_left       = 0;
-            this.dst_top        = 0;
-            this.dst_width      = 0;
-            this.dst_height     = 0;
 
             /* time the toolbar animation started */
             this.anim_start     = -1;
@@ -510,8 +469,62 @@ var JTB = function() {
                 var origDisp = container.style.display;
                 container.style.display = '';
 
-                /* show/hide toolbar based on its state */
-                this.e_tb.style.display = ((this.getState() == JTB.STATE_VIS) ? 'block' : 'none');
+                /* determine the toolbar's current size */
+                var tw = this.sz_tb.width;
+                var th = this.sz_tb.height;
+                var vis = (this.getState() == JTB.STATE_VIS);
+                if(this.anim_start != -1) {
+                    /* always visible during the animation */
+                    this.e_tb.style.display = 'block';
+
+                    /* compute how far done (%) the animation is */
+                    var millisElapsed = new Date().getTime() - tb.anim_start;
+                    var percentDone = millisElapsed / tb.animation_len_msec;
+
+                    if(percentDone >= 1.0) {
+                        percentDone = 1.0;
+                        this.anim_start = -1;
+                    }
+                    else {
+                        var sideDock = (this.dock==JTB.DOCK_LEFT || this.dock==JTB.DOCK_RIGHT);
+                        var mult = (this.anim_springy ? SPRINGINESS_FACTOR : 0.5);
+
+                        /* set the actual toolbar size based on the animation */
+                        var p, nextw=tw, nexth=th;
+                        if(percentDone <= animSplit) {
+                            /* first part of animation: go beyond normal max size */
+                            p = percentDone / animSplit;
+                            if(sideDock) {
+                                nextw *= mult;
+                            }
+                            else {
+                                nexth *= mult;
+                            }
+                        }
+                        else {
+                            /* second part: go to final dst */
+                            p = (percentDone - animSplit) / (1.0 - animSplit);
+                            if(!vis) {
+                                if(sideDock) {
+                                    tw *= mult;
+                                    nextw = 0;
+                                }
+                                else {
+                                    th *= mult;
+                                    nexth = 0;
+                                }
+                            }
+                        }
+
+                        tw  = parseInt((p*tw) + ((1.0-p)*nextw), 10);
+                        th = parseInt((p*th) + ((1.0-p)*nexth), 10);
+                    }
+                }
+
+                /* show/hide toolbar based on its state if there is no anim */
+                if(this.anim_start != -1) {
+                    this.e_tb.style.display = (vis ? 'block' : 'none');
+                }
 
                 /* determine where in the container the toolbar should be positioned */
                 var tx, ty; // toolbar position
@@ -554,6 +567,8 @@ var JTB = function() {
 
                 this.e_tb.style.left = (px + tx) + 'px';
                 this.e_tb.style.top  = (py + ty) + 'px';
+                this.e_tb.style.width  = tw + 'px';
+                this.e_tb.style.height = th + 'px';
 
                 this.e_content.style.left   = (px + cx) + 'px';
                 this.e_content.style.top    = (py + cy) + 'px';
@@ -662,21 +677,10 @@ var JTB = function() {
 
                 this.state = newState;
 
-                /* determine how to animate it into the correct position */
-                var w, h;
-                w = this.sz_tb.getWidth();
-                h = this.sz_tb.getHeight();
-                if(newState != JTB.STATE_VIS) {
-                    if(this.dock==JTB.DOCK_TOP || this.dock==JTB.DOCK_BOTTOM) {
-                        h = 0;
-                    }
-                    else {
-                        w = 0;
-                    }
-                }
-
                 /* perform the transition animation */
-                this.animate(-1, -1, w, h, this.anim_springy, true);
+                this.anim_start = new Date().getTime();
+                handleToolbarAnimation(this);
+                return this;
             };
 
             /** sets the visibility of the toolbar based on the mouse location */
@@ -926,70 +930,6 @@ var JTB = function() {
             /** unhook the toolbar from the UI (assumes it is currently hooked in) */
             JTB.Toolbar.prototype.unhook = function() {
                 /* TODO */
-            };
-
-            /**
-             * start a toolbar animation (any negatively-valued parameter means
-             * don't change that field)
-             */
-            JTB.Toolbar.prototype.animate = function(l, t, w, h, springAnim, onlyInDockDir) {
-                var e = this.e_tb;
-                this.src_left   = findPosX(e);
-                this.src_top    = findPosY(e);
-                this.src_width  = e.offsetWidth;
-                this.src_height = e.offsetHeight;
-
-                this.dst_left   = ((l == -1) ? this.src_left   : l);
-                this.dst_top    = ((t == -1) ? this.src_top    : t);
-                this.dst_width  = ((w == -1) ? this.src_width  : w);
-                this.dst_height = ((h == -1) ? this.src_height : h);
-
-                if(springAnim === false) {
-                    this.int_left   = (this.src_left   + this.dst_left)   / 2;
-                    this.int_top    = (this.src_top    + this.dst_top)    / 2;
-                    this.int_width  = (this.src_width  + this.dst_width)  / 2;
-                    this.int_height = (this.src_height + this.dst_height) / 2;
-                }
-                else {
-                    if(this.src_width > this.dst_width || this.src_height > this.dst_height) {
-                        this.int_left   = this.src_left;
-                        this.int_top    = this.src_top;
-                        this.int_width  = this.src_width;
-                        this.int_height = this.src_height;
-                    }
-                    else {
-                        this.int_left   = this.dst_left;
-                        this.int_top    = this.dst_top;
-                        this.int_width  = this.dst_width;
-                        this.int_height = this.dst_height;
-                    }
-                    if(this.dock==JTB.DOCK_LEFT || this.dock==JTB.DOCK_RIGHT) {
-                        this.int_width *= 1.3;
-                    }
-                    else {
-                        this.int_height *= 1.3;
-                    }
-                }
-                animSplit = 0.5;
-
-                /* restrict animation to a single direction if requested to do so */
-                if(onlyInDockDir === true) {
-                    if(this.dock==JTB.DOCK_LEFT || this.dock==JTB.DOCK_RIGHT) {
-                        this.src_height = this.int_height = this.dst_height;
-                    }
-                    else {
-                        this.src_width = this.int_width = this.dst_width;
-                    }
-                }
-
-                debug(this.src_left + ',' + this.src_top + ' ' + this.src_width + '-' + this.src_height + ' ---- ' +
-                      this.dst_left + ',' + this.dst_top + ' ' + this.dst_width + '-' + this.dst_height);
-
-                debug(document.getElementById('custom_toolbar').offsetHeight + ' / ' + document.getElementById('tempest').offsetHeight);
-
-                this.anim_start = new Date().getTime();
-                this.e_tb.style.display = 'block';
-                handleToolbarAnimation(this);
             };
 
             /** refreshes the toolbar elements to reflect a change in available space */
