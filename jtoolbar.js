@@ -65,6 +65,53 @@ var JTB = function() {
         return curtop;
     }
 
+    /** returns the effective value of a property of obj */
+    function findValue(obj, propName) {
+        var v = eval('obj.' + propName);
+        if(v === '' || v == 'inherit') {
+            if(obj.parentNode==document.body || obj.parentNode===null) {
+                return 0;
+            }
+            else {
+                return findValue(obj.parentNode, propName);
+            }
+        }
+        else {
+            return v;
+        }
+    }
+
+    /**
+     * gets the width not included in offsetWidth (e.g. borders,
+     * padding, and margin)
+     */
+    function getExtraWidth(e) {
+        var ret = 0;
+        ret += parseInt(findValue(e, 'style.paddingLeft'), 10);
+        ret += parseInt(findValue(e, 'style.paddingRight'), 10);
+        ret += parseInt(findValue(e, 'style.marginLeft'), 10);
+        ret += parseInt(findValue(e, 'style.marginRight'), 10);
+        ret += parseInt(findValue(e, 'style.borderLeftWidth'), 10);
+        ret += parseInt(findValue(e, 'style.borderRightWidth'), 10);
+        debug('ex => ' + ret);
+        return ret;
+    }
+
+    /**
+     * gets the height not included in offsetHeight (e.g. borders,
+     * padding, and margin)
+     */
+    function getExtraHeight(e) {
+        var ret = 0;
+        ret += parseInt(findValue(e, 'style.paddingTop'), 10);
+        ret += parseInt(findValue(e, 'style.paddingBottom'), 10);
+        ret += parseInt(findValue(e, 'style.marginTop'), 10);
+        ret += parseInt(findValue(e, 'style.marginBottom'), 10);
+        ret += parseInt(findValue(e, 'style.borderTopWidth'), 10);
+        ret += parseInt(findValue(e, 'style.borderBottomWidth'), 10);
+        return ret;
+    }
+
     /** returns the effective z-index of the object */
     function findZIndex(obj) {
         var z = obj.style.zIndex;
