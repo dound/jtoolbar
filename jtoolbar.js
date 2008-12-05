@@ -173,6 +173,15 @@ var JTB = function() {
         }
     }
 
+    /** sets the style parameters of an icon div */
+    function setupIconDiv(e) {
+        e.style.backgroundRepeat = 'no-repeat';
+        e.style.border = '1px solid black';
+        e.style.width = '16px';
+        e.style.height = '16px';
+        e.style.margin = '3px 3px 3px 3px';
+    }
+
     /* export public members */
     return {
         /* public constants */
@@ -254,6 +263,8 @@ var JTB = function() {
             this.e_container      = null;
             this.e_content        = null;
             this.e_tb             = null;
+            this.e_icons          = null;
+            this.e_icon_drag      = null;
             this.e_icon_pin       = null;
             this.e_links          = null;
 
@@ -275,11 +286,17 @@ var JTB = function() {
             /* where to place our div relative to its parent */
             this.dock           = null;
 
+            /* whether to show the drag graphic */
+            this.show_drag      = true;
+
             /* whether to show the pin/unpin graphic */
             this.show_pin       = true;
 
             /* path to icon location */
             this.img_path       = 'images/';
+
+            /* whether the toolbar is being dragged */
+            this.dragging       = false;
 
             /* whether the toolbar is currently pinned */
             this.pinned         = true;
@@ -686,18 +703,44 @@ var JTB = function() {
 
             /** set pin icon attributes so it displays according to the current Toolbar state */
             JTB.Toolbar.prototype.refreshPinGfx = function() {
-                var es = this.e_icon_pin.style;
-                if(this.isShowPinIcon()) {
+                var imgName;
+                var display = (this.isSideDocked() ? 'table-cell' : 'block');
+
+                var esd = this.e_icon_drag.style;
+                if(this.isShowDragIcon()) {
                     /* show it */
-                    var imgName = this.getImagePath() + (this.isPinned() ? 'pin.gif' : 'unpin.gif');
-                    es.backgroundImage = 'url(' + imgName + ')';
-                    es.display = 'block';
+                    imgName = this.getImagePath() + (this.isDragging() ? 'dragging.gif' : 'drag.gif');
+                    esd.backgroundImage = 'url(' + imgName + ')';
+                    esd.display = display;
                 }
                 else {
                     /* hide it */
-                    es.display = 'none';
+                    esd.display = 'none';
                 }
 
+                var esp = this.e_icon_pin.style;
+                if(this.isShowPinIcon()) {
+                    /* show it */
+                    imgName = this.getImagePath() + (this.isPinned() ? 'pin.gif' : 'unpin.gif');
+                    esp.backgroundImage = 'url(' + imgName + ')';
+                    esp.display = display;
+                }
+                else {
+                    /* hide it */
+                    esp.display = 'none';
+                }
+
+                return this;
+            };
+
+            /** get whether the drag icon is showing */
+            JTB.Toolbar.prototype.isShowDragIcon = function() {
+                return this.show_drag;
+            };
+
+            /** set whether the drag icon is showing */
+            JTB.Toolbar.prototype.setShowDragIcon = function(b) {
+                this.show_drag = b;
                 return this;
             };
 
@@ -722,6 +765,11 @@ var JTB = function() {
                 this.img_path = path;
                 this.refreshPinGfx();
                 return this;
+            };
+
+            /** get whether the toolbar is being dragged */
+            JTB.Toolbar.prototype.isDragging = function() {
+                return this.dragging;
             };
 
             /** get whether the toolbar is pinned */
@@ -980,20 +1028,30 @@ var JTB = function() {
                 this.e_links.setAttribute('id', this.tb_id + "_links");
                 this.e_tb.appendChild(this.e_links);
 
-                /* create a div to put the pin icon in within the toolbar */
+                /* create a div to put the icons in */
+                this.e_icons = document.createElement("div");
+                this.e_icons.setAttribute('id', this.tb_id + "_icons");
+                this.e_icons.style.cssFloat = 'right';
+                this.e_icons.style.display = 'table';
+                this.e_tb.insertBefore(this.e_icons, this.e_tb.childNodes[0]);
+
+                /* create a div for the drag icon */
+                this.e_icon_drag = document.createElement("div");
+                this.e_icon_drag.setAttribute('id', this.tb_id + "_icon_pin");
+                this.e_icon_drag.setAttribute('onmousedown', "JTB.handleDragStartEvent('" + this.tb_id + "');");
+                setupIconDiv(this.e_icon_drag);
+                this.e_icons.appendChild(this.e_icon_drag);
+
+                /* create a div for the pin icon */
                 this.e_icon_pin = document.createElement("div");
                 this.e_icon_pin.setAttribute('id', this.tb_id + "_icon_pin");
                 this.e_icon_pin.setAttribute('onclick', "JTB.handlePinClickEvent('" + this.tb_id + "');");
-                this.e_icon_pin.style.backgroundRepeat = 'no-repeat';
-                this.e_icon_pin.style.border = '1px solid black';
-                this.e_icon_pin.style.width = '16px';
-                this.e_icon_pin.style.height = '16px';
-                this.e_icon_pin.style.cssFloat = 'right';
-                this.e_icon_pin.style.margin = '3px 3px 3px 3px';
-                this.e_tb.insertBefore(this.e_icon_pin, this.e_tb.childNodes[0]);
+                setupIconDiv(this.e_icon_pin);
+                this.e_icons.appendChild(this.e_icon_pin);
 
                 /* setup the show/hide handler for the toolbar */
                 this.e_container.setAttribute('onmousemove', "JTB.handleMouseMove('" + this.tb_id + "', event);");
+                this.e_container.setAttribute('onmouseup', 'JTB.handleMouseUp(event);');
 
                 /* toolbar and content will be absolutely positioned within the container */
                 this.e_tb.style.position = 'absolute';
@@ -1038,6 +1096,16 @@ var JTB = function() {
                 this.refreshGfx();
             };
 
+            /** terminates any ongoing drag operation */
+            JTB.Toolbar.prototype.handleMouseUp = function() {
+                if(this.dragging) {
+                    /* TODO */
+
+                    this.dragging = false;
+                    this.refreshGfx();
+                }
+            };
+
             /** set whether debug mode is on */
             JTB.Toolbar.prototype.setDebugMode = function(b) {
                 debugMode = b;
@@ -1052,6 +1120,17 @@ var JTB = function() {
                 if(tb !== null && !tb.pinned && !tb.isAnimating()) {
                     tb.setStateBasedOnMouse();
                 }
+            };
+
+            /** handle a click on the drag icon */
+            JTB.handleDragStartEvent = function(tb_id) {
+                var tb = getToolbar(tb_id);
+                if(tb === null) {
+                    return;
+                }
+
+                tb.dragging = true;
+                tb.refreshGfx();
             };
 
             /** handle a click on a pin icon */
@@ -1084,6 +1163,14 @@ var JTB = function() {
                 }
             };
 
+            /** handle the callback for the mouse button being released */
+            JTB.handleMouseUp = function(event) {
+                var i;
+                for(i=0; i<toolbars.length; i++) {
+                    toolbars[i].handleMouseUp();
+                }
+            };
+
             /* install a function which lets us know when the window is resized */
             var onresize = document.body.getAttribute('onresize');
             if(onresize === null) {
@@ -1094,6 +1181,17 @@ var JTB = function() {
             }
             onresize += 'JTB.handleWindowResizeEvent();';
             document.body.setAttribute('onresize', onresize);
+
+            /* install a function which lets us know when the mouse is up */
+            var onmouseup = document.body.getAttribute('onmouseup');
+            if(onmouseup === null) {
+                onmouseup = '';
+            }
+            else {
+                onmouseup += '; ';
+            }
+            onmouseup += 'JTB.handleMouseUp(event);';
+            document.body.setAttribute('onmouseup', onmouseup);
         }
     };
 }();
