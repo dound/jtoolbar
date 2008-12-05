@@ -116,7 +116,7 @@ var JTB = function() {
         tb.refreshGfx();
 
         /* periodically call this method until the animation is done */
-        if(tb.anim_start != -1) {
+        if(tb.isAnimating()) {
             setTimeout('JTB.handleAnimationCallback("' + tb.tb_id + '");', JTB.ANIM_INTERVAL_MSEC);
         }
     }
@@ -469,6 +469,11 @@ var JTB = function() {
                 return this;
             };
 
+            /** returns true if an animation is going on */
+            JTB.Toolbar.prototype.isAnimating = function() {
+                return (this.anim_start != -1);
+            };
+
             /** set toolbar attributes so it displays according to the current Toolbar state */
             JTB.Toolbar.prototype.refreshGfx = function() {
                 /* efficiency: hide the toolbar container while we arrange it */
@@ -480,7 +485,7 @@ var JTB = function() {
                 var tw = this.sz_tb.width;
                 var th = this.sz_tb.height;
                 var vis = (this.getState() == JTB.STATE_VIS);
-                if(this.anim_start != -1) {
+                if(this.isAnimating()) {
                     /* always visible during the animation */
                     this.e_tb.style.display = 'block';
                     this.e_tb.style.overflow = 'hidden';
@@ -540,7 +545,7 @@ var JTB = function() {
                 }
 
                 /* show/hide toolbar based on its state if there is no anim */
-                if(this.anim_start != -1) {
+                if(!this.isAnimating()) {
                     this.e_tb.style.display = (vis ? 'block' : 'none');
                 }
 
@@ -689,7 +694,7 @@ var JTB = function() {
                 }
 
                 /* reject state changes which try to occur during an animation */
-                if(this.anim_start != -1) {
+                if(this.isAnimating()) {
                     return false;
                 }
 
@@ -972,7 +977,7 @@ var JTB = function() {
                 mouseY = event.clientY;
 
                 var tb = getToolbar(tb_id);
-                if(tb !== null && !tb.pinned && tb.anim_start==-1) {
+                if(tb !== null && !tb.pinned && !tb.isAnimating()) {
                     tb.setStateBasedOnMouse();
                 }
             };
