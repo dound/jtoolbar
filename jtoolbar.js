@@ -1257,14 +1257,13 @@ var JTB = function() {
             };
 
             /** shows a child toolbar */
-            JTB.Toolbar.showChildToolbar = function(parentToolbarName, childToolbarName, x, y) {
-                var p = getToolbar(parentToolbarName);
+            JTB.Toolbar.showChildToolbar = function(childToolbarName, x, y) {
                 var c = getToolbar(childToolbarName);
-                if(p===null || c===null) {
+                if(c===null) {
                     return;
                 }
 
-                p.showChildToolbar(c, x, y);
+                c.tb_parent.showChildToolbar(c, x, y);
             };
 
             /* install a function which lets us know when the window is resized */
