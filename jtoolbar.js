@@ -398,6 +398,15 @@ var JTB = function() {
                 return this.e.offsetHeight;
             };
 
+            /** string representation */
+            JTB.SizeHelper.prototype.toString = function() {
+                return this.e.getAttribute('id') + ': ' +
+                  'forc=' + this.forced_width  + '/' + this.forced_height  + '  ' +
+                  'size=' + this.width         + '/' + this.height         + '  ' +
+                  'curr=' + this.getCurWidth() + '/' + this.getCurHeight() + '  ' +
+                  'defa=' + this.default_width + '/' + this.default_height;
+            };
+
 
             /** return the HTML representation of this link object */
             JTB.ToolbarLink.prototype.makeLink = function() {
