@@ -269,7 +269,8 @@ var JTB = function() {
 
             /* toolbar hierarchy support */
             this.tb_parent        = null;
-            this.tb_child         = null;
+            this.tb_children      = [];
+            this.vis_tb_child     = null;
 
             /* sizing information helpers */
             this.sz_container     = null;
@@ -538,9 +539,69 @@ var JTB = function() {
                 return this;
             };
 
-            /** shows a child toolbar */
+
+            /** shows a child toolbar (makes childToolbar a child if it isn't already one) */
             JTB.Toolbar.prototype.showChildToolbar = function(childToolbar, x, y) {
-                /* TODO */
+                /* make sure childToolbar is one of our children */
+                if(!this.hasChildToolbar(childToolbar)) {
+                    this.addChildToolbar(childToolbar);
+                }
+
+                this.vis_tb_child = childToolbar;
+
+                return this;
+            };
+
+            /** adds a child toolbar to this toolbar */
+            JTB.Toolbar.prototype.addChildToolbar = function(childToolbar) {
+                /* remove the child from any old parent */
+                if(childToolbar.tb_parent !== null) {
+                    childToolbar.tb_parent.removeChildToolbar(childToolbar);
+                }
+
+                /* add the child toolbar to our list of toolbars */
+                this.tb_children[this.tb_children.length] = childToolbar;
+                childToolbar.tb_parent = this;
+            };
+
+            /** gets whether e is a child toolbar of this toolbar */
+            JTB.Toolbar.prototype.indexOfChildToolbar = function(e) {
+                return this.indexOfChildToolbar(e) != -1;
+            };
+
+            /** returns non-negative index if e is a child toolbar of this toolbar */
+            JTB.Toolbar.prototype.indexOfChildToolbar = function(e) {
+                var i;
+                for(i=0; i<this.tb_children.length; i++) {
+                    if(this.tb_children[i] === e) {
+                        return i;
+                    }
+                }
+
+                return -1;
+            };
+
+            /** removes a child toolbar */
+            JTB.Toolbar.prototype.removeChildToolbar = function(e) {
+                var i = this.indexOfChildToolbar(e);
+                if(i >= 0) {
+                    this.getContainer().removeChild(e);
+
+                    if(this.vis_tb_child == e) {
+                        this.vis_tb_child = null;
+                    }
+
+                    e.tb_parent = null;
+
+                    var j;
+                    for(j=i; j<this.tb_children.length-1; j++) {
+                        this.tb_children[j] = this.tb_children[j+1];
+                    }
+                    this.tb_children.length -= 1;
+
+                    this.refreshGfx();
+                }
+                return this;
             };
 
             /** get the location of the toolbar on its parent */
