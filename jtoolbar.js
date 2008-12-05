@@ -565,6 +565,18 @@ var JTB = function() {
                 return this;
             };
 
+            /** get whether the toolbar takes up space (versus being in front
+             * of the content).  Always true if pinned. */
+            JTB.Toolbar.prototype.isShiftContent = function() {
+                return this.pinned || this.alwaysShiftContent;
+            };
+
+            /** set whether the toolbar takes up space even when it isn't pinned. */
+            JTB.Toolbar.prototype.setAlwaysShiftContent = function(b) {
+                this.alwaysShiftContent = b;
+                return this;
+            };
+
             /** get the state of the toolbar's visibility */
             JTB.Toolbar.prototype.getState = function() {
                 return this.state;
