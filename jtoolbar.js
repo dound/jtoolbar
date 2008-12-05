@@ -211,7 +211,7 @@ var JTB = function() {
             this.anim_start     = -1;
 
             /* where to place our div relative to its parent */
-            this.dock           = JTB.DOCK_LEFT;
+            this.dock           = null;
 
             /* whether to show the pin/unpin graphic */
             this.show_pin       = true;
@@ -924,6 +924,9 @@ var JTB = function() {
                 /* create size helpers */
                 this.sz_container = new JTB.SizeHelper(this.e_container);
                 this.sz_tb = new JTB.SizeHelper(this.e_tb);
+
+                /* default docking location */
+                this.setDockLocation(JTB.DOCK_LEFT);
 
                 this.refreshGfx();
             };
