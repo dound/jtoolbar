@@ -65,6 +65,22 @@ var JTB = function() {
         return curtop;
     }
 
+    /** returns the effective z-index of the object */
+    function findZIndex(obj) {
+        var z = obj.style.zIndex;
+        if(z === '') {
+            if(obj.parentNode==document.body || obj.prentNode===null) {
+                return 0;
+            }
+            else {
+                return findZIndex(obj.parentNode);
+            }
+        }
+        else {
+            return z;
+        }
+    }
+
     /** gets a toolbar object based on its name */
     function getToolbar(name) {
         var i;
@@ -778,9 +794,10 @@ var JTB = function() {
                 this.e_container.style.left    = this.e_content.style.left;
                 this.e_container.style.top     = this.e_content.style.top;
                 this.e_container.style.width   = this.e_content.style.width;
+                this.e_container.style.zIndex  = this.e_content.style.zIndex;
 
                 /* clear the copied properties from the content */
-                this.e_content.style.display = '';
+                this.e_content.style.display = 'block';
                 this.e_content.style.height  = '';
                 this.e_content.style.left    = '';
                 this.e_content.style.top     = '';
@@ -805,6 +822,15 @@ var JTB = function() {
 
                 /* setup the show/hide handler for the toolbar */
                 this.e_container.setAttribute('onmousemove', "JTB.handleMouseMove('" + this.tb_id + "', event);");
+
+                /* toolbar and content will be absolutely positioned within the container */
+                this.e_tb.style.position = 'absolute';
+                this.e_content.style.position = 'absolute';
+
+                /* toolbar just in front of the content */
+                var z = findZIndex(this.e_content);
+                this.e_tb.style.zIndex = z + 1;
+                this.e_content.style.zIndex = z;
 
                 /* put our new elements into the DOM */
                 this.e_container.appendChild(this.e_tb);
