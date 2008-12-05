@@ -540,7 +540,7 @@ var JTB = function() {
             };
 
             /** shows a child toolbar */
-            JTB.Toolbar.prototype.showChildToolbar(parentName, childName, x, y) {
+            JTB.Toolbar.prototype.showChildToolbar = function(parentName, childName, x, y) {
                 /* TODO */
             };
 
