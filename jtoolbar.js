@@ -91,6 +91,10 @@ var JTB = function() {
      * padding, and margin)
      */
     function getExtraWidth(e) {
+        if(e === null) {
+            return 0;
+        }
+
         var ret = 0;
         ret += parseInt(findValue(e, 'style.paddingLeft',      false), 10);
         ret += parseInt(findValue(e, 'style.paddingRight',     false), 10);
@@ -106,6 +110,10 @@ var JTB = function() {
      * padding, and margin)
      */
     function getExtraHeight(e) {
+        if(e === null) {
+            return 0;
+        }
+
         var ret = 0;
         ret += parseInt(findValue(e, 'style.paddingTop',        false), 10);
         ret += parseInt(findValue(e, 'style.paddingBottom',     false), 10);
@@ -494,7 +502,7 @@ var JTB = function() {
             };
 
 
-            /** get the name of the element the toolbar is attached to */
+            /** get the name of the element the toolbar is attached to (may be null) */
             JTB.Toolbar.prototype.getContentName = function() {
                 if(this.tb_parent === null) {
                     return this.content_id;
@@ -515,12 +523,18 @@ var JTB = function() {
                 return this;
             };
 
-            /** get the parent element of the toolbar and its attached content */
+            /** get the parent element of the toolbar and its attached content (may be null) */
             JTB.Toolbar.prototype.getParent = function() {
-                return this.getContent().parentNode;
+                var content = this.getContent();
+                if(content === null) {
+                    return null;
+                }
+                else {
+                    return content.parentNode;
+                }
             };
 
-            /** get the container element which holds toolbar and its attached content */
+            /** get the container element which holds toolbar and its attached content (may be null) */
             JTB.Toolbar.prototype.getContainer = function() {
                 if(this.tb_parent === null) {
                     return this.e_container;
@@ -530,7 +544,7 @@ var JTB = function() {
                 }
             };
 
-            /** get the content element to which the toolbar is attached */
+            /** get the content element to which the toolbar is attached (may be null) */
             JTB.Toolbar.prototype.getContent = function() {
                 if(this.tb_parent === null) {
                     return this.e_content;
@@ -592,7 +606,10 @@ var JTB = function() {
             JTB.Toolbar.prototype.removeChildToolbar = function(e) {
                 var i = this.indexOfChildToolbar(e);
                 if(i >= 0) {
-                    this.getContainer().removeChild(e);
+                    var container = this.getContainer();
+                    if(container !== null) {
+                        container.removeChild(e);
+                    }
 
                     if(this.vis_tb_child == e) {
                         this.vis_tb_child = null;
@@ -692,6 +709,11 @@ var JTB = function() {
                 /* efficiency: hide the toolbar container while we arrange it */
                 var container = this.getContainer();
                 var content = this.getContent();
+                if(container===null || content===null) {
+                    /* no-op if the toolbar isn't inside or attached to anything */
+                    return;
+                }
+
                 var origDisp = container.style.display;
                 container.style.display = '';
 
@@ -1025,11 +1047,20 @@ var JTB = function() {
 
                 /* adjust based on orientation */
                 var content = this.getContent();
+                var cw, ch;
+                if(content === null) {
+                    cw = ch = 0;
+                }
+                else {
+                    cw = content.offsetWidth;
+                    ch = content.offsetHeight;
+                }
+
                 if(this.orient == JTB.ORIENT_RIGHT) {
-                    x = findPosX(content) + content.offsetWidth - this.sz_tb.width;
+                    x = findPosX(content) + cw - this.sz_tb.width;
                 }
                 else if(this.orient == JTB.ORIENT_BOTTOM) {
-                    y = findPosY(content) + content.offsetHeight - this.sz_tb.height;
+                    y = findPosY(content) + ch - this.sz_tb.height;
                 }
 
                 /* display the toolbar iff the mouse is within the maximum deviation */
