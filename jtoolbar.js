@@ -470,32 +470,35 @@ var JTB = function() {
             JTB.Toolbar.prototype.refreshGfx = function() {
                 var container = this.getContainer();
                 var content = this.getContent();
-                var display   = '';
 
-                if(this.getState() == JTB.STATE_VIS) {
-                    this.e_tb.style.display = 'block';
-                }
-                else {
-                    this.e_tb.style.display = 'none';
-                }
+                /* efficiency: hide the toolbar container while we arrange it */
+                var origDisp = container.style.display;
+                container.style.display = '';
+
+                /* show/hide toolbar based on its state */
+                this.e_tb.style.display = ((this.getState() == JTB.STATE_VIS) ? 'block' : 'none');
 
                 /* setup the pin/unpin icon */
                 this.refreshPinGfx();
+
+                /* show it again */
+                container.style.display = origDisp;
 
                 return this;
             };
 
             /** set pin icon attributes so it displays according to the current Toolbar state */
             JTB.Toolbar.prototype.refreshPinGfx = function() {
+                var es = this.e_icon_pin.style;
                 if(this.isShowPinIcon()) {
                     /* show it */
                     var imgName = this.getImagePath() + (this.isPinned() ? 'pin.gif' : 'unpin.gif');
-                    this.e_icon_pin.style.backgroundImage = 'url(' + imgName + ')';
-                    this.e_icon_pin.style.display = 'block';
+                    es.backgroundImage = 'url(' + imgName + ')';
+                    es.display = 'block';
                 }
                 else {
                     /* hide it */
-                    this.e_icon_pin.style.display = 'none';
+                    es.display = 'none';
                 }
 
                 return this;
