@@ -283,8 +283,11 @@ var JTB = function() {
             this.anim_src_height = 0;
             this.anim_first_half = true;
 
-            /* where to place our div relative to its parent */
-            this.orient           = null;
+            /* orientation of the toolbar */
+            this.orient         = null;
+
+            /* whether the toolbar is docked */
+            this.docked         = true;
 
             /* whether to show the drag graphic */
             this.show_drag      = true;
@@ -541,6 +544,18 @@ var JTB = function() {
             /** set the location of the toolbar on its parent */
             JTB.Toolbar.prototype.setOrientation = function(orient) {
                 this.orient = orient;
+                this.refreshGfx();
+                return this;
+            };
+
+            /** get whether the toolbar is docked */
+            JTB.Toolbar.prototype.isDocked = function() {
+                return this.docked;
+            };
+
+            /** set whether the toolbar is docked */
+            JTB.Toolbar.prototype.setDocked = function(b) {
+                this.docked = b;
                 this.refreshGfx();
                 return this;
             };
