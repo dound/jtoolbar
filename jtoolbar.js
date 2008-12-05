@@ -98,7 +98,6 @@ var JTB = function() {
         ret += parseInt(findValue(e, 'style.marginRight',      false), 10);
         ret += parseInt(findValue(e, 'style.borderLeftWidth',  false), 10);
         ret += parseInt(findValue(e, 'style.borderRightWidth', false), 10);
-        debug('ex => ' + ret);
         return ret;
     }
 
