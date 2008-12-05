@@ -145,6 +145,40 @@ var JTB = function() {
         ANIM_INTERVAL_MSEC : 25,
 
         /**
+         * Helps determine what size an element should be.  It allows width
+         * and/or the height dimensions to be forced to a specific value if
+         * desired.
+         */
+        SizeHelper : function(e) {
+            /** the element this handles size for */
+            this.e = e;
+
+            /** true if width refers to a forced width, else a natural one */
+            this.forced_width = false;
+
+            /** true if height refers to a forced height, else a natural one */
+            this.forced_height = false;
+
+            /** the width of this element when it is visible */
+            this.width = 0;
+
+            /** the height of this element when it is visible */
+            this.height = 0;
+
+            /* set the forced sizes if they exist */
+            if(e.style.width !== '') {
+                this.forced_width = true;
+                this.width = e.style.width;
+            }
+            if(e.style.height !== '') {
+                this.forced_height = true;
+                this.forced_height = e.style.height;
+            }
+
+            this.refreshSizeData();
+        },
+
+        /**
          * Toolbar link constructor
          */
         ToolbarLink : function() {
@@ -235,10 +269,121 @@ var JTB = function() {
         },
 
         init : function() {
+            /** refresh the internal data about how much space this elt uses */
+            JTB.SizeHelper.prototype.refreshSizeData = function() {
+                if(this.forced_width && this.forced_height) {
+                    /* nothing to do: just go with the forced values */
+                    return;
+                }
+
+                /* unset any dimensions which are not forced */
+                var w = this.e.style.width;
+                var h = this.e.style.height;
+                if(!this.forced_width) {
+                    this.e.style.width = '';
+                }
+                if(!this.forced_height) {
+                    this.e.style.height = '';
+                }
+
+                /* make sure the element is visible and unrestricted so we can
+                   get its preferred size */
+                var dis = this.e.style.display;
+                var pos = this.e.style.position;
+                if(dis == 'none') { this.e.style.display = 'block'; }
+                this.e.style.position = 'absolute';
+
+                /* get the preferred sizes */
+                if(!this.forced_width) {
+                    this.width = this.e.offsetWidth;
+                }
+                if(!this.forced_height) {
+                    this.height = this.e.offsetHeight;
+                }
+
+                /* restore the original style */
+                if(dis == 'none') { this.e.style.display = dis; }
+                this.e.style.position = pos;
+                this.e.style.width = w;
+                this.e.style.height = h;
+            };
+
+            /** require the element to have the specified width */
+            JTB.SizeHelper.prototype.forceWidth = function(w) {
+                if(!this.forced_width || this.width!=w) {
+                    this.forced_width = true;
+                    this.width = w;
+                    this.refreshSizeData();
+                }
+            };
+
+            /** require the element to have the specified height */
+            JTB.SizeHelper.prototype.forceHeight = function(h) {
+                if(!this.forced_height || this.height!=h) {
+                    this.forced_height = true;
+                    this.height = h;
+                    this.refreshSizeData();
+                }
+            };
+
+            /** make the current width the required width */
+            JTB.SizeHelper.prototype.forceCurrentWidth = function() {
+                this.forced_width = true;
+            };
+
+            /** make the current height the required height */
+            JTB.SizeHelper.prototype.forceCurrentHeight = function() {
+                this.forced_height = true;
+            };
+
+            /** make the current width and height the required size */
+            JTB.SizeHelper.prototype.forceCurrent = function() {
+                this.forceCurrentWidth();
+                this.forceCurrentHeight();
+            };
+
+            /** make the element use whatever its natural width is */
+            JTB.SizeHelper.prototype.useNaturalWidth = function() {
+                if(this.forced_width) {
+                    this.forced_width = false;
+                    this.refreshSizeData();
+                }
+            };
+
+            /** make the element use whatever its natural height is */
+            JTB.SizeHelper.prototype.useNaturalHeight = function() {
+                if(this.forced_height) {
+                    this.forced_height = false;
+                    this.refreshSizeData();
+                }
+            };
+
+            /** gets the width the element uses when it is visible */
+            JTB.SizeHelper.prototype.getVisWidth = function() {
+                return this.width;
+            };
+
+            /** gets the height the element uses when it is visible */
+            JTB.SizeHelper.prototype.getVisHeight = function() {
+                return this.height;
+            };
+
+            /** gets the current width of the element */
+            JTB.SizeHelper.prototype.getCurWidth = function() {
+                return this.e.offsetWidth;
+            };
+
+            /** gets the current height of the element */
+            JTB.SizeHelper.prototype.getCurHeight = function() {
+                return this.e.offsetHeight;
+            };
+
+
             /** return the HTML representation of this link object */
             JTB.ToolbarLink.prototype.makeLink = function() {
                 return '<a href="' + this.link + '">' + this.name + '</a>';
             };
+
 
             /** get the name of the element the toolbar is attached to */
             JTB.Toolbar.prototype.getContentName = function() {
