@@ -619,12 +619,12 @@ var JTB = function() {
                     tx = 0;
                     ty = 0;
                     if(this.isShiftContent()) {
-                        cx = this.sz_tb.width;
+                        cx = tw;
                     }
                     break;
 
                 case JTB.DOCK_RIGHT:
-                    tx = this.sz_container.width - this.sz_tb.width;
+                    tx = this.sz_container.width - tw;
                     ty = 0;
                     break;
 
@@ -632,19 +632,26 @@ var JTB = function() {
                     tx = 0;
                     ty = 0;
                     if(this.isShiftContent()) {
-                        cy = this.sz_tb.height;
+                        cy = th;
                     }
                     break;
 
                 case JTB.DOCK_BOTTOM:
                     tx = 0;
-                    ty = this.sz_container.height - this.sz_tb.height;
+                    ty = this.sz_container.height - th;
                     break;
                 }
 
                 /* compute the content's size */
-                var cw = ((cx < tx) ? (tx - cx) : (this.sz_container.width  - cx));
-                var ch = ((cy < ty) ? (ty - cy) : (this.sz_container.height - cy));
+                var cw, ch;
+                if(vis && this.isShiftContent()) {
+                    cw = ((cx < tx) ? (tx - cx) : (this.sz_container.width  - cx));
+                    ch = ((cy < ty) ? (ty - cy) : (this.sz_container.height - cy));
+                }
+                else {
+                    cw = this.sz_container.width;
+                    ch = this.sz_container.height;
+                }
 
                 /* set the toolbar's and content's sizes and positions */
                 var px = container.offsetLeft;
