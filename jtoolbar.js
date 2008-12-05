@@ -893,6 +893,13 @@ var JTB = function() {
                 handleToolbarAnimation(this);
             };
 
+            /** refreshes the toolbar elements to reflect a change in available space */
+            JTB.Toolbar.prototype.handleResizing = function() {
+                this.sz_container.refreshSizeData();
+                this.sz_tb.refreshSizeData();
+                this.refreshGfx();
+            };
+
             /** set whether debug mode is on */
             JTB.Toolbar.prototype.setDebugMode = function(b) {
                 debugMode = b;
@@ -935,9 +942,7 @@ var JTB = function() {
             JTB.handleWindowResizeEvent = function() {
                 var i;
                 for(i=0; i<toolbars.length; i++) {
-                    toolbars[i].sz_container.refreshSizeData();
-                    toolbars[i].sz_tb.refreshSizeData();
-                    toolbars[i].refreshGfx();
+                    toolbars[i].handleResizing();
                 }
             };
 
