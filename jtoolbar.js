@@ -268,6 +268,10 @@ var JTB = function() {
             this.e_icon_pin       = null;
             this.e_links          = null;
 
+            /* toolbar hierarchy support */
+            this.e_tb_parent      = null;
+            this.e_tb_child       = null;
+
             /* sizing information helpers */
             this.sz_container     = null;
             this.sz_tb            = null;
@@ -533,6 +537,11 @@ var JTB = function() {
                 this.e_tb = tb;
 
                 return this;
+            };
+
+            /** shows a child toolbar */
+            JTB.Toolbar.prototype.showChildToolbar(parentName, childName, x, y) {
+                /* TODO */
             };
 
             /** get the location of the toolbar on its parent */
