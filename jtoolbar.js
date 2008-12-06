@@ -1855,9 +1855,9 @@ var JTB = function() {
             };
 
             /* install a global event handlers */
-            appendCode(document.body, 'onresize', 'JTB.handleWindowResizeEvent();');
-            appendCode(document.body, 'onmouseup', 'JTB.handleMouseUp(event);');
-            appendCode(document.body, 'onmousemove', "JTB.handleMouseMove(event);");
+            window.addEventListener('resize',    JTB.handleWindowResizeEvent, false);
+            window.addEventListener('mouseup',   JTB.handleMouseUp,           false);
+            window.addEventListener('mousemove', JTB.handleMouseMove,         false);
 
             /* create a div for the shared anchor icon */
             ICON_ANCHOR = document.createElement("div");
