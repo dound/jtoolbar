@@ -6,6 +6,7 @@
 var JTB = function() {
     /*  private members */
     var toolbars = [];
+    var mouseDragX, mouseDragY;
     var mouseX, mouseY;
     var SPRINGINESS_FACTOR = 1.3;
     var SPLIT_CLOSE = 1.0 - (1.0 / SPRINGINESS_FACTOR);
@@ -311,6 +312,10 @@ var JTB = function() {
             /* absolute position offset from parent if not docked */
             this.floatx         = 0;
             this.floaty         = 0;
+
+            /* position at the beginning of a drag */
+            this.dragStartX     = 0;
+            this.dragStartY     = 0;
 
             /* whether to show the drag graphic */
             this.show_drag      = true;
@@ -1343,7 +1348,7 @@ var JTB = function() {
                 /* create a div for the drag icon */
                 this.e_icon_drag = document.createElement("div");
                 this.e_icon_drag.setAttribute('id', this.tb_id + "_icon_drag");
-                this.e_icon_drag.setAttribute('onmousedown', "JTB.handleDragStartEvent('" + this.tb_id + "');");
+                this.e_icon_drag.setAttribute('onmousedown', "JTB.handleDragStartEvent('" + this.tb_id + "', event);");
                 setupIconDiv(this.e_icon_drag);
                 this.e_icons.appendChild(this.e_icon_drag);
 
@@ -1429,19 +1434,28 @@ var JTB = function() {
                 var i;
                 for(i=0; i<toolbars.length; i++) {
                     var tb = toolbars[i];
-                    if(!tb.isPinned() && !tb.isAnimating()) {
+                    if(tb.isDragging()) {
+                        tb.setFloatPos(mouseX - mouseDragX + tb.dragStartX,
+                                       mouseY - mouseDragY + tb.dragStartY);
+                        debug(tb.tb_id + ' --> ' + tb.floatx + ' ' + tb.floaty + ' ...' + mouseX+','+mouseY+' / ' + mouseDragX+','+mouseDragY + ' / ' + tb.dragStartX + ','+tb.dragStartY);
+                    }
+                    else if(!tb.isPinned() && !tb.isAnimating()) {
                         tb.setStateBasedOnMouse();
                     }
                 }
             };
 
             /** handle a click on the drag icon */
-            JTB.handleDragStartEvent = function(tb_id) {
+            JTB.handleDragStartEvent = function(tb_id, event) {
                 var tb = JTB.getToolbar(tb_id);
                 if(tb === null) {
                     return;
                 }
 
+                mouseDragX = event.clientX;
+                mouseDragY = event.clientY;
+                tb.dragStartX = tb.e_tb.offsetLeft;
+                tb.dragStartY = tb.e_tb.offsetTop;
                 tb.dragging = true;
                 tb.refreshGfx();
             };
