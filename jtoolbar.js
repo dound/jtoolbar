@@ -238,6 +238,7 @@ var JTB = function() {
         STATE_VIS      : "vis",
         STATE_INVIS    : "invis",
         ANIM_INTERVAL_MSEC : 25,
+        DOCK_CLOSEST_INCUMBENT_ADVANTAGE : 1.1,
 
         /**
          * Helps determine what size an element should be.  It allows width
@@ -1577,7 +1578,7 @@ var JTB = function() {
                             if(container !== null) {
                                 d = tb.getClosestDock(mouseX-findPosX(container),
                                                       mouseY-findPosY(container),
-                                                      100, 1.25);
+                                                      100, JTB.DOCK_CLOSEST_INCUMBENT_ADVANTAGE);
                                 if(d !== null) {
                                     tb.setOrientation(d);
                                 }
@@ -1628,7 +1629,8 @@ var JTB = function() {
                 }
                 else {
                     /* if we dock, snap to the dock closest to our floating position */
-                    var d = tb.getClosestDockToMouse(tb.floatx, tb.floaty, 100, 1.25);
+                    var d = tb.getClosestDockToMouse(tb.floatx, tb.floaty,
+                                                     100, JTB.DOCK_CLOSEST_INCUMBENT_ADVANTAGE);
                     if(d !== null) {
                         tb.setOrientation(d);
                     }
