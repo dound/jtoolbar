@@ -1022,8 +1022,8 @@ var JTB = function() {
 
             /** sets the visibility of the toolbar based on the mouse location */
             JTB.Toolbar.prototype.setStateBasedOnMouse = function() {
-                /* always show if pinned */
-                if(this.pinned) {
+                /* always show if pinned or if a child is active */
+                if(this.pinned || this.vis_tb_child!==null) {
                     this.setVisible(true);
                     return;
                 }
