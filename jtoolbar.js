@@ -604,16 +604,17 @@ var JTB = function() {
                	var orient = this.encToolbar.getOrientation();
                	var displayStyle = (orient == JTB.ORIENT_LEFT || orient == JTB.ORIENT_RIGHT) ? "block" : "table-cell";
                	if (typeof(this.link) == "string") {
-               		// normal link           		
+               		// normal link           		       		
                		return '<div style="display: ' + displayStyle + '"> <a href="' + this.link + '">' + this.name + '</a> </div>';  			
                	}
                 else {
                 	// link is actually a nested toolbar            	
-                	var tbName = this.link.getToolbarName();   	
-               		return '<div onmouseover="JTB.showChildToolbar(\'' + tbName +
-                                     '\', JTB.findXOffset(\'' + tbName + '\', event)' +
-                                     ', JTB.findYOffset(\'' + tbName + '\', event))" style="display: ' +
-                                     displayStyle + '">' + this.name + '</div>';
+                	var tbName = this.link.getToolbarName();
+                	//return '<div onmouseover=\"document.write(\'Come on\');\")>' + this.name + '</div>';
+                	
+                	return '<div onmouseover=\"JTB.showChildToolbar(\'' + tbName + '\', 100, 100)\">' + this.name + '</div>';
+                	   	
+               		//return '<div onmouseover=\"JTB.showChildToolbar(' + tbName + ', JTB.findXOffset(' + tbName + ', event)' + ', JTB.findYOffset(' + tbName + ', event))" style="display: ' + displayStyle + '">' + this.name + '</div>';
             	}
             };
 
