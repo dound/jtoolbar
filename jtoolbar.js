@@ -287,9 +287,10 @@ var JTB = function() {
         /**
          * Toolbar link constructor
          */
-        ToolbarLink : function() {
-            this.name = arguments[0];
-            this.link = arguments[1];
+        ToolbarLink : function(name, link, encToolbar) {
+            this.name = name;
+            this.link = link;
+            this.encToolbar = encToolbar;
         },
 
         /**
@@ -399,8 +400,12 @@ var JTB = function() {
                 var i, name, link;
                 for(i=1; i<arguments.length/2; i+=1) {
                     name = arguments[2*i];
-                    link = arguments[2*i+1];
-                    this.links[i-1] = new JTB.ToolbarLink(name, link);
+                    link = arguments[2*i+1];              
+                    if (typeof(link) != "string") {                   	
+                    	// link is actually a nested toolar
+                    	link.setParentToolbar(this);	
+                    }
+                    this.links[i-1] = new JTB.ToolbarLink(name, link, this);
                 }
             }
 
@@ -550,11 +555,30 @@ var JTB = function() {
 
 
             /** return the HTML representation of this link object */
-            JTB.ToolbarLink.prototype.makeLink = function() {
-                return '<a href="' + this.link + '">' + this.name + '</a>';
+            JTB.ToolbarLink.prototype.makeLink = function() {            	
+               	var orient = this.encToolbar.getOrientation();
+               	var displayStyle = (orient == JTB.ORIENT_LEFT || orient == JTB.ORIENT_RIGHT) ? "block" : "table-cell";
+               	if (typeof(this.link) == "string") {
+               		// normal link           		
+               		return '<div style="display: ' + displayStyle + '"> <a href="' + this.link + '">' + this.name + '</a> </div>';  			
+               	}
+                else {
+                	// link is actually a nested toolbar            	
+                	var tbName = this.link.getToolbarName();   	
+               		return '<div onmouseover="JTB.showChildToolbar(' + tbName + ', JTB.findXOffset(' + tbName + ', event)' + ', JTB.findYOffset(' + tbName + ', event))" style="display: ' + displayStyle + '">' + this.name + '</div>';
+            	}
             };
 
-
+			JTB.Toolbar.prototype.getParentToolbar = function () {
+				return tb_parent;	
+			};
+			
+			JTB.Toolbar.prototype.setParentToolbar = function (tb) {
+				this.tb_parent = tb;
+				return this;	
+			};
+			
+			
             /** get the name of the element the toolbar is attached to (may be null) */
             JTB.Toolbar.prototype.getContentName = function() {
                 if(this.tb_parent === null) {
@@ -1432,7 +1456,7 @@ var JTB = function() {
                 if(hasContent) {
                     this.initContainerAndContent();
                 }
-
+				
                 /* create a div to put the links in within the toolbar */
                 this.e_links = document.createElement("div");
                 this.e_links.setAttribute('id', this.tb_id + "_links");
@@ -1469,9 +1493,10 @@ var JTB = function() {
                 this.e_tb.style.position = 'absolute';
 
                 /* toolbar just in front of the content */
-                var z = findZIndex(this.e_content);
-                this.e_tb.style.zIndex = z + 1;
+                
                 if(hasContent) {
+                	var z = findZIndex(this.e_content);
+                	this.e_tb.style.zIndex = z + 1;
                     this.e_content.style.zIndex = z;
                 }
 
@@ -1488,6 +1513,8 @@ var JTB = function() {
 
                 /* build the toolbar links (triggers a ui redraw too) */
                 this.refreshLinks();
+                
+                
             };
 
             /** unhook the toolbar from the UI (assumes it is currently hooked in) */
@@ -1696,13 +1723,43 @@ var JTB = function() {
             };
 
             /** shows a child toolbar */
-            JTB.Toolbar.showChildToolbar = function(childToolbarName, x, y) {
-                var c = JTB.getToolbar(childToolbarName);
+            JTB.showChildToolbar = function(childToolbarName, x, y) {
+                var c = getToolbar(childToolbarName);
                 if(c===null) {
                     return;
                 }
 
                 c.tb_parent.showChildToolbar(c, x, y);
+            };
+            
+            /** calculates the x-offset of a child toolbar from its parent toolbar */
+            JTB.findXOffset = function(childToolbarName, event) {
+            	var childToolbar = getToolbar(childToolbarName);
+            	var linkDiv = event.target;
+            	var parentToolbar = childToolbar.getParentToolbar();
+            	var orient = parentToolbar.getOrientation();
+            	if (orient == JTB.ORIENT_LEFT) {
+            		return (linkDiv.offsetLeft + parentToolbar.e_tb.width);
+            	} else if (orient == JTB.ORIENT_RIGHT) {
+            		return (linkDiv.offsetLeft - childToolbar.e_tb.width);	
+            	} else {
+            		return linkDiv.offsetLeft;
+            	}
+            };
+            
+            /** calculates the y-offset of a child toolbar from its parent toolbar */
+            JTB.findYOffset = function(childToolbarName, event) {
+            	var childToolbar = getToolbar(childToolbarName);
+            	var linkDiv = event.target;
+            	var parentToolbar = childToolbar.getParentToolbar();
+            	var orient = parentToolbar.getOrientation();
+            	if (orient == JTB.ORIENT_TOP) {
+            		return (linkDiv.offsetTop + parentToolbar.e_tb.height);
+            	} else if (orient == JTB.ORIENT_BOTTOM) {
+            		return (linkDiv.offsetTop - childToolbar.e_tb.height);	
+            	} else {
+            		return linkDiv.offsetTop;
+            	}
             };
 
             /* install a global event handlers */
