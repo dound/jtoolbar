@@ -1699,6 +1699,28 @@ var JTB = function() {
                 return JTB.ORIENT_BOTTOM;
             };
 
+            /** returns whether the mouse is over the toolbar */
+            JTB.Toolbar.prototype.isMouseOver = function() {
+                var d = this.getClosestDock(mouseX-findPosX(container),
+                                            mouseY-findPosY(container),
+                                            0,
+                                            1);
+                return (d == this.getOrientation());
+            };
+
+            /**
+             * Returns whether the mouse is over the toolbar or any of its
+             * active parents.  A parent is active for a given child if that
+             * parent is currently displaying the child.
+             */
+            JTB.Toolbar.prototype.isMouseOverMeOrParents = function() {
+                var b = this.isMouseOver();
+                if(!b && this.tb_parent!==null && this.tb_parent.vis_tb_child===this) {
+                    return this.tb_parent.isMouseOverMeOrParents();
+                }
+                return b;
+            };
+
             /** gets a toolbar object based on its name */
             JTB.getToolbar = function(name) {
                 var i;
