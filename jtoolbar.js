@@ -41,18 +41,6 @@ var JTB = function() {
         }
     }
 
-    function appendCode(e, attrName, newCode) {
-        var code = e.getAttribute(attrName);
-        if(code === null) {
-            code = '';
-        }
-        else {
-            code += '; ';
-        }
-        code += newCode;
-        e.setAttribute(attrName, code);
-    }
-
     function createCookie(name,value,days) {
         var expires;
         if(days) {
