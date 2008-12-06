@@ -2,6 +2,7 @@
  * JavaScript Toolbar Widget
  * David Underhill and James Chen
  */
+/* createCookie(), readCookie() are by Peter-Paul Koch of quirksmode.org */
 
 var JTB = function() {
     /*  private constants */
@@ -52,7 +53,6 @@ var JTB = function() {
         e.setAttribute(attrName, code);
     }
 
-    /* cookie functions by Peter-Paul Koch of quirksmode.org */
     function createCookie(name,value,days) {
         var expires;
         if(days) {
