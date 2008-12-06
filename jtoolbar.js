@@ -666,6 +666,17 @@ var JTB = function() {
                 }
             };
 
+            /** get the container size information (may be null on unattached
+             * child toolbars) */
+            JTB.Toolbar.prototype.getContainerSize = function() {
+                if(this.tb_parent === null) {
+                    return this.sz_container;
+                }
+                else {
+                    return this.tb_parent.getContainerSize();
+                }
+            };
+
             /** get the content element to which the toolbar is attached (may be null) */
             JTB.Toolbar.prototype.getContent = function() {
                 if(this.tb_parent === null) {
@@ -822,6 +833,16 @@ var JTB = function() {
             JTB.Toolbar.prototype.refreshGfx = function() {
                 /* efficiency: hide the toolbar container while we arrange it */
                 var container = this.getContainer();
+                var sz_container = this.getContainerSize();
+                var sz_container_w=0, sz_container_h=0;
+                if(sz_container !== null) {
+                    sz_container_w = sz_container.width;
+                    sz_container_h = sz_container.height;
+                }
+                else {
+                    sz_container_w = 0;
+                    sz_container_h = 0;
+                }
                 var content = this.getContent();
                 if(container===null || content===null) {
                     /* no-op if the toolbar isn't inside or attached to anything */
@@ -838,9 +859,9 @@ var JTB = function() {
                 var sideOriented = this.isSideOriented();
                 if(sideOriented) {
                     this.sz_tb.resetToDefaultWidth();
-                    this.sz_tb.forceHeight(this.sz_container.height + extraH);
+                    this.sz_tb.forceHeight(sz_container_h + extraH);
                 } else {
-                    this.sz_tb.forceWidth(this.sz_container.width + getExtraWidth(content));
+                    this.sz_tb.forceWidth(sz_container_w + getExtraWidth(content));
                     this.sz_tb.resetToDefaultHeight();
                 }
 
@@ -923,7 +944,7 @@ var JTB = function() {
                         break;
 
                     case JTB.ORIENT_RIGHT:
-                        tx = this.sz_container.width - tw + extraW;
+                        tx = sz_container_w - tw + extraW;
                         ty = 0;
                         break;
 
@@ -937,7 +958,7 @@ var JTB = function() {
 
                     case JTB.ORIENT_BOTTOM:
                         tx = 0;
-                        ty = this.sz_container.height - th + extraH;
+                        ty = sz_container_h - th + extraH;
                         break;
                     }
                 }
@@ -949,12 +970,12 @@ var JTB = function() {
                 /* compute the content's size */
                 var cw, ch;
                 if(vis && this.isShiftContent()) {
-                    cw = ((cx < tx) ? (tx - cx) : (this.sz_container.width  - cx));
-                    ch = ((cy < ty) ? (ty - cy) : (this.sz_container.height - cy));
+                    cw = ((cx < tx) ? (tx - cx) : (sz_container_w  - cx));
+                    ch = ((cy < ty) ? (ty - cy) : (sz_container_h - cy));
                 }
                 else {
-                    cw = this.sz_container.width;
-                    ch = this.sz_container.height;
+                    cw = sz_container_w;
+                    ch = sz_container_h;
                 }
 
                 /* set the toolbar's and content's sizes and positions */
@@ -1226,14 +1247,26 @@ var JTB = function() {
 
                 this.state = newState;
 
+                /* get sizing info */
+                var sz_container = this.getContainerSize();
+                var sz_container_w=0, sz_container_h=0;
+                if(sz_container !== null) {
+                    sz_container_w = sz_container.width;
+                    sz_container_h = sz_container.height;
+                }
+                else {
+                    sz_container_w = 0;
+                    sz_container_h = 0;
+                }
+
                 /* perform the transition animation */
                 this.anim_start = new Date().getTime();
                 if(this.isSideOriented()) {
                     this.anim_src_width = this.sz_tb.getCurWidth();
-                    this.anim_src_height = this.sz_container.height + getExtraHeight(this.getContent());
+                    this.anim_src_height = sz_container_h + getExtraHeight(this.getContent());
                 }
                 else {
-                    this.anim_src_width = this.sz_container.width + getExtraWidth(this.getContent());
+                    this.anim_src_width = sz_container_w + getExtraWidth(this.getContent());
                     this.anim_src_height = this.sz_tb.getCurHeight();
                 }
                 this.anim_first_half = true;
