@@ -952,14 +952,14 @@ var JTB = function() {
                 return this.dragging;
             };
 
-            /** get whether the toolbar is pinned */
+            /** get whether the toolbar is pinned (child toolbars are always unpinned) */
             JTB.Toolbar.prototype.isPinned = function() {
-                return this.pinned;
+                return !this.isChildToolbar() && this.pinned;
             };
 
-            /** set whether the toolbar is pinned */
+            /** set whether the toolbar is pinned (always false if this is a child toolbar) */
             JTB.Toolbar.prototype.setPinned = function(b) {
-                this.pinned = b;
+                this.pinned = (this.isChildToolbar() ? false : b);
                 return this;
             };
 
@@ -970,7 +970,7 @@ var JTB = function() {
              * content.
              */
             JTB.Toolbar.prototype.isShiftContent = function() {
-                return this.docked && (this.pinned || this.alwaysShiftContent);
+                return this.docked && (this.isPinned() || this.alwaysShiftContent);
             };
 
             /** set whether the toolbar takes up space even when it isn't pinned. */
@@ -1034,7 +1034,7 @@ var JTB = function() {
             /** sets the visibility of the toolbar based on the mouse location */
             JTB.Toolbar.prototype.setStateBasedOnMouse = function() {
                 /* always show if pinned or if a child is active */
-                if(this.pinned || this.vis_tb_child!==null) {
+                if(this.isPinned() || this.vis_tb_child!==null) {
                     this.setVisible(true);
                     return;
                 }
@@ -1344,7 +1344,7 @@ var JTB = function() {
                 var i;
                 for(i=0; i<toolbars.length; i++) {
                     var tb = toolbars[i];
-                    if(!tb.pinned && !tb.isAnimating()) {
+                    if(!tb.isPinned() && !tb.isAnimating()) {
                         tb.setStateBasedOnMouse();
                     }
                 }
@@ -1368,7 +1368,7 @@ var JTB = function() {
                     return;
                 }
 
-                tb.pinned = !tb.pinned;
+                tb.setPinned(!tb.isPinned());
                 tb.refreshGfx();
                 tb.setStateBasedOnMouse();
             };
