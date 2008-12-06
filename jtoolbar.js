@@ -152,18 +152,6 @@ var JTB = function() {
         }
     }
 
-    /** gets a toolbar object based on its name */
-    function getToolbar(name) {
-        var i;
-        for(i=0; i<toolbars.length; i++) {
-            if(toolbars[i].tb_id == name) {
-                return toolbars[i];
-            }
-        }
-
-        return null;
-    }
-
     /** get a child element */
     function getChild(elt, child_name) {
         var children = elt.childNodes;
@@ -1320,6 +1308,18 @@ var JTB = function() {
                 return this;
             };
 
+            /** gets a toolbar object based on its name */
+            JTB.getToolbar = function(name) {
+                var i;
+                for(i=0; i<toolbars.length; i++) {
+                    if(toolbars[i].tb_id == name) {
+                        return toolbars[i];
+                    }
+                }
+
+                return null;
+            };
+
             /** called when the mouse moves */
             JTB.handleMouseMove = function(event) {
                 mouseX = event.clientX;
@@ -1336,7 +1336,7 @@ var JTB = function() {
 
             /** handle a click on the drag icon */
             JTB.handleDragStartEvent = function(tb_id) {
-                var tb = getToolbar(tb_id);
+                var tb = JTB.getToolbar(tb_id);
                 if(tb === null) {
                     return;
                 }
@@ -1347,7 +1347,7 @@ var JTB = function() {
 
             /** handle a click on a pin icon */
             JTB.handlePinClickEvent = function(tb_id) {
-                var tb = getToolbar(tb_id);
+                var tb = JTB.getToolbar(tb_id);
                 if(tb === null) {
                     return;
                 }
@@ -1359,7 +1359,7 @@ var JTB = function() {
 
             /** handle callback for an animation event */
             JTB.handleAnimationCallback = function(tb_id) {
-                var tb = getToolbar(tb_id);
+                var tb = JTB.getToolbar(tb_id);
                 if(tb === null) {
                     return;
                 }
@@ -1385,7 +1385,7 @@ var JTB = function() {
 
             /** shows a child toolbar */
             JTB.Toolbar.showChildToolbar = function(childToolbarName, x, y) {
-                var c = getToolbar(childToolbarName);
+                var c = JTB.getToolbar(childToolbarName);
                 if(c===null) {
                     return;
                 }
