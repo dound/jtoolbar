@@ -1487,6 +1487,13 @@ var JTB = function() {
                 return null;
             };
 
+            /** Returns the closest dock within thresh pixels, or null if none. */
+            JTB.Toolbar.prototype.getClosestDockToMouse = function(thresh) {
+
+
+                return null;
+            };
+
             /** called when the mouse moves */
             JTB.handleMouseMove = function(event) {
                 mouseX = event.clientX;
@@ -1500,7 +1507,12 @@ var JTB = function() {
                                        mouseY - mouseDragY + tb.dragStartY);
 
                         if(tb.isDocked()) {
-                            var imgName = tb.getImagePath() + 'anchor.gif';
+                            var d = tb.getClosestDockToMouse(100);
+                            if(d !== null) {
+                                tb.setOrientation(d);
+                            }
+
+                            var imgName = tb.getImagePath() + ((d===null) ? 'anchor.gif' : 'anchor_highlighted.gif');
                             ICON_ANCHOR.style.backgroundImage = 'url(' + imgName + ')';
                             ICON_ANCHOR.style.left = mouseX - ICON_ANCHOR_WIDTH / 2;
                             ICON_ANCHOR.style.top = mouseY - ICON_ANCHOR_HEIGHT / 2;
