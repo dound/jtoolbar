@@ -929,7 +929,15 @@ var JTB = function() {
                     dx = 0;
                     dy = iconTotalSize;
                     x -= iconTotalSize;
-                    y -= iconTotalSize;
+
+
+                    if(this.getOrientation() == JTB.ORIENT_BOTTOM) {
+                        dy = -dy;
+                        y = ICON_COUNT * iconTotalSize;
+                    }
+                    else {
+                        y = this.e_tb.offsetHeight - (ICON_COUNT+1) * iconTotalSize;
+                    }
                 }
                 if(this.getOrientation() != JTB.ORIENT_RIGHT) {
                     x += this.e_tb.offsetWidth + getExtraWidth(this.e_tb) / 2;
