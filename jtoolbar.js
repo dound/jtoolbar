@@ -1556,10 +1556,17 @@ var JTB = function() {
                     return;
                 }
 
-                /* if we undock, start floating in our current position */
                 if(tb.isDocked()) {
+                    /* if we undock, start floating in our current position */
                     tb.floatx = tb.e_tb.offsetLeft - tb.e_tb.parentNode.offsetLeft;
                     tb.floaty = tb.e_tb.offsetTop - tb.e_tb.parentNode.offsetTop;
+                }
+                else {
+                    /* if we dock, snap to the dock closest to our floating position */
+                    var d = tb.getClosestDockToMouse(tb.floatx, tb.floaty, 100);
+                    if(d !== null) {
+                        tb.setOrientation(d);
+                    }
                 }
 
                 tb.setDocked(!tb.isDocked());
