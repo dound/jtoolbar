@@ -714,7 +714,7 @@ var JTB = function() {
             JTB.Toolbar.prototype.setFloatPos = function(x, y) {
                 this.floatx = x;
                 this.floaty = y;
-                if(!this.isDocked()) {
+                if(this.isFloating()) {
                     this.refreshGfx();
                 }
                 return this;
@@ -728,7 +728,7 @@ var JTB = function() {
             /** set whether the toolbar is clamped to the container's size when floating */
             JTB.Toolbar.prototype.setClampFloatingToolbarSize = function(b) {
                 this.clamp_size_on_float = b;
-                if(!this.isDocked()) {
+                if(this.isFloating()) {
                     this.refreshGfx();
                 }
                 return this;
@@ -887,7 +887,7 @@ var JTB = function() {
                 content.style.width  = cw + 'px';
                 content.style.height = ch + 'px';
 
-                if(!this.isDocked() && this.isClampFloatingToolbarSize()) {
+                if(this.isFloating() && this.isClampFloatingToolbarSize()) {
                     var cwf = cw + getExtraWidth(content);
                     var chf = ch + getExtraHeight(content);
 
@@ -1178,7 +1178,7 @@ var JTB = function() {
                 /* determine the max deviation from the top-left corner of the toolbar */
                 var vis = (this.getState() == JTB.STATE_VIS);
                 var maxdx, maxdy;
-                if(vis || !this.isDocked()) {
+                if(vis || this.isFloating()) {
                     maxdx = this.sz_tb.width;
                     maxdy = this.sz_tb.height;
                 }
