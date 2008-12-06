@@ -707,6 +707,12 @@ var JTB = function() {
                 childToolbar.floatx = x;
                 childToolbar.floaty = y;
 
+                /* make sure the child is in the container */
+                var container = this.getContainer();
+                if(container !== null) {
+                    container.appendChild(childToolbar.e_tb);
+                }
+
                 /* show the child */
                 this.vis_tb_child = childToolbar;
                 this.refreshGfx();
