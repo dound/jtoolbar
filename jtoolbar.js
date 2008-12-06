@@ -901,7 +901,7 @@ var JTB = function() {
                 var esp = this.e_icon_pin.style;
 
                 /* handle the case where no icons should be shown now */
-                if(this.vis_tb_child===null || this.isChildToolbar()) {
+                if(this.vis_tb_child!==null || this.isChildToolbar()) {
                     esd.display = 'none';
                     esf.display = 'none';
                     esp.display = 'none';
