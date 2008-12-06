@@ -995,10 +995,13 @@ var JTB = function() {
                 var px = container.offsetLeft;
                 var py = container.offsetTop;
 
-                content.style.left   = (px + cx) + 'px';
-                content.style.top    = (py + cy) + 'px';
-                content.style.width  = cw + 'px';
-                content.style.height = ch + 'px';
+                /* the root toolbar handles the content style */
+                if(!this.isChildToolbar()) {
+                    content.style.left   = (px + cx) + 'px';
+                    content.style.top    = (py + cy) + 'px';
+                    content.style.width  = cw + 'px';
+                    content.style.height = ch + 'px';
+                }
 
                 if(this.isFloating() && this.isClampFloatingToolbarSize()) {
                     var cwf = cw + getExtraWidth(content);
