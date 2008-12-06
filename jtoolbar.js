@@ -68,10 +68,10 @@ var JTB = function() {
 
     function createBooleanCookie(name,value,days) {
         if(value === true) {
-            createCooke(name, 'T', days);
+            createCookie(name, 'T', days);
         }
         else {
-            createCooke(name, 'F', days);
+            createCookie(name, 'F', days);
         }
     }
 
@@ -618,7 +618,7 @@ var JTB = function() {
 
 
             JTB.Toolbar.prototype.getParentToolbar = function () {
-                return tb_parent;	
+                return this.tb_parent;	
             };
 			
             JTB.Toolbar.prototype.setParentToolbar = function (tb) {
@@ -1793,7 +1793,7 @@ var JTB = function() {
 
             /** shows a child toolbar */
             JTB.showChildToolbar = function(childToolbarName, x, y) {
-                var c = getToolbar(childToolbarName);
+                var c = JTB.getToolbar(childToolbarName);
                 if(c===null) {
                     return;
                 }
@@ -1803,7 +1803,7 @@ var JTB = function() {
 
             /** calculates the x-offset of a child toolbar from its parent toolbar */
             JTB.findXOffset = function(childToolbarName, event) {
-            	var childToolbar = getToolbar(childToolbarName);
+            	var childToolbar = JTB.getToolbar(childToolbarName);
             	var linkDiv = event.target;
             	var parentToolbar = childToolbar.getParentToolbar();
             	var orient = parentToolbar.getOrientation();
@@ -1818,7 +1818,7 @@ var JTB = function() {
 
             /** calculates the y-offset of a child toolbar from its parent toolbar */
             JTB.findYOffset = function(childToolbarName, event) {
-            	var childToolbar = getToolbar(childToolbarName);
+            	var childToolbar = JTB.getToolbar(childToolbarName);
             	var linkDiv = event.target;
             	var parentToolbar = childToolbar.getParentToolbar();
             	var orient = parentToolbar.getOrientation();
