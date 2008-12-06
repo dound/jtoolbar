@@ -1136,9 +1136,9 @@ var JTB = function() {
                 /* determine the max deviation from the top-left corner of the toolbar */
                 var vis = (this.getState() == JTB.STATE_VIS);
                 var maxdx, maxdy;
-                if(vis) {
-                    maxdx = this.e_tb.offsetWidth;
-                    maxdy = this.e_tb.offsetHeight;
+                if(vis || !this.isDocked()) {
+                    maxdx = this.sz_tb.width;
+                    maxdy = this.sz_tb.height;
                 }
                 else {
                     if(this.isSideOriented()) {
@@ -1152,25 +1152,32 @@ var JTB = function() {
                 }
 
                 /* get the position of the toolbar */
-                var x = findPosX(this.e_tb);
-                var y = findPosY(this.e_tb);
+                var x, y;
+                if(this.isDocked()) {
+                    x = findPosX(this.e_tb);
+                    y = findPosY(this.e_tb);
 
-                /* adjust based on orientation */
-                var content = this.getContent();
-                var cw, ch;
-                if(content === null) {
-                    cw = ch = 0;
+                    /* adjust based on orientation */
+                    var content = this.getContent();
+                    var cw, ch;
+                    if(content === null) {
+                        cw = ch = 0;
+                    }
+                    else {
+                        cw = content.offsetWidth;
+                        ch = content.offsetHeight;
+                    }
+
+                    if(this.orient == JTB.ORIENT_RIGHT) {
+                        x = findPosX(content) + cw - this.sz_tb.width;
+                    }
+                    else if(this.orient == JTB.ORIENT_BOTTOM) {
+                        y = findPosY(content) + ch - this.sz_tb.height;
+                    }
                 }
                 else {
-                    cw = content.offsetWidth;
-                    ch = content.offsetHeight;
-                }
-
-                if(this.orient == JTB.ORIENT_RIGHT) {
-                    x = findPosX(content) + cw - this.sz_tb.width;
-                }
-                else if(this.orient == JTB.ORIENT_BOTTOM) {
-                    y = findPosY(content) + ch - this.sz_tb.height;
+                    x = this.floatx;
+                    y = this.floaty;
                 }
 
                 /* display the toolbar iff the mouse is within the maximum deviation */
