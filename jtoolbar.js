@@ -1538,7 +1538,7 @@ var JTB = function() {
 
                 /* compute the minimum distance */
                 var minDist = Math.min(dl, Math.min(dt, Math.min(dr, db)));
-                if(minDist > thresh) {
+                if(minDist > thresh * thresh) {
                     return null;
                 }
 
