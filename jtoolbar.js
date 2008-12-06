@@ -610,7 +610,10 @@ var JTB = function() {
                 else {
                 	// link is actually a nested toolbar            	
                 	var tbName = this.link.getToolbarName();   	
-               		return '<div onmouseover="JTB.showChildToolbar(' + tbName + ', JTB.findXOffset(' + tbName + ', event)' + ', JTB.findYOffset(' + tbName + ', event))" style="display: ' + displayStyle + '">' + this.name + '</div>';
+               		return '<div onmouseover="JTB.showChildToolbar(\'' + tbName +
+                                     '\', JTB.findXOffset(\'' + tbName + '\', event)' +
+                                     ', JTB.findYOffset(\'' + tbName + '\', event))" style="display: ' +
+                                     displayStyle + '">' + this.name + '</div>';
             	}
             };
 
