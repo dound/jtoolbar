@@ -699,7 +699,7 @@ var JTB = function() {
             /** shows a child toolbar (makes childToolbar a child if it isn't already one) */
             JTB.Toolbar.prototype.showChildToolbar = function(childToolbar, x, y) {
                 /* remove the child from any old parent */
-                childToolbar.removeFromParentToolbar(childToolbar);
+                childToolbar.removeFromParentToolbar();
 
                 /* tell the child toolbar it belongs to us now */
                 childToolbar.tb_parent = this;
@@ -743,7 +743,8 @@ var JTB = function() {
             };
 
             /** removes a child toolbar from its parent */
-            JTB.Toolbar.prototype.removeFromParentToolbar = function(e) {
+            JTB.Toolbar.prototype.removeFromParentToolbar = function() {
+                var e = this;
                 if(e.tb_parent !== null) {
                     if(e.tb_parent.vis_tb_child == e) {
                         e.tb_parent.vis_tb_child = null;
