@@ -616,15 +616,15 @@ var JTB = function() {
             	}
             };
 
-			JTB.Toolbar.prototype.getParentToolbar = function () {
-				return tb_parent;	
-			};
+
+            JTB.Toolbar.prototype.getParentToolbar = function () {
+                return tb_parent;	
+            };
 			
-			JTB.Toolbar.prototype.setParentToolbar = function (tb) {
-				this.tb_parent = tb;
-				return this;	
-			};
-			
+            JTB.Toolbar.prototype.setParentToolbar = function (tb) {
+                this.tb_parent = tb;
+                return this;	
+            };	
 			
             /** get the name of the element the toolbar is attached to (may be null) */
             JTB.Toolbar.prototype.getContentName = function() {
