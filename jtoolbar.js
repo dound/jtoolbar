@@ -572,6 +572,11 @@ var JTB = function() {
                 return this;
             };
 
+            /** returns true if this is a child toolbar */
+            JTB.Toolbar.prototype.isChildToolbar = function() {
+                return this.e_content === null;
+            };
+
             /** adds a child toolbar to this toolbar */
             JTB.Toolbar.prototype.addChildToolbar = function(childToolbar) {
                 /* remove the child from any old parent */
