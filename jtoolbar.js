@@ -894,8 +894,19 @@ var JTB = function() {
             /** set pin icon attributes so it displays according to the current Toolbar state */
             JTB.Toolbar.prototype.refreshIconsGfx = function() {
                 var imgName;
-                var hasNoVisChild = (this.vis_tb_child === null);
                 var iconTotalSize = ICON_SIZE + 2*ICON_MARGIN + 2*ICON_BORDER_SIZE;
+
+                var esd = this.e_icon_drag.style;
+                var esf = this.e_icon_float.style;
+                var esp = this.e_icon_pin.style;
+
+                /* handle the case where no icons should be shown now */
+                if(this.vis_tb_child===null || this.isChildToolbar()) {
+                    esd.display = 'none';
+                    esf.display = 'none';
+                    esp.display = 'none';
+                    return;
+                }
 
                 var x = 0;
                 var y = 0;
@@ -922,8 +933,7 @@ var JTB = function() {
                 }
 
                 var iconOn = 0;
-                var esd = this.e_icon_drag.style;
-                if(this.isShowDragIcon() && hasNoVisChild) {
+                if(this.isShowDragIcon()) {
                     /* show it */
                     imgName = this.getImagePath() + (this.isDragging() ? 'dragging.gif' : 'drag.gif');
                     esd.backgroundImage = 'url(' + imgName + ')';
@@ -939,8 +949,7 @@ var JTB = function() {
                 x += dx;
                 y += dy;
                 iconOn += 1;
-                var esf = this.e_icon_float.style;
-                if(this.isShowFloatIcon() && hasNoVisChild) {
+                if(this.isShowFloatIcon()) {
                     /* show it */
                     imgName = this.getImagePath() + (this.isDocked() ? 'float.gif' : 'floating.gif');
                     esf.backgroundImage = 'url(' + imgName + ')';
@@ -956,8 +965,7 @@ var JTB = function() {
                 x += dx;
                 y += dy;
                 iconOn += 1;
-                var esp = this.e_icon_pin.style;
-                if(this.isShowPinIcon() && this.docked && hasNoVisChild) {
+                if(this.isShowPinIcon() && this.docked) {
                     /* show it */
                     imgName = this.getImagePath() + (this.isPinned() ? 'pin.gif' : 'unpin.gif');
                     esp.backgroundImage = 'url(' + imgName + ')';
