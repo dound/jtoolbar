@@ -516,6 +516,12 @@ var JTB = function() {
                 }
             };
 
+            /** require the element to have the specified size */
+            JTB.SizeHelper.prototype.forceSize = function(w, h) {
+                this.forceWidth(w);
+                this.forceHeight(h);
+            };
+
             /** make the current width the required width */
             JTB.SizeHelper.prototype.forceCurrentWidth = function() {
                 this.forced_width = true;
