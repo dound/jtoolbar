@@ -1439,7 +1439,6 @@ var JTB = function() {
                     if(tb.isDragging()) {
                         tb.setFloatPos(mouseX - mouseDragX + tb.dragStartX,
                                        mouseY - mouseDragY + tb.dragStartY);
-                        debug(tb.tb_id + ' --> ' + tb.floatx + ' ' + tb.floaty + ' ...' + mouseX+','+mouseY+' / ' + mouseDragX+','+mouseDragY + ' / ' + tb.dragStartX + ','+tb.dragStartY);
                     }
                     else if(!tb.isPinned() && !tb.isAnimating()) {
                         tb.setStateBasedOnMouse();
