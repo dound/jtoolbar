@@ -367,7 +367,7 @@ var JTB = function() {
             this.anim_first_half = true;
 
             /* orientation of the toolbar */
-            this.orient         = null;
+            this.orient         = JTB.ORIENT_LEFT;
 
             /* whether the toolbar is docked */
             this.docked         = true;
@@ -1542,9 +1542,6 @@ var JTB = function() {
 
                 /* create size helpers */
                 this.sz_tb = new JTB.SizeHelper(this.e_tb);
-
-                /* default orientation */
-                this.setOrientation(JTB.ORIENT_LEFT);
 
                 /* build the toolbar links (triggers a ui redraw too) */
                 this.refreshLinks();
