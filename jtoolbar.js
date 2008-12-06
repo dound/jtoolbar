@@ -1616,10 +1616,10 @@ var JTB = function() {
                 if(docked !== null) { this.docked = docked; }
 
                 var floatx = readCookie("floatx");
-                if(floatx !== null) { this.floatx = floatx; }
+                if(floatx !== null) { this.floatx = parseInt(floatx, 10); }
 
                 var floaty = readCookie("floaty");
-                if(floaty !== null) { this.floaty = floaty; }
+                if(floaty !== null) { this.floaty = parseInt(floaty, 10); }
 
                 var pinned = readBooleanCookie("pinned");
                 if(pinned !== null) { this.pinned = pinned; }
