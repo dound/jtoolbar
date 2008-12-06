@@ -975,7 +975,7 @@ var JTB = function() {
                 x += dx;
                 y += dy;
                 iconOn += 1;
-                if(this.isShowPinIcon() && this.docked) {
+                if(this.isShowPinIcon()) {
                     /* show it */
                     imgName = this.getImagePath() + (this.isPinned() ? 'pin.gif' : 'unpin.gif');
                     esp.backgroundImage = 'url(' + imgName + ')';
