@@ -699,7 +699,7 @@ var JTB = function() {
             /** shows a child toolbar (makes childToolbar a child if it isn't already one) */
             JTB.Toolbar.prototype.showChildToolbar = function(childToolbar, x, y) {
                 /* remove the child from any old parent */
-                childToolbar.removeFromParentToolbar();
+                childToolbar.hideFromParentToolbar();
 
                 /* tell the child toolbar it belongs to us now */
                 childToolbar.tb_parent = this;
@@ -742,8 +742,8 @@ var JTB = function() {
                 return this.e_content === null;
             };
 
-            /** removes a child toolbar from its parent */
-            JTB.Toolbar.prototype.removeFromParentToolbar = function() {
+            /** hides a child toolbar */
+            JTB.Toolbar.prototype.hideFromParentToolbar = function() {
                 var e = this;
                 if(e.tb_parent !== null) {
                     if(e.tb_parent.vis_tb_child == e) {
@@ -755,7 +755,6 @@ var JTB = function() {
                             container.removeChild(e.e_tb);
                         }
                     }
-                    e.tb_parent = null;
                 }
             };
 
@@ -1368,11 +1367,11 @@ var JTB = function() {
                 /* determine whether the mouse is over this toolbar's area */
                 vis = (mouseX>=x && mouseX<x+maxdx && mouseY>=y && mouseY<y+maxdy);
 
-                if(this.isChildToolbar() && !vis) {
+                if(this.isChildToolbar() && this.tb_parent!==null && !vis) {
                     /* only popout children if the mouse is also not over its parents */
                     vis = this.tb_parent.isMouseOverMeOrParents();
                     if(!vis) {
-                        this.removeFromParentToolbar();
+                        this.hideFromParentToolbar();
                     }
                 }
                 else {
