@@ -694,8 +694,10 @@ var JTB = function() {
 
             /** set the location of the toolbar on its parent */
             JTB.Toolbar.prototype.setOrientation = function(orient) {
-                this.orient = orient;
-                this.refreshGfx();
+                if(orient != this.orient) {
+                    this.orient = orient;
+                    this.refreshGfx();
+                }
                 return this;
             };
 
