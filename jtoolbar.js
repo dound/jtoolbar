@@ -9,6 +9,8 @@ var JTB = function() {
     var mouseX, mouseY;
     var SPRINGINESS_FACTOR = 1.3;
     var SPLIT_CLOSE = 1.0 - (1.0 / SPRINGINESS_FACTOR);
+    var ICON_SIZE = '16px';
+    var ICON_MARGIN = '3px';
 
     var debugMode = false;
     var MAX_DEBUG_LINES = 5;
@@ -184,9 +186,9 @@ var JTB = function() {
     function setupIconDiv(e) {
         e.style.backgroundRepeat = 'no-repeat';
         e.style.border = '1px solid black';
-        e.style.width = '16px';
-        e.style.height = '16px';
-        e.style.margin = '3px 3px 3px 3px';
+        e.style.width = ICON_SIZE;
+        e.style.height = ICON_SIZE;
+        e.style.margin = ICON_MARGIN + ' ' + ICON_MARGIN + ' ' + ICON_MARGIN + ' ' + ICON_MARGIN;
     }
 
     /* export public members */
