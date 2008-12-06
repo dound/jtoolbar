@@ -66,6 +66,15 @@ var JTB = function() {
         document.cookie = name+"="+value+expires+"; path=/";
     }
 
+    function createBooleanCookie(name,value,days) {
+        if(value === true) {
+            createCooke(name, 'T', days);
+        }
+        else {
+            createCooke(name, 'F', days);
+        }
+    }
+
     function readCookie(name) {
         var nameEQ = name + "=";
         var ca = document.cookie.split(';');
@@ -79,6 +88,14 @@ var JTB = function() {
             }
         }
         return null;
+    }
+
+    function readBooleanCookie(name) {
+        var v = readCookie(name);
+        if(v === null) {
+            return null;
+        }
+        return (v === 'T');
     }
 
     /** returns the distance squared from a point to a rectangle */
