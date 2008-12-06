@@ -1002,6 +1002,12 @@ var JTB = function() {
                     return false;
                 }
 
+                /* if we're hiding this toolbar, hide its child too */
+                if(newState == JTB.STATE_INVIS && this.vis_tb_child) {
+                    this.vis_tb_child.setVisible(false);
+                    this.vis_tb_child = null;
+                }
+
                 this.state = newState;
 
                 /* perform the transition animation */
