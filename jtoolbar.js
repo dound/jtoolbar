@@ -1536,7 +1536,7 @@ var JTB = function() {
                             var d;
                             var container = tb.getContainer();
                             if(container !== null) {
-                                d = tb.getClosestDock(mouseX-findXPos(container),
+                                d = tb.getClosestDock(mouseX-findPosX(container),
                                                       mouseY-findPosY(container),
                                                       100);
                                 if(d !== null) {
