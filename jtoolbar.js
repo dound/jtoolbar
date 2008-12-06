@@ -341,6 +341,9 @@ var JTB = function() {
             /* whether the toolbar is docked */
             this.docked         = true;
 
+            /* threshold (in pixels) for a position to be considered in a docking area */
+            this.docking_threshold = 100;
+
             /* absolute position offset from parent if not docked */
             this.floatx         = 0;
             this.floaty         = 0;
@@ -716,6 +719,17 @@ var JTB = function() {
             JTB.Toolbar.prototype.setDocked = function(b) {
                 this.docked = b;
                 this.refreshGfx();
+                return this;
+            };
+
+            /** get the docking threshold */
+            JTB.Toolbar.prototype.getDockingThreshold = function() {
+                return this.docking_threshold;
+            };
+
+            /** set the docking threshold */
+            JTB.Toolbar.prototype.setDockingThreshold = function(thresh) {
+                this.docking_threshold = thresh;
                 return this;
             };
 
@@ -1578,7 +1592,8 @@ var JTB = function() {
                             if(container !== null) {
                                 d = tb.getClosestDock(mouseX-findPosX(container),
                                                       mouseY-findPosY(container),
-                                                      100, JTB.DOCK_CLOSEST_INCUMBENT_ADVANTAGE);
+                                                      tb.docking_threshold,
+                                                      JTB.DOCK_CLOSEST_INCUMBENT_ADVANTAGE);
                                 if(d !== null) {
                                     tb.setOrientation(d);
                                 }
@@ -1630,7 +1645,8 @@ var JTB = function() {
                 else {
                     /* if we dock, snap to the dock closest to our floating position */
                     var d = tb.getClosestDockToMouse(tb.floatx, tb.floaty,
-                                                     100, JTB.DOCK_CLOSEST_INCUMBENT_ADVANTAGE);
+                                                     tb.docking_threshold,
+                                                     JTB.DOCK_CLOSEST_INCUMBENT_ADVANTAGE);
                     if(d !== null) {
                         tb.setOrientation(d);
                     }
