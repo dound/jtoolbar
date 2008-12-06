@@ -15,6 +15,7 @@ var JTB = function() {
     var ICON_ANCHOR_WIDTH = 32;
     var ICON_ANCHOR_HEIGHT = 48;
     var MAX_DEBUG_LINES = 5;
+    var COOKIE_LIFETIME_DAYS = 60;
 
     /* private members */
     var toolbars = [];
@@ -429,7 +430,7 @@ var JTB = function() {
                 var i, name, link;
                 for(i=1; i<arguments.length/2; i+=1) {
                     name = arguments[2*i];
-                    link = arguments[2*i+1];              
+                    link = arguments[2*i+1];
                     if (typeof(link) != "string") {                   	
                     	// link is actually a nested toolar
                     	link.setParentToolbar(this);	
@@ -754,6 +755,7 @@ var JTB = function() {
                 if(orient != this.orient) {
                     this.orient = orient;
                     this.refreshGfx();
+                    createCookie("orient", this.orient, COOKIE_LIFETIME_DAYS);
                 }
                 return this;
             };
@@ -772,6 +774,7 @@ var JTB = function() {
             JTB.Toolbar.prototype.setDocked = function(b) {
                 this.docked = b;
                 this.refreshGfx();
+                createCookie("docked", this.docked, COOKIE_LIFETIME_DAYS);
                 return this;
             };
 
@@ -815,6 +818,8 @@ var JTB = function() {
                 if(this.isFloating()) {
                     this.refreshGfx();
                 }
+                createCookie("floatx", this.floatx, COOKIE_LIFETIME_DAYS);
+                createCookie("floaty", this.floaty, COOKIE_LIFETIME_DAYS);
                 return this;
             };
 
@@ -1189,6 +1194,7 @@ var JTB = function() {
             /** set whether the toolbar is pinned (always false if this is a child toolbar) */
             JTB.Toolbar.prototype.setPinned = function(b) {
                 this.pinned = (this.isChildToolbar() ? false : b);
+                createCookie("pinned", this.pinned, COOKIE_LIFETIME_DAYS);
                 return this;
             };
 
@@ -1522,7 +1528,7 @@ var JTB = function() {
                 this.e_tb.style.position = 'absolute';
 
                 /* toolbar just in front of the content */
-                
+
                 if(hasContent) {
                 	var z = findZIndex(this.e_content);
                 	this.e_tb.style.zIndex = z + 1;
@@ -1542,8 +1548,8 @@ var JTB = function() {
 
                 /* build the toolbar links (triggers a ui redraw too) */
                 this.refreshLinks();
-                
-                
+
+                this.restoreFromCookie();
             };
 
             /** unhook the toolbar from the UI (assumes it is currently hooked in) */
@@ -1572,6 +1578,26 @@ var JTB = function() {
             JTB.Toolbar.prototype.setDebugMode = function(b) {
                 debugMode = b;
                 return this;
+            };
+
+            /** restores the toolbar's UI-changable options from the cookie */
+            JTB.Toolbar.prototype.restoreFromCookie = function() {
+                var orient = readCookie("orient");
+                if(orient !== null) { this.orient = orient; }
+
+                var docked = readCookie("docked");
+                if(docked !== null) { this.docked = docked; }
+
+                var floatx = readCookie("floatx");
+                if(floatx !== null) { this.floatx = floatx; }
+
+                var floaty = readCookie("floaty");
+                if(floaty !== null) { this.floaty = floaty; }
+
+                var pinned = readCookie("pinned");
+                if(pinned !== null) { this.pinned = pinned; }
+
+                this.refreshGfx();
             };
 
             /**
@@ -1760,7 +1786,7 @@ var JTB = function() {
 
                 c.tb_parent.showChildToolbar(c, x, y);
             };
-            
+
             /** calculates the x-offset of a child toolbar from its parent toolbar */
             JTB.findXOffset = function(childToolbarName, event) {
             	var childToolbar = getToolbar(childToolbarName);
@@ -1775,7 +1801,7 @@ var JTB = function() {
             		return linkDiv.offsetLeft;
             	}
             };
-            
+
             /** calculates the y-offset of a child toolbar from its parent toolbar */
             JTB.findYOffset = function(childToolbarName, event) {
             	var childToolbar = getToolbar(childToolbarName);
