@@ -1644,9 +1644,9 @@ var JTB = function() {
                 }
                 else {
                     /* if we dock, snap to the dock closest to our floating position */
-                    var d = tb.getClosestDockToMouse(tb.floatx, tb.floaty,
-                                                     tb.docking_threshold,
-                                                     JTB.DOCK_CLOSEST_INCUMBENT_ADVANTAGE);
+                    var d = tb.getClosestDock(tb.floatx, tb.floaty,
+                                              tb.docking_threshold,
+                                              JTB.DOCK_CLOSEST_INCUMBENT_ADVANTAGE);
                     if(d !== null) {
                         tb.setOrientation(d);
                     }
