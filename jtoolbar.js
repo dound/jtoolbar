@@ -882,7 +882,7 @@ var JTB = function() {
                 var display = (this.isSideOriented() ? 'table-cell' : 'block');
 
                 var esd = this.e_icon_drag.style;
-                if(this.isShowDragIcon()) {
+                if(this.isShowDragIcon() && this.vis_tb_child===null) {
                     /* show it */
                     imgName = this.getImagePath() + (this.isDragging() ? 'dragging.gif' : 'drag.gif');
                     esd.backgroundImage = 'url(' + imgName + ')';
@@ -894,7 +894,7 @@ var JTB = function() {
                 }
 
                 var esp = this.e_icon_pin.style;
-                if(this.isShowPinIcon() && this.docked) {
+                if(this.isShowPinIcon() && this.docked && this.vis_tb_child===null) {
                     /* show it */
                     imgName = this.getImagePath() + (this.isPinned() ? 'pin.gif' : 'unpin.gif');
                     esp.backgroundImage = 'url(' + imgName + ')';
