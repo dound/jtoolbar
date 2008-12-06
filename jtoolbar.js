@@ -1748,8 +1748,9 @@ var JTB = function() {
 
                 if(tb.isDocked()) {
                     /* if we undock, start floating in our current position */
-                    tb.floatx = tb.e_tb.offsetLeft - tb.e_tb.parentNode.offsetLeft;
-                    tb.floaty = tb.e_tb.offsetTop - tb.e_tb.parentNode.offsetTop;
+                    var x = tb.e_tb.offsetLeft - tb.e_tb.parentNode.offsetLeft;
+                    var y = tb.e_tb.offsetTop - tb.e_tb.parentNode.offsetTop;
+                    tb.setFloatPos(x, y);
                 }
                 else {
                     /* if we dock, snap to the dock closest to our floating position */
