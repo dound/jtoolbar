@@ -1313,11 +1313,6 @@ var JTB = function() {
                     return;
                 }
 
-                /* don't popout children toolbars based on the regular criteria */
-                if(this.isChildToolbar()) {
-                    return;
-                }
-
                 /* determine the max deviation from the top-left corner of the toolbar */
                 var vis = (this.getState() == JTB.STATE_VIS);
                 var maxdx, maxdy;
@@ -1365,8 +1360,20 @@ var JTB = function() {
                     y = this.floaty;
                 }
 
-                /* display the toolbar iff the mouse is within the maximum deviation */
-                this.setVisible(mouseX>=x && mouseX<x+maxdx && mouseY>=y && mouseY<y+maxdy);
+                /* determine whether the mouse is over this toolbar's area */
+                vis = (mouseX>=x && mouseX<x+maxdx && mouseY>=y && mouseY<y+maxdy);
+
+                if(this.isChildToolbar() && !vis) {
+                    /* only popout children if the mouse is also not over its parents */
+                    vis = this.tb_parent.isMouseOverMeOrParents();
+                    if(!vis) {
+                        this.removeFromParentToolbar();
+                    }
+                }
+                else {
+                    /* display the toolbar iff the mouse is within the maximum deviation */
+                    this.setVisible(vis);
+                }
             };
 
             /** get the number of milliseconds the animation will last */
