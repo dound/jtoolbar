@@ -761,17 +761,17 @@ var JTB = function() {
 
             /** get whether the toolbar is docked */
             JTB.Toolbar.prototype.isDocked = function() {
-                return this.docked;
+                return !this.isChildToolbar() && this.docked;
             };
 
             /** get whether the toolbar is floating */
             JTB.Toolbar.prototype.isFloating = function() {
-                return !this.docked;
+                return !this.isDocked();
             };
 
             /** set whether the toolbar is docked */
             JTB.Toolbar.prototype.setDocked = function(b) {
-                this.docked = b;
+                this.docked = !this.isChildToolbar() && b;
                 this.refreshGfx();
                 createBooleanCookie("docked", this.docked, COOKIE_LIFETIME_DAYS);
                 return this;
@@ -945,7 +945,7 @@ var JTB = function() {
                 /* determine where in the container the toolbar should be positioned */
                 var tx, ty; // toolbar position
                 var cx=0, cy=0; // content position
-                if(this.docked) {
+                if(this.isDocked()) {
                     switch(this.orient) {
                     case JTB.ORIENT_LEFT:
                         tx = 0;
@@ -1214,7 +1214,7 @@ var JTB = function() {
              * content.
              */
             JTB.Toolbar.prototype.isShiftContent = function() {
-                return this.docked && (this.isPinned() || this.alwaysShiftContent);
+                return this.isDocked() && (this.isPinned() || this.alwaysShiftContent);
             };
 
             /** set whether the toolbar takes up space even when it isn't pinned. */
