@@ -1513,11 +1513,43 @@ var JTB = function() {
                 return null;
             };
 
-            /** Returns the closest dock within thresh pixels, or null if none. */
+            /** returns the closest dock within thresh pixels, or null if none. */
             JTB.Toolbar.prototype.getClosestDock = function(x, y, thresh) {
+                var container = this.getContainer();
+                if(container === null) {
+                    return null;
+                }
+                var cw = container.offsetWidth;
+                var ch = container.offsetHeight;
+                var tw = this.sz_tb.getVisWidth();
+                var th = this.sz_tb.getVisHeight();
 
+                /* compute distance to the docking locations */
+                var dl = distanceSqToRectangle(x, y, 0, 0, tw, ch);
+                var dt = distanceSqToRectangle(x, y, 0, 0, cw, th);
+                var dr = distanceSqToRectangle(x, y, cw - tw, 0, tw, ch);
+                var db = distanceSqToRectangle(x, y, 0, ch - th, cw, th);
 
-                return null;
+                /* compute the minimum distance */
+                var minDist = Math.min(dl, Math.min(dt, Math.min(dr, db)));
+                if(minDist > thresh) {
+                    return null;
+                }
+
+                /* check the current dock first (e.g. tie => use same dock) */
+                var o = this.getOrientation();
+                switch(o) {
+                case JTB.ORIENT_LEFT:   if(dl <= minDist) { return o; } break;
+                case JTB.ORIENT_RIGHT:  if(dr <= minDist) { return o; } break;
+                case JTB.ORIENT_TOP:    if(dt <= minDist) { return o; } break;
+                case JTB.ORIENT_BOTTOM: if(db <= minDist) { return o; } break;
+                }
+
+                /* check the current dock first (e.g. tie => use same dock) */
+                if(dl == minDist) { return JTB.ORIENT_LEFT; }
+                if(dr == minDist) { return JTB.ORIENT_RIGHT; }
+                if(dt == minDist) { return JTB.ORIENT_TOP; }
+                return JTB.ORIENT_BOTTOM;
             };
 
             /** called when the mouse moves */
