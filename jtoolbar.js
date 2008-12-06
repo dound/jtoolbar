@@ -1515,16 +1515,20 @@ var JTB = function() {
                 return null;
             };
 
-            /** returns the closest dock within thresh pixels, or null if none. */
-            JTB.Toolbar.prototype.getClosestDock = function(x, y, thresh) {
+            /**
+             * Returns the closest dock within thresh pixels, or null if none.
+             * The current docking location is given an advantage of
+             * curAdvantageMultiple (e.g. higher number => greater preference).
+             */
+            JTB.Toolbar.prototype.getClosestDock = function(x, y, thresh, curAdvantageMultiple) {
                 var container = this.getContainer();
                 if(container === null) {
                     return null;
                 }
                 var cw = container.offsetWidth;
                 var ch = container.offsetHeight;
-                var tw = this.sz_tb.getVisWidth();
-                var th = this.sz_tb.getVisHeight();
+                var tw = this.sz_tb.default_width;
+                var th = this.sz_tb.default_height;
 
                 /* compute distance to the docking locations */
                 var dl = distanceSqToRectangle(x, y, 0, 0, tw, ch);
@@ -1540,11 +1544,12 @@ var JTB = function() {
 
                 /* check the current dock first (e.g. tie => use same dock) */
                 var o = this.getOrientation();
+                var scaledMinDist = minDist * curAdvantageMultiple;
                 switch(o) {
-                case JTB.ORIENT_LEFT:   if(dl <= minDist) { return o; } break;
-                case JTB.ORIENT_RIGHT:  if(dr <= minDist) { return o; } break;
-                case JTB.ORIENT_TOP:    if(dt <= minDist) { return o; } break;
-                case JTB.ORIENT_BOTTOM: if(db <= minDist) { return o; } break;
+                case JTB.ORIENT_LEFT:   if(dl <= scaledMinDist) { return o; } break;
+                case JTB.ORIENT_RIGHT:  if(dr <= scaledMinDist) { return o; } break;
+                case JTB.ORIENT_TOP:    if(dt <= scaledMinDist) { return o; } break;
+                case JTB.ORIENT_BOTTOM: if(db <= scaledMinDist) { return o; } break;
                 }
 
                 /* check the current dock first (e.g. tie => use same dock) */
@@ -1572,7 +1577,7 @@ var JTB = function() {
                             if(container !== null) {
                                 d = tb.getClosestDock(mouseX-findPosX(container),
                                                       mouseY-findPosY(container),
-                                                      100);
+                                                      100, 1.25);
                                 if(d !== null) {
                                     tb.setOrientation(d);
                                 }
@@ -1623,7 +1628,7 @@ var JTB = function() {
                 }
                 else {
                     /* if we dock, snap to the dock closest to our floating position */
-                    var d = tb.getClosestDockToMouse(tb.floatx, tb.floaty, 100);
+                    var d = tb.getClosestDockToMouse(tb.floatx, tb.floaty, 100, 1.25);
                     if(d !== null) {
                         tb.setOrientation(d);
                     }
