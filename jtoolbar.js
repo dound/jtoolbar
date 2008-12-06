@@ -14,6 +14,9 @@ var JTB = function() {
     var ICON_BORDER_SIZE = 1;
     var ICON_MARGIN = 3;
     var ICON_COUNT = 3;
+    var ICON_ANCHOR = null;
+    var ICON_ANCHOR_WIDTH = 32;
+    var ICON_ANCHOR_HEIGHT = 48;
 
     var debugMode = false;
     var MAX_DEBUG_LINES = 5;
@@ -1378,6 +1381,11 @@ var JTB = function() {
                     this.e_content.style.zIndex = z;
                 }
 
+                /* make sure the anchor is always in front */
+                if(ICON_ANCHOR.style.zIndex < z + 1) {
+                    ICON_ANCHOR.style.zIndex = z + 1;
+                }
+
                 /* create size helpers */
                 this.sz_tb = new JTB.SizeHelper(this.e_tb);
 
@@ -1402,9 +1410,9 @@ var JTB = function() {
 
             /** terminates any ongoing drag operation */
             JTB.Toolbar.prototype.handleMouseUp = function() {
-                if(this.dragging) {
-                    /* TODO */
-
+                if(this.isDragging()) {
+                    /* TODO: handle dock being changed case */
+                    ICON_ANCHOR.style.display = 'none';
                     this.dragging = false;
                     this.refreshGfx();
                 }
@@ -1439,6 +1447,14 @@ var JTB = function() {
                     if(tb.isDragging()) {
                         tb.setFloatPos(mouseX - mouseDragX + tb.dragStartX,
                                        mouseY - mouseDragY + tb.dragStartY);
+
+                        if(tb.isDocked()) {
+                            var imgName = tb.getImagePath() + 'anchor.gif';
+                            ICON_ANCHOR.style.backgroundImage = 'url(' + imgName + ')';
+                            ICON_ANCHOR.style.left = mouseX - ICON_ANCHOR_WIDTH / 2;
+                            ICON_ANCHOR.style.top = mouseY - ICON_ANCHOR_HEIGHT / 2;
+                            ICON_ANCHOR.style.display = 'block';
+                        }
                     }
                     else if(!tb.isPinned() && !tb.isAnimating()) {
                         tb.setStateBasedOnMouse();
@@ -1531,6 +1547,16 @@ var JTB = function() {
             appendCode(document.body, 'onresize', 'JTB.handleWindowResizeEvent();');
             appendCode(document.body, 'onmouseup', 'JTB.handleMouseUp(event);');
             appendCode(document.body, 'onmousemove', "JTB.handleMouseMove(event);");
+
+            /* create a div for the shared anchor icon */
+            ICON_ANCHOR = document.createElement("div");
+            ICON_ANCHOR.setAttribute('id', "toolbar_anchor");
+            ICON_ANCHOR.style.width = ICON_ANCHOR_WIDTH + 'px';
+            ICON_ANCHOR.style.height = ICON_ANCHOR_HEIGHT + 'px';
+            ICON_ANCHOR.style.position = 'absolute';
+            ICON_ANCHOR.style.display = 'none';
+            ICON_ANCHOR.style.zIndex = 0;
+            document.body.appendChild(ICON_ANCHOR);
         }
     };
 }();
