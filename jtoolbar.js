@@ -1488,7 +1488,7 @@ var JTB = function() {
             };
 
             /** Returns the closest dock within thresh pixels, or null if none. */
-            JTB.Toolbar.prototype.getClosestDockToMouse = function(thresh) {
+            JTB.Toolbar.prototype.getClosestDock = function(x, y, thresh) {
 
 
                 return null;
@@ -1507,9 +1507,18 @@ var JTB = function() {
                                        mouseY - mouseDragY + tb.dragStartY);
 
                         if(tb.isDocked()) {
-                            var d = tb.getClosestDockToMouse(100);
-                            if(d !== null) {
-                                tb.setOrientation(d);
+                            var d;
+                            var container = tb.getContainer();
+                            if(container !== null) {
+                                d = tb.getClosestDock(mouseX-findXPos(container),
+                                                      mouseY-findPosY(container),
+                                                      100);
+                                if(d !== null) {
+                                    tb.setOrientation(d);
+                                }
+                            }
+                            else {
+                                d = null;
                             }
 
                             var imgName = tb.getImagePath() + ((d===null) ? 'anchor.gif' : 'anchor_highlighted.gif');
