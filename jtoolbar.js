@@ -776,7 +776,7 @@ var JTB = function() {
                 if(orient != this.orient) {
                     this.orient = orient;
                     this.refreshGfx();
-                    createBooleanCookie("orient", this.orient, COOKIE_LIFETIME_DAYS);
+                    createCookie("orient", this.orient, COOKIE_LIFETIME_DAYS);
                 }
                 return this;
             };
@@ -1609,7 +1609,7 @@ var JTB = function() {
 
             /** restores the toolbar's UI-changable options from the cookie */
             JTB.Toolbar.prototype.restoreFromCookie = function() {
-                var orient = readBooleanCookie("orient");
+                var orient = readCookie("orient");
                 if(orient !== null) { this.orient = orient; }
 
                 var docked = readBooleanCookie("docked");
