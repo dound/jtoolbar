@@ -708,7 +708,9 @@ var JTB = function() {
             JTB.Toolbar.prototype.setFloatPos = function(x, y) {
                 this.floatx = x;
                 this.floaty = y;
-                this.refreshGfx();
+                if(!this.isDocked()) {
+                    this.refreshGfx();
+                }
                 return this;
             };
 
