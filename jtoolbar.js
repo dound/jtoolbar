@@ -1496,8 +1496,8 @@ var JTB = function() {
 
             /** called when the mouse moves */
             JTB.handleMouseMove = function(event) {
-                mouseX = event.clientX;
-                mouseY = event.clientY;
+                mouseX = event.pageX;
+                mouseY = event.pageY;
 
                 var i;
                 for(i=0; i<toolbars.length; i++) {
@@ -1532,8 +1532,8 @@ var JTB = function() {
                     return;
                 }
 
-                mouseDragX = event.clientX;
-                mouseDragY = event.clientY;
+                mouseDragX = event.pageX;
+                mouseDragY = event.pageY;
                 tb.dragStartX = tb.e_tb.offsetLeft;
                 tb.dragStartY = tb.e_tb.offsetTop;
                 tb.dragging = true;
