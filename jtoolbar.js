@@ -707,6 +707,9 @@ var JTB = function() {
                 childToolbar.floatx = x;
                 childToolbar.floaty = y;
 
+                /* put the child at the same depth as its parent */
+                childToolbar.e_tb.style.zIndex = this.e_tb.style.zIndex;
+
                 /* make sure the child is in the container */
                 var container = this.getContainer();
                 if(container !== null) {
