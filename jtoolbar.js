@@ -1545,18 +1545,6 @@ var JTB = function() {
                 return this;
             };
 
-            /** gets a toolbar object based on its name */
-            JTB.getToolbar = function(name) {
-                var i;
-                for(i=0; i<toolbars.length; i++) {
-                    if(toolbars[i].tb_id == name) {
-                        return toolbars[i];
-                    }
-                }
-
-                return null;
-            };
-
             /**
              * Returns the closest dock within thresh pixels, or null if none.
              * The current docking location is given an advantage of
@@ -1599,6 +1587,18 @@ var JTB = function() {
                 if(dr == minDist) { return JTB.ORIENT_RIGHT; }
                 if(dt == minDist) { return JTB.ORIENT_TOP; }
                 return JTB.ORIENT_BOTTOM;
+            };
+
+            /** gets a toolbar object based on its name */
+            JTB.getToolbar = function(name) {
+                var i;
+                for(i=0; i<toolbars.length; i++) {
+                    if(toolbars[i].tb_id == name) {
+                        return toolbars[i];
+                    }
+                }
+
+                return null;
             };
 
             /** called when the mouse moves */
