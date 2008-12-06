@@ -719,7 +719,7 @@ var JTB = function() {
             };
 
             /** gets whether e is a child toolbar of this toolbar */
-            JTB.Toolbar.prototype.indexOfChildToolbar = function(e) {
+            JTB.Toolbar.prototype.hasChildToolbar = function(e) {
                 return this.indexOfChildToolbar(e) != -1;
             };
 
