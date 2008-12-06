@@ -9,8 +9,10 @@ var JTB = function() {
     var mouseX, mouseY;
     var SPRINGINESS_FACTOR = 1.3;
     var SPLIT_CLOSE = 1.0 - (1.0 / SPRINGINESS_FACTOR);
-    var ICON_SIZE = '16px';
-    var ICON_MARGIN = '3px';
+    var ICON_SIZE = 16;
+    var ICON_BORDER_SIZE = 1;
+    var ICON_MARGIN = 3;
+    var ICON_COUNT = 3;
 
     var debugMode = false;
     var MAX_DEBUG_LINES = 5;
@@ -185,10 +187,12 @@ var JTB = function() {
     /** sets the style parameters of an icon div */
     function setupIconDiv(e) {
         e.style.backgroundRepeat = 'no-repeat';
-        e.style.border = '1px solid black';
-        e.style.width = ICON_SIZE;
-        e.style.height = ICON_SIZE;
-        e.style.margin = ICON_MARGIN + ' ' + ICON_MARGIN + ' ' + ICON_MARGIN + ' ' + ICON_MARGIN;
+        e.style.border = ICON_BORDER_SIZE + 'px solid black';
+        e.style.width = ICON_SIZE + 'px';
+        e.style.height = ICON_SIZE + 'px';
+        e.style.position = 'absolute';
+        var m = ICON_MARGIN + 'px ';
+        e.style.margin = m + m + m + m;
     }
 
     /* export public members */
@@ -274,6 +278,7 @@ var JTB = function() {
             this.e_tb             = null;
             this.e_icons          = null;
             this.e_icon_drag      = null;
+            this.e_icon_float     = null;
             this.e_icon_pin       = null;
             this.e_links          = null;
 
@@ -309,6 +314,9 @@ var JTB = function() {
 
             /* whether to show the drag graphic */
             this.show_drag      = true;
+
+            /* whether to show the float graphic */
+            this.show_float       = true;
 
             /* whether to show the pin/unpin graphic */
             this.show_pin       = true;
@@ -886,26 +894,76 @@ var JTB = function() {
             /** set pin icon attributes so it displays according to the current Toolbar state */
             JTB.Toolbar.prototype.refreshIconsGfx = function() {
                 var imgName;
-                var display = (this.isSideOriented() ? 'table-cell' : 'block');
+                var hasNoVisChild = (this.vis_tb_child === null);
+                var iconTotalSize = ICON_SIZE + 2*ICON_MARGIN + 2*ICON_BORDER_SIZE;
 
+                var x = 0;
+                var y = 0;
+                var dx, dy;
+                if(this.isSideOriented()) {
+                    dx = iconTotalSize;
+                    dy = 0;
+                }
+                else {
+                    dx = 0;
+                    dy = iconTotalSize;
+                    x -= iconTotalSize;
+                    y -= iconTotalSize;
+                }
+                if(this.getOrientation() != JTB.ORIENT_RIGHT) {
+                    x += this.e_tb.offsetWidth + getExtraWidth(this.e_tb) / 2;
+                    if(this.getOrientation() == JTB.ORIENT_LEFT) {
+                        x -= ((ICON_COUNT+1) * iconTotalSize);
+                    }
+                }
+                else {
+                    dx = -dx;
+                    x += (ICON_COUNT * iconTotalSize);
+                }
+
+                var iconOn = 0;
                 var esd = this.e_icon_drag.style;
-                if(this.isShowDragIcon() && this.vis_tb_child===null) {
+                if(this.isShowDragIcon() && hasNoVisChild) {
                     /* show it */
                     imgName = this.getImagePath() + (this.isDragging() ? 'dragging.gif' : 'drag.gif');
                     esd.backgroundImage = 'url(' + imgName + ')';
-                    esd.display = display;
+                    esd.display = 'block';
+                    esd.left = (x + dx) + 'px';
+                    esd.top = (y + dy) + 'px';
                 }
                 else {
                     /* hide it */
                     esd.display = 'none';
                 }
 
+                x += dx;
+                y += dy;
+                iconOn += 1;
+                var esf = this.e_icon_float.style;
+                if(this.isShowFloatIcon() && hasNoVisChild) {
+                    /* show it */
+                    imgName = this.getImagePath() + (this.isDocked() ? 'float.gif' : 'floating.gif');
+                    esf.backgroundImage = 'url(' + imgName + ')';
+                    esf.display = 'block';
+                    esf.left = (x + dx) + 'px';
+                    esf.top = (y + dy) + 'px';
+                }
+                else {
+                    /* hide it */
+                    esf.display = 'none';
+                }
+
+                x += dx;
+                y += dy;
+                iconOn += 1;
                 var esp = this.e_icon_pin.style;
-                if(this.isShowPinIcon() && this.docked && this.vis_tb_child===null) {
+                if(this.isShowPinIcon() && this.docked && hasNoVisChild) {
                     /* show it */
                     imgName = this.getImagePath() + (this.isPinned() ? 'pin.gif' : 'unpin.gif');
                     esp.backgroundImage = 'url(' + imgName + ')';
-                    esp.display = display;
+                    esp.display = 'block';
+                    esp.left = (x + dx) + 'px';
+                    esp.top = (y + dy) + 'px';
                 }
                 else {
                     /* hide it */
@@ -923,6 +981,17 @@ var JTB = function() {
             /** set whether the drag icon is showing */
             JTB.Toolbar.prototype.setShowDragIcon = function(b) {
                 this.show_drag = b;
+                return this;
+            };
+
+            /** get whether the float icon is showing */
+            JTB.Toolbar.prototype.isShowFloatIcon = function() {
+                return this.show_float;
+            };
+
+            /** set whether the drag icon is showing */
+            JTB.Toolbar.prototype.setShowFloatIcon = function(b) {
+                this.show_float = b;
                 return this;
             };
 
@@ -1260,16 +1329,22 @@ var JTB = function() {
                 /* create a div to put the icons in */
                 this.e_icons = document.createElement("div");
                 this.e_icons.setAttribute('id', this.tb_id + "_icons");
-                this.e_icons.style.cssFloat = 'right';
-                this.e_icons.style.display = 'table';
+                this.e_icons.style.display = 'block';
                 this.e_tb.insertBefore(this.e_icons, this.e_tb.childNodes[0]);
 
                 /* create a div for the drag icon */
                 this.e_icon_drag = document.createElement("div");
-                this.e_icon_drag.setAttribute('id', this.tb_id + "_icon_pin");
+                this.e_icon_drag.setAttribute('id', this.tb_id + "_icon_drag");
                 this.e_icon_drag.setAttribute('onmousedown', "JTB.handleDragStartEvent('" + this.tb_id + "');");
                 setupIconDiv(this.e_icon_drag);
                 this.e_icons.appendChild(this.e_icon_drag);
+
+                /* create a div for the float icon */
+                this.e_icon_float = document.createElement("div");
+                this.e_icon_float.setAttribute('id', this.tb_id + "_icon_float");
+                this.e_icon_float.setAttribute('onmousedown', "JTB.handleFloatClickEvent('" + this.tb_id + "');");
+                setupIconDiv(this.e_icon_float);
+                this.e_icons.appendChild(this.e_icon_float);
 
                 /* create a div for the pin icon */
                 this.e_icon_pin = document.createElement("div");
@@ -1361,6 +1436,18 @@ var JTB = function() {
 
                 tb.dragging = true;
                 tb.refreshGfx();
+            };
+
+            /** handle a click on a float icon */
+            JTB.handleFloatClickEvent = function(tb_id) {
+                var tb = JTB.getToolbar(tb_id);
+                if(tb === null) {
+                    return;
+                }
+
+                tb.setDocked(!tb.isDocked());
+                tb.refreshGfx();
+                tb.setStateBasedOnMouse();
             };
 
             /** handle a click on a pin icon */
