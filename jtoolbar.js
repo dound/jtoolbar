@@ -772,7 +772,7 @@ var JTB = function() {
                 if(orient != this.orient) {
                     this.orient = orient;
                     this.refreshGfx();
-                    createCookie("orient", this.orient, COOKIE_LIFETIME_DAYS);
+                    createBooleanCookie("orient", this.orient, COOKIE_LIFETIME_DAYS);
                 }
                 return this;
             };
@@ -791,7 +791,7 @@ var JTB = function() {
             JTB.Toolbar.prototype.setDocked = function(b) {
                 this.docked = b;
                 this.refreshGfx();
-                createCookie("docked", this.docked, COOKIE_LIFETIME_DAYS);
+                createBooleanCookie("docked", this.docked, COOKIE_LIFETIME_DAYS);
                 return this;
             };
 
@@ -1211,7 +1211,7 @@ var JTB = function() {
             /** set whether the toolbar is pinned (always false if this is a child toolbar) */
             JTB.Toolbar.prototype.setPinned = function(b) {
                 this.pinned = (this.isChildToolbar() ? false : b);
-                createCookie("pinned", this.pinned, COOKIE_LIFETIME_DAYS);
+                createBooleanCookie("pinned", this.pinned, COOKIE_LIFETIME_DAYS);
                 return this;
             };
 
@@ -1596,10 +1596,10 @@ var JTB = function() {
 
             /** restores the toolbar's UI-changable options from the cookie */
             JTB.Toolbar.prototype.restoreFromCookie = function() {
-                var orient = readCookie("orient");
+                var orient = readBooleanCookie("orient");
                 if(orient !== null) { this.orient = orient; }
 
-                var docked = readCookie("docked");
+                var docked = readBooleanCookie("docked");
                 if(docked !== null) { this.docked = docked; }
 
                 var floatx = readCookie("floatx");
@@ -1608,7 +1608,7 @@ var JTB = function() {
                 var floaty = readCookie("floaty");
                 if(floaty !== null) { this.floaty = floaty; }
 
-                var pinned = readCookie("pinned");
+                var pinned = readBooleanCookie("pinned");
                 if(pinned !== null) { this.pinned = pinned; }
 
                 this.refreshGfx();
