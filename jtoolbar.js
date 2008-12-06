@@ -98,6 +98,10 @@ var JTB = function() {
         return (v === 'T');
     }
 
+    function eraseCookie(name) {
+        createCookie(name,"",-1);
+    }
+
     /** returns the distance squared from a point to a rectangle */
     function distanceSqToRectangle(x, y, rx, ry, rw, rh) {
         var dx, dy;
@@ -1592,6 +1596,15 @@ var JTB = function() {
             JTB.Toolbar.prototype.setDebugMode = function(b) {
                 debugMode = b;
                 return this;
+            };
+
+            /** clears the toolbar's cookies */
+            JTB.Toolbar.prototype.clearCookies = function() {
+                eraseCookie("orient");
+                eraseCookie("docked");
+                eraseCookie("floatx");
+                eraseCookie("floaty");
+                eraseCookie("pinned");
             };
 
             /** restores the toolbar's UI-changable options from the cookie */
