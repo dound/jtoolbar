@@ -689,6 +689,10 @@ var JTB = function() {
                 /* tell the child toolbar it belongs to us now */
                 childToolbar.tb_parent = this;
 
+                /* float the child to the correct position */
+                childToolbar.floatx = x;
+                childToolbar.floaty = y;
+
                 /* show the child */
                 this.vis_tb_child = childToolbar;
                 this.refreshGfx();
