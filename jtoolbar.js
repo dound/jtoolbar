@@ -263,7 +263,8 @@ var JTB = function() {
 
         /* periodically call this method until the animation is done */
         if(tb.isAnimating()) {
-            setTimeout('JTB.handleAnimationCallback("' + tb.tb_id + '");', JTB.ANIM_INTERVAL_MSEC);
+            setTimeout(function(){JTB.handleAnimationCallback(tb.tb_id);},
+                       JTB.ANIM_INTERVAL_MSEC);
         }
     }
 
