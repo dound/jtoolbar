@@ -4,10 +4,7 @@
  */
 
 var JTB = function() {
-    /*  private members */
-    var toolbars = [];
-    var mouseDragX, mouseDragY;
-    var mouseX, mouseY;
+    /*  private constants */
     var SPRINGINESS_FACTOR = 1.3;
     var SPLIT_CLOSE = 1.0 - (1.0 / SPRINGINESS_FACTOR);
     var ICON_SIZE = 16;
@@ -17,10 +14,15 @@ var JTB = function() {
     var ICON_ANCHOR = null;
     var ICON_ANCHOR_WIDTH = 32;
     var ICON_ANCHOR_HEIGHT = 48;
-
-    var debugMode = false;
     var MAX_DEBUG_LINES = 5;
+
+    /* private members */
+    var toolbars = [];
+    var mouseDragX, mouseDragY;
+    var mouseX, mouseY;
+    var debugMode = false;
     var debugLines = [MAX_DEBUG_LINES];
+
     function debug(newstr) {
         var i, str="";
         for(i=MAX_DEBUG_LINES-2; i>=0; i--) {
