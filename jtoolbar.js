@@ -1540,7 +1540,9 @@ var JTB = function() {
 
             /** refreshes the toolbar elements to reflect a change in available space */
             JTB.Toolbar.prototype.handleResizing = function() {
-                this.sz_container.refreshSizeData();
+                if(this.sz_container !== null) {
+                    this.sz_container.refreshSizeData();
+                }
                 this.sz_tb.refreshSizeData();
                 this.refreshGfx();
             };
