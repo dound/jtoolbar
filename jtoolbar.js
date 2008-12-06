@@ -1039,6 +1039,11 @@ var JTB = function() {
                     return;
                 }
 
+                /* don't popout children toolbars based on the regular criteria */
+                if(this.isChildToolbar()) {
+                    return;
+                }
+
                 /* determine the max deviation from the top-left corner of the toolbar */
                 var vis = (this.getState() == JTB.STATE_VIS);
                 var maxdx, maxdy;
