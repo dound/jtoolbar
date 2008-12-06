@@ -1497,6 +1497,8 @@ var JTB = function() {
 
             /* create and hook the toolbar into the UI (assumes it is not already hooked in */
             JTB.Toolbar.prototype.hookup = function() {
+                var tb_id = this.tb_id;
+
                 /* get the toolbar element */
                 this.e_tb = document.getElementById(this.tb_id);
                 if(this.e_tb === null) {
@@ -1528,21 +1530,27 @@ var JTB = function() {
                 /* create a div for the drag icon */
                 this.e_icon_drag = document.createElement("div");
                 this.e_icon_drag.setAttribute('id', this.tb_id + "_icon_drag");
-                this.e_icon_drag.setAttribute('onmousedown', "JTB.handleDragStartEvent('" + this.tb_id + "', event);");
+                this.e_icon_drag.addEventListener('mousedown',
+                                                  function(e){JTB.handleDragStartEvent(tb_id, e);},
+                                                  false);
                 setupIconDiv(this.e_icon_drag);
                 this.e_icons.appendChild(this.e_icon_drag);
 
                 /* create a div for the float icon */
                 this.e_icon_float = document.createElement("div");
                 this.e_icon_float.setAttribute('id', this.tb_id + "_icon_float");
-                this.e_icon_float.setAttribute('onmousedown', "JTB.handleFloatClickEvent('" + this.tb_id + "');");
+                this.e_icon_float.addEventListener('click',
+                                                  function(e){JTB.handleFloatClickEvent(tb_id);},
+                                                  false);
                 setupIconDiv(this.e_icon_float);
                 this.e_icons.appendChild(this.e_icon_float);
 
                 /* create a div for the pin icon */
                 this.e_icon_pin = document.createElement("div");
                 this.e_icon_pin.setAttribute('id', this.tb_id + "_icon_pin");
-                this.e_icon_pin.setAttribute('onclick', "JTB.handlePinClickEvent('" + this.tb_id + "');");
+                this.e_icon_pin.addEventListener('click',
+                                                 function(e){JTB.handlePinClickEvent(tb_id);},
+                                                 false);
                 setupIconDiv(this.e_icon_pin);
                 this.e_icons.appendChild(this.e_icon_pin);
 
