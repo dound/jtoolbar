@@ -1453,6 +1453,12 @@ var JTB = function() {
                     return;
                 }
 
+                /* if we undock, start floating in our current position */
+                if(tb.isDocked()) {
+                    tb.floatx = tb.e_tb.offsetLeft - tb.e_tb.parentNode.offsetLeft;
+                    tb.floaty = tb.e_tb.offsetTop - tb.e_tb.parentNode.offsetTop;
+                }
+
                 tb.setDocked(!tb.isDocked());
                 tb.refreshGfx();
                 tb.setStateBasedOnMouse();
