@@ -51,6 +51,32 @@ var JTB = function() {
         e.setAttribute(attrName, code);
     }
 
+    /** returns the distance squared from a point to a rectangle */
+    function distanceSqToRectangle(x, y, rx, ry, rw, rh) {
+        var dx, dy;
+        if(x < rx) {
+            dx = rx - x;
+        }
+        else if(x > rx + rw) {
+            dx = x - rx - rw;
+        }
+        else {
+            dx = 0;
+        }
+
+        if(y < ry) {
+            dy = ry - y;
+        }
+        else if(y > ry + rh) {
+            dy = y - ry - rh;
+        }
+        else {
+            dy = 0;
+        }
+
+        return (dx*dx) + (dy*dy);
+    }
+
     function findPosX(obj) {
         var curleft = 0;
         if(obj.offsetParent) {
