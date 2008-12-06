@@ -749,6 +749,11 @@ var JTB = function() {
                     if(e.tb_parent.vis_tb_child == e) {
                         e.tb_parent.vis_tb_child = null;
                         e.tb_parent.refreshGfx();
+
+                        var container = e.tb_parent.getContainer();
+                        if(container !== null) {
+                            container.removeChild(e.e_tb);
+                        }
                     }
                     e.tb_parent = null;
                 }
