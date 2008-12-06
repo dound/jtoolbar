@@ -29,6 +29,18 @@ var JTB = function() {
         }
     }
 
+    function appendCode(e, attrName, newCode) {
+        var code = e.getAttribute(attrName);
+        if(code === null) {
+            code = '';
+        }
+        else {
+            code += '; ';
+        }
+        code += newCode;
+        e.setAttribute(attrName, code);
+    }
+
     function findPosX(obj) {
         var curleft = 0;
         if(obj.offsetParent) {
@@ -1199,11 +1211,6 @@ var JTB = function() {
                 this.e_content.style.left    = '';
                 this.e_content.style.top     = '';
                 this.e_content.style.width   = '';
-
-                /* setup the show/hide handler for the toolbar */
-                this.e_container.setAttribute('onmousemove', "JTB.handleMouseMove('" + this.tb_id + "', event);");
-                this.e_container.setAttribute('onmouseup', 'JTB.handleMouseUp(event);');
-
                 this.e_content.style.position = 'absolute';
 
                 /* put our new elements into the DOM */
@@ -1313,14 +1320,17 @@ var JTB = function() {
                 return this;
             };
 
-            /** called when the mouse moves on the toolbar's parent */
-            JTB.handleMouseMove = function(tb_id, event) {
+            /** called when the mouse moves */
+            JTB.handleMouseMove = function(event) {
                 mouseX = event.clientX;
                 mouseY = event.clientY;
 
-                var tb = getToolbar(tb_id);
-                if(tb !== null && !tb.pinned && !tb.isAnimating()) {
-                    tb.setStateBasedOnMouse();
+                var i;
+                for(i=0; i<toolbars.length; i++) {
+                    var tb = toolbars[i];
+                    if(!tb.pinned && !tb.isAnimating()) {
+                        tb.setStateBasedOnMouse();
+                    }
                 }
             };
 
@@ -1383,27 +1393,10 @@ var JTB = function() {
                 c.tb_parent.showChildToolbar(c, x, y);
             };
 
-            /* install a function which lets us know when the window is resized */
-            var onresize = document.body.getAttribute('onresize');
-            if(onresize === null) {
-                onresize = '';
-            }
-            else {
-                onresize += '; ';
-            }
-            onresize += 'JTB.handleWindowResizeEvent();';
-            document.body.setAttribute('onresize', onresize);
-
-            /* install a function which lets us know when the mouse is up */
-            var onmouseup = document.body.getAttribute('onmouseup');
-            if(onmouseup === null) {
-                onmouseup = '';
-            }
-            else {
-                onmouseup += '; ';
-            }
-            onmouseup += 'JTB.handleMouseUp(event);';
-            document.body.setAttribute('onmouseup', onmouseup);
+            /* install a global event handlers */
+            appendCode(document.body, 'onresize', 'JTB.handleWindowResizeEvent();');
+            appendCode(document.body, 'onmouseup', 'JTB.handleMouseUp(event);');
+            appendCode(document.body, 'onmousemove', "JTB.handleMouseMove(event);");
         }
     };
 }();
