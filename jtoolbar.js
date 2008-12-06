@@ -1712,6 +1712,11 @@ var JTB = function() {
 
             /** returns whether the mouse is over the toolbar */
             JTB.Toolbar.prototype.isMouseOver = function() {
+                var container = this.getContainer();
+                if(container === null) {
+                    return false;
+                }
+
                 var d = this.getClosestDock(mouseX-findPosX(container),
                                             mouseY-findPosY(container),
                                             0,
