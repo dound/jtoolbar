@@ -704,6 +704,19 @@ var JTB = function() {
                 /* tell the child toolbar it belongs to us now */
                 childToolbar.tb_parent = this;
 
+                /* copy parent's styles into child unless the child has its own */
+                var cs = childToolbar.e_tb.style;
+                var ps = this.e_tb.style;
+                if(cs.backgroundColor==='')      { cs.backgroundColor      = ps.backgroundColor; }
+                if(cs.backgroundImage==='')      { cs.backgroundImage      = ps.backgroundImage; }
+                if(cs.backgroundRepeat==='')     { cs.backgroundRepeat     = ps.backgroundRepeat; }
+                if(cs.backgroundAttachment==='') { cs.backgroundAttachment = ps.backgroundAttachment; }
+                if(cs.backgroundPosition==='')   { cs.backgroundPosition   = ps.backgroundPosition; }
+                if(cs.border==='')               { cs.border               = ps.border; }
+                if(childToolbar.e_tb.getAttribute('class')==='') {
+                    childToolbar.e_tb.setAttribute('class', this.e_tb.getAttribute('class'));
+                }
+
                 /* float the child to the correct position */
                 childToolbar.floatx = x;
                 childToolbar.floaty = y;
