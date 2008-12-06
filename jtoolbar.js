@@ -1197,7 +1197,7 @@ var JTB = function() {
 
             /** get whether the toolbar is pinned (child toolbars are always unpinned) */
             JTB.Toolbar.prototype.isPinned = function() {
-                return !this.isChildToolbar() && this.pinned;
+                return this.isChildToolbar() || this.pinned;
             };
 
             /** set whether the toolbar is pinned (always false if this is a child toolbar) */
