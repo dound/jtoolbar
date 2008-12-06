@@ -316,6 +316,9 @@ var JTB = function() {
             this.floatx         = 0;
             this.floaty         = 0;
 
+            /* whether to clamp a floating toolbar to its container's size */
+            this.clamp_size_on_float = false;
+
             /* position at the beginning of a drag */
             this.dragStartX     = 0;
             this.dragStartY     = 0;
@@ -717,10 +720,17 @@ var JTB = function() {
                 return this;
             };
 
-            /** set whether the toolbar is docked */
-            JTB.Toolbar.prototype.setDocked = function(b) {
-                this.docked = b;
-                this.refreshGfx();
+            /** get whether the toolbar is clamped to the container's size when floating */
+            JTB.Toolbar.prototype.isClampFloatingToolbarSize = function() {
+                return this.clamp_size_on_float;
+            };
+
+            /** set whether the toolbar is clamped to the container's size when floating */
+            JTB.Toolbar.prototype.setClampFloatingToolbarSize = function(b) {
+                this.clamp_size_on_float = b;
+                if(!this.isDocked()) {
+                    this.refreshGfx();
+                }
                 return this;
             };
 
@@ -876,6 +886,30 @@ var JTB = function() {
                 content.style.top    = (py + cy) + 'px';
                 content.style.width  = cw + 'px';
                 content.style.height = ch + 'px';
+
+                if(!this.isDocked() && this.isClampFloatingToolbarSize()) {
+                    var cwf = cw + getExtraWidth(content);
+                    var chf = ch + getExtraHeight(content);
+
+                    /* clamp the toolbar's size to be within the container */
+                    if(tx < 0) {
+                        tw += tx;
+                        tx = 0;
+                    }
+
+                    if(tx + tw > cwf) {
+                        tw = cwf - tx;
+                    }
+
+                    if(ty < 0) {
+                        th += ty;
+                        ty = 0;
+                    }
+
+                    if(ty + th > chf) {
+                        th = chf - ty;
+                    }
+                }
 
                 /* use offset relative to parent toolbar if there is one (vice container) */
                 if(this.tb_parent !== null) {
