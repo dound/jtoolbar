@@ -1426,6 +1426,11 @@ var JTB = function() {
                 return this.state;
             };
 
+            /** whether the toolbar is visible */
+            JTB.Toolbar.prototype.isVisible = function() {
+                return this.state == JTB.STATE_VIS;
+            };
+
             /** show or hide the toolbar */
             JTB.Toolbar.prototype.setVisible = function(b) {
                 if(b) {
