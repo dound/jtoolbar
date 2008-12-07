@@ -11,13 +11,12 @@ a:visited {
 	border-style: solid;
 	border-color: white;
 	border-width: thin;
-	padding-top: 50px
 }
 
 .JTB_button {
 	background-color: IndianRed;
 	color: white;
-	width: 100%;
+	width: 100px;
 	border-top-style: solid;
 	border-bottom-style: solid;
 	border-left-style: solid;

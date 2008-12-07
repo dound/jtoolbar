@@ -4,7 +4,7 @@
 	</head>
 <body>
   <div id="tempest" style="border: 1px solid #000; background-color: #AAAAAA;
-                           padding: 0 10px 0 10px; width: 800px; height: 350px;">
+                           padding: 0 10px 0 10px; width: 800px;">
     <p style="text-align:center"><b><u>The Tempest</u></b></p>
 
     <p>
@@ -41,6 +41,8 @@
     nt2.setImagePath('../images/');
     var t = new JTB.Toolbar(parentName, toolbarName, "dound", "http://www.dound.com", "Schools", nt, "Search", nt2);
     t.setImagePath('../images/');
+    t.clearCookies();
+    t.setAnimationSpringy(false);
     //t.setDebugMode(true);
     //t.setFloatPos(50,50).setDocked(false);
     //setTimeout('t.setOrientation(JTB.ORIENT_TOP);', 1000);
