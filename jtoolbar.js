@@ -1841,7 +1841,7 @@ var JTB = function() {
                     this.initContainerAndContent();
                     hasContent = (this.content_id !== null);
                 }
-                var inferOrientation = (hasContent && !isBasicToolbar && readCookie("orient")==null);
+                var inferOrientation = (hasContent && !isBasicToolbar && readCookie("orient")===null);
 
                 /* create a div to put the links in within the toolbar */
                 this.e_links = document.createElement("div");
