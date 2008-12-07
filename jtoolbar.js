@@ -473,6 +473,9 @@ var JTB = function() {
             /* whether to clamp a floating toolbar to its container's size */
             this.clamp_size_on_float = false;
 
+            /* how to deal with toolbar overflow */
+            this.overflow_style = 'visible';
+
             /* position at the beginning of a drag */
             this.dragStartX     = 0;
             this.dragStartY     = 0;
@@ -1022,6 +1025,18 @@ var JTB = function() {
                 return this;
             };
 
+            /** get how the toolbar deals with overflow */
+            JTB.Toolbar.prototype.getOverflowStyle = function() {
+                return this.overflow_style;
+            };
+
+            /** set how the toolbar deals with overflow */
+            JTB.Toolbar.prototype.setOverflowStyle = function(o) {
+                this.overflow_style = o;
+                this.refreshGfx();
+                return this;
+            };
+
             /** returns true if an animation is going on */
             JTB.Toolbar.prototype.isAnimating = function() {
                 return (this.anim_start != -1);
@@ -1144,7 +1159,7 @@ var JTB = function() {
                 }
                 else {
                     /* always crop overflow: some users may want scroll here */
-                    this.e_tb.style.overflow = 'hidden';
+                    this.e_tb.style.overflow = this.overflow_style;
                 }
 
                 /* show/hide toolbar based on its state if there is no anim */
