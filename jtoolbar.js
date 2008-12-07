@@ -263,11 +263,11 @@ var JTB = function() {
 
     /** Compute the size in pixels of some length field. */
     function lengthToPixels(len, isWidth) {
-        var i;
         if(len===null || len==='') {
             return 0;
         }
 
+        var val = parseInt(len, 10);
         if(typeof(len) == 'string') {
             if(len.indexOf('%') >= 0) {
                 var max;
@@ -277,12 +277,12 @@ var JTB = function() {
                 else {
                     max = document.body.offsetHeight;
                 }
-                return Math.ceil(parseInt(len, 10) * max / 100);
+                return parseInt(val * max / 100, 10);
             }
         }
 
         /* assume pixels as units */
-        return parseInt(len, 10);
+        return val;
     }
 
 
