@@ -291,15 +291,17 @@ var JTB = function() {
     function computeMaxXY(e) {
         var i, c, cur;
         var max = new Coords(lengthToPixels(e.offsetLeft + e.offsetWidth, true),
-                             lengthToPixels(e.offsetLeft + e.offsetHeight, false));
+                             lengthToPixels(e.offsetTop + e.offsetHeight, false));
 
         for(i=0; i<e.childNodes.length; i++) {
-            cur = computeMaxXY(e.childNodes[i]);
-            if(cur.x > max.x) {
-                max.x = cur.x;
-            }
-            if(cur.y > max.y) {
-                max.y = cur.y;
+            if(e.getAttribute('isToolbar') === null) {
+                cur = computeMaxXY(e.childNodes[i]);
+                if(cur.x > max.x) {
+                    max.x = cur.x;
+                }
+                if(cur.y > max.y) {
+                    max.y = cur.y;
+                }
             }
         }
 
@@ -1679,6 +1681,7 @@ var JTB = function() {
                     /* remove the toolbar from its current parent */
                     this.e_tb.parentNode.removeChild(this.e_tb);
                 }
+                this.e_tb.setAttribute('isToolbar', 'y');
 
                 var hasContent = (this.content_id !== null);
                 if(hasContent) {
