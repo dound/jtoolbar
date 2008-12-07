@@ -739,7 +739,7 @@ var JTB = function() {
             /** string representation */
             JTB.SizeHelper.prototype.toString = function() {
                 return this.e.getAttribute('id') + ': ' +
-                  'pref='   + this.width + '/' + this.height + '  ' +
+                  'pref='   + this.getPreferredWidth() + '/' + this.getPreferredHeight() + '  ' +
                   'curr='   + this.getCurrentWidth() + '/' + this.getCurrentHeight() + '  ' +
                   'orient=' + this.vert_orient_width + '/' + this.horiz_orient_height + '  ' +
                   'float='  + this.float_width + '/' + this.float_height + '  ' + '(' + this.float_ignore + ')';
