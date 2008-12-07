@@ -1013,13 +1013,27 @@ var JTB = function() {
                 if(this.isDocked()) {
                     if(sideOriented) {
                         var extraH_tb = getExtraHeight(this.e_tb);
-                        var maxh = Math.max(sz_container.height+extraH, this.sz_tb.height+extraH_tb);
-                        sz_container.height = this.sz_tb.height = maxh;
+                        var c_toth = sz_container.height + extraH;
+                        var t_toth = this.sz_tb.height + extraH_tb;
+                        var maxh = Math.max(c_toth, t_toth);
+                        if(c_toth == maxh) {
+                            this.sz_tb.height = c_toth - extraH_tb;
+                        }
+                        else {
+                            sz_container_h = sz_container.height = t_toth - extraH;
+                        }
                     }
                     else {
                         var extraW_tb = getExtraWidth(this.e_tb);
-                        var maxw = Math.max(sz_container.width+extraW, this.sz_tb.width+extraH_tb);
-                        sz_container.width = this.sz_tb.width = maxw;
+                        var c_totw = sz_container.width + extraW;
+                        var t_totw = this.sz_tb.width + extraW_tb;
+                        var maxw = Math.max(c_totw, t_totw);
+                        if(c_totw == maxw) {
+                            this.sz_tb.width = c_totw - extraW_tb;
+                        }
+                        else {
+                            sz_container_w = sz_container.width = t_totw - extraW;
+                        }
                     }
                 }
 
