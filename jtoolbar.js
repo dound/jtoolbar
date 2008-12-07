@@ -288,20 +288,27 @@ var JTB = function() {
 
     /** compute the maximum x and y values used according to absolutely
      * positioned children (recursve) */
-    function computeMaxXY(e) {
+    function computeMaxXY(e, skipSelf) {
         var i, c, cur;
-        var max = new Coords(lengthToPixels(e.offsetLeft + e.offsetWidth, true),
+
+        var max;
+        if(skipSelf===true || (e.style && e.style.position=='absolute')) {
+            max = new Coords(0, 0);
+        }
+        else {
+            max = new Coords(lengthToPixels(e.offsetLeft + e.offsetWidth, true),
                              lengthToPixels(e.offsetTop + e.offsetHeight, false));
+        }
+
+        var tx=max.x, ty=max.y;
 
         for(i=0; i<e.childNodes.length; i++) {
-            if(e.getAttribute('isToolbar') === null) {
-                cur = computeMaxXY(e.childNodes[i]);
-                if(cur.x > max.x) {
-                    max.x = cur.x;
-                }
-                if(cur.y > max.y) {
-                    max.y = cur.y;
-                }
+            cur = computeMaxXY(e.childNodes[i], false);
+            if(cur.x > max.x) {
+                max.x = cur.x;
+            }
+            if(cur.y > max.y) {
+                max.y = cur.y;
             }
         }
 
@@ -600,9 +607,10 @@ var JTB = function() {
                      * children inside the element (absolute positioned elements
                      * otherwise screw us up)
                      */
-                    var maxXY = computeMaxXY(this.e);
-                    this.width  = maxXY.x - this.e.offsetLeft;
-                    this.height = maxXY.y - this.e.offsetTop;
+                    var maxXY = computeMaxXY(this.e, true);
+                    this.width  = maxXY.x;
+                    this.height = maxXY.y;
+                    this.first = false;
                 }
 
                 /* restore the original style */
@@ -1688,7 +1696,6 @@ var JTB = function() {
                     /* remove the toolbar from its current parent */
                     this.e_tb.parentNode.removeChild(this.e_tb);
                 }
-                this.e_tb.setAttribute('isToolbar', 'y');
 
                 var hasContent = (this.content_id !== null);
                 if(hasContent) {
