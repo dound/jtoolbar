@@ -853,6 +853,11 @@ var JTB = function() {
 
             /** shows a child toolbar (makes childToolbar a child if it isn't already one) */
             JTB.Toolbar.prototype.showChildToolbar = function(childToolbar, x, y) {
+                /* do nothing if this child is already being shown by this toolbar */
+                if(childToolbar == this.vis_tb_child) {
+                    return;
+                }
+
                 /* remove the child from any old parent */
                 childToolbar.hideFromParentToolbar();
 
