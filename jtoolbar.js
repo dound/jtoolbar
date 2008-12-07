@@ -263,7 +263,7 @@ var JTB = function() {
     }
 
     /** Compute the size in pixels of some length field. */
-    function lengthToPixels(len, max) {
+    function lengthToPixels(len, isWidth) {
         var i;
         if(len===null || len==='') {
             return 0;
@@ -271,6 +271,13 @@ var JTB = function() {
 
         if(typeof(len) == 'string') {
             if(len.indexOf('%') >= 0) {
+                var max;
+                if(isWidth) {
+                    max = document.body.offsetWidth;
+                }
+                else {
+                    max = document.body.offsetHeight;
+                }
                 return Math.ceil(parseInt(len, 10) * max / 100);
             }
         }
@@ -280,7 +287,25 @@ var JTB = function() {
     }
 
 
+    /** compute the maximum x and y values used according to absolutely
+     * positioned children (recursve) */
+    function computeMaxXY(e) {
+        var i, c, cur;
+        var max = new Coords(lengthToPixels(e.offsetLeft + e.offsetWidth, true),
+                             lengthToPixels(e.offsetLeft + e.offsetHeight, false));
 
+        for(i=0; i<e.childNodes.length; i++) {
+            cur = computeMaxXY(e.childNodes[i]);
+            if(cur.x > max.x) {
+                max.x = cur.x;
+            }
+            if(cur.y > max.y) {
+                max.y = cur.y;
+            }
+        }
+
+        return max;
+    }
 
     /** sets the style parameters of an icon div */
     function setupIconDiv(e) {
