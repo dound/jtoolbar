@@ -1902,10 +1902,12 @@ var JTB = function() {
             /** terminates any ongoing drag operation */
             JTB.Toolbar.prototype.handleMouseUp = function() {
                 if(this.isDragging()) {
-                    /* TODO: handle dock being changed case */
                     ICON_ANCHOR.style.display = 'none';
                     this.dragging = false;
                     this.refreshGfx();
+
+                    /* re-enable text selection on the toolbar */
+                    this.e_tb.setAttribute("onmousedown", "");
                 }
             };
 
@@ -2075,6 +2077,9 @@ var JTB = function() {
                 tb.dragStartY = tb.e_tb.offsetTop;
                 tb.dragging = true;
                 tb.refreshGfx();
+
+                /* disable text selection on the toolbar */
+                tb.e_tb.setAttribute("onmousedown", "return false;");
             };
 
             /** handle a click on a float icon */
