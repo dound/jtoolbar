@@ -576,15 +576,9 @@ var JTB = function() {
                     }
                 }
                 else {
-                    w = lengthToPixels(this.float_width,  true);
-                    h = lengthToPixels(this.float_height, false);
-
-                    /* force exact size */
-                    if(this.tb === null) {
-                        this.width = w;
-                        this.height = h;
-                        return;
-                    }
+                    this.width = lengthToPixels(this.float_width,  true);
+                    this.height = lengthToPixels(this.float_height, false);
+                    return;
                 }
 
                 /* save the current values: we're just getting not setting sizes */
@@ -1846,8 +1840,8 @@ var JTB = function() {
                 }
                 var cw = container.offsetWidth;
                 var ch = container.offsetHeight;
-                var tw = lengthToPixels(this.sz_tb.vert_orient_width);
-                var th = lengthToPixels(this.sz_tb.horiz_orient_height);
+                var tw = lengthToPixels(this.sz_tb.vert_orient_width, true);
+                var th = lengthToPixels(this.sz_tb.horiz_orient_height, false);
 
                 /* compute distance to the docking locations */
                 var dl = distanceSqToRectangle(x, y, 0, 0, tw, ch);
