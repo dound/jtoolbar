@@ -1825,7 +1825,8 @@ var JTB = function() {
 
                 /* get the toolbar element */
                 this.e_tb = document.getElementById(this.tb_id);
-                if(this.e_tb === null) {
+                var isBasicToolbar = (this.e_tb === null);
+                if(isBasicToolbar) {
                     /* create the toolbar if it doesn't exist */
                     this.e_tb = document.createElement("div");
                     this.e_tb.setAttribute('id', this.tb_id);
@@ -1840,6 +1841,7 @@ var JTB = function() {
                     this.initContainerAndContent();
                     hasContent = (this.content_id !== null);
                 }
+                var inferOrientation = (hasContent && isBasicToolbar);
 				
                 /* create a div to put the links in within the toolbar */
                 this.e_links = document.createElement("div");
@@ -1897,6 +1899,31 @@ var JTB = function() {
 
                 /* create size helpers */
                 this.sz_tb = new JTB.SizeHelper(this.e_tb, this);
+
+                /* infer the default orientation for custom root toolbars */
+                if(inferOrientation) {
+                    var w = lengthToPixels(this.sz_tb.float_width, true);
+                    var h = lengthToPixels(this.sz_tb.float_height, false);
+
+                    if(w > h) {
+                        /* horizontal */
+                        if(this.e_tb.offsetLeft <= (document.body.offsetWidth / 2)) {
+                            this.setOrientation(JTB.ORIENT_LEFT);
+                        }
+                        else {
+                            this.setOrientation(JTB.ORIENT_RIGHT);
+                        }
+                    }
+                    else if(h > w) {
+                        /* vertical */
+                        if(this.e_tb.offsetTop <= (document.body.offsetHeight / 2)) {
+                            this.setOrientation(JTB.ORIENT_TOP);
+                        }
+                        else {
+                            this.setOrientation(JTB.ORIENT_BOTTOM);
+                        }
+                    }
+                }
 
                 /* build the toolbar links (triggers a ui redraw too) */
                 this.refreshLinks();
