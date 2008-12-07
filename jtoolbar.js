@@ -26,7 +26,7 @@ var JTB = function() {
     var debugErrReported = false;
     function debug(newstr) {
         if(window.console) {
-            console.debug("message", newstr);
+            console.debug(newstr);
         }
         else if(!debugErrReported) {
             debugErrReported = true;
