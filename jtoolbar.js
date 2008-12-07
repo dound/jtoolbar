@@ -34,7 +34,7 @@ var JTB = function() {
         }
     }
 
-    function createCookie(name,value,days) {
+    function createCookie(name,value,days,path) {
         var expires;
         if(days) {
             var date = new Date();
@@ -44,15 +44,15 @@ var JTB = function() {
         else {
             expires = "";
         }
-        document.cookie = name+"="+value+expires+"; path=/";
+        document.cookie = name+"="+value+expires+"; path=" + path;
     }
 
-    function createBooleanCookie(name,value,days) {
+    function createBooleanCookie(name,value,days,path) {
         if(value === true) {
-            createCookie(name, 'T', days);
+            createCookie(name, 'T', days, path);
         }
         else {
-            createCookie(name, 'F', days);
+            createCookie(name, 'F', days, path);
         }
     }
 
@@ -79,8 +79,8 @@ var JTB = function() {
         return (v === 'T');
     }
 
-    function eraseCookie(name) {
-        createCookie(name,"",-1);
+    function eraseCookie(name,path) {
+        createCookie(name,"",-1,path);
     }
 
     /** simple object containing a set of coordinates */
@@ -510,6 +510,9 @@ var JTB = function() {
             /* pixels from the edge which triggers the toolbar to show */
             this.trigger_dist   = 100;
 
+            /* path to use to store cookies (page means use the page URL */
+            this.cookie_path    = '/';
+
             /* array of ToolbarLink objects to show in the toolbar div */
             this.links          = [];
 
@@ -922,7 +925,7 @@ var JTB = function() {
                 if(orient != this.orient) {
                     this.orient = orient;
                     this.refreshGfx();
-                    createCookie("orient", this.orient, COOKIE_LIFETIME_DAYS);
+                    createCookie("orient", this.orient, COOKIE_LIFETIME_DAYS, this.cookie_path);
                 }
                 return this;
             };
@@ -941,7 +944,7 @@ var JTB = function() {
             JTB.Toolbar.prototype.setDocked = function(b) {
                 this.docked = !this.isChildToolbar() && b;
                 this.refreshGfx();
-                createBooleanCookie("docked", this.docked, COOKIE_LIFETIME_DAYS);
+                createBooleanCookie("docked", this.docked, COOKIE_LIFETIME_DAYS, this.cookie_path);
                 return this;
             };
 
@@ -985,8 +988,8 @@ var JTB = function() {
                 if(this.isFloating()) {
                     this.refreshGfx();
                 }
-                createCookie("floatx", this.floatx, COOKIE_LIFETIME_DAYS);
-                createCookie("floaty", this.floaty, COOKIE_LIFETIME_DAYS);
+                createCookie("floatx", this.floatx, COOKIE_LIFETIME_DAYS, this.cookie_path);
+                createCookie("floaty", this.floaty, COOKIE_LIFETIME_DAYS, this.cookie_path);
                 return this;
             };
 
@@ -1398,7 +1401,7 @@ var JTB = function() {
             /** set whether the toolbar is pinned (always false if this is a child toolbar) */
             JTB.Toolbar.prototype.setPinned = function(b) {
                 this.pinned = (this.isChildToolbar() ? false : b);
-                createBooleanCookie("pinned", this.pinned, COOKIE_LIFETIME_DAYS);
+                createBooleanCookie("pinned", this.pinned, COOKIE_LIFETIME_DAYS, this.cookie_path);
                 return this;
             };
 
@@ -1593,6 +1596,22 @@ var JTB = function() {
             /** set the # of pixels from the edge at which the toolbar will popup */
             JTB.Toolbar.prototype.setTriggerDistance = function(d) {
                 this.trigger_dist = d;
+                return this;
+            };
+
+            /** get the path cookies are saved with */
+            JTB.Toolbar.prototype.getCookiePath = function() {
+                return this.cookie_path;
+            };
+
+            /** set the path to save cookies with */
+            JTB.Toolbar.prototype.setCookiePath = function(path) {
+                if(path == 'page') {
+                    this.cookie_path = document.location.pathname;
+                }
+                else {
+                    this.cookie_path = path;
+                }
                 return this;
             };
 
@@ -1817,11 +1836,11 @@ var JTB = function() {
 
             /** clears the toolbar's cookies */
             JTB.Toolbar.prototype.clearCookies = function() {
-                eraseCookie("orient");
-                eraseCookie("docked");
-                eraseCookie("floatx");
-                eraseCookie("floaty");
-                eraseCookie("pinned");
+                eraseCookie("orient", this.cookie_path);
+                eraseCookie("docked", this.cookie_path);
+                eraseCookie("floatx", this.cookie_path);
+                eraseCookie("floaty", this.cookie_path);
+                eraseCookie("pinned", this.cookie_path);
             };
 
             /** restores the toolbar's UI-changable options from the cookie */
