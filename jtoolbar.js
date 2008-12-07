@@ -1902,8 +1902,8 @@ var JTB = function() {
 
                 /* infer the default orientation for custom root toolbars */
                 if(inferOrientation) {
-                    var w = lengthToPixels(this.sz_tb.float_width, true);
-                    var h = lengthToPixels(this.sz_tb.float_height, false);
+                    var w = lengthToPixels(this.e_tb.offsetWidth, true);
+                    var h = lengthToPixels(this.e_tb.offsetHeight, false);
 
                     if(h > w) {
                         /* vertical */
