@@ -579,6 +579,13 @@ var JTB = function() {
                 else {
                     w = lengthToPixels(this.float_width,  true);
                     h = lengthToPixels(this.float_height, false);
+
+                    /* force exact size */
+                    if(this.tb === null) {
+                        this.width = w;
+                        this.height = h;
+                        return;
+                    }
                 }
 
                 /* save the current values: we're just getting not setting sizes */
