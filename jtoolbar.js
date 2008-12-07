@@ -847,6 +847,12 @@ var JTB = function() {
                 /* remove the child from any old parent */
                 childToolbar.hideFromParentToolbar();
 
+                /* remove any other child this toolbar was showing */
+                if(this.vis_tb_child !== null) {
+                    this.vis_tb_child.hideFromParentToolbar();
+                    this.vis_tb_child = null;
+                }
+
                 /* tell the child toolbar it belongs to us now */
                 childToolbar.tb_parent = this;
 
