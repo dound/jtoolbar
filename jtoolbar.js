@@ -254,6 +254,12 @@ var JTB = function() {
             setTimeout(function(){JTB.handleAnimationCallback(tb.tb_id);},
                        JTB.ANIM_INTERVAL_MSEC);
         }
+        else if(tb.isChildToolbar()) {
+            var container = tb.tb_parent.getContainer();
+            if(container !== null) {
+                container.removeChild(tb.e_tb);
+            }
+        }
     }
 
     /** sets the style parameters of an icon div */
@@ -732,6 +738,7 @@ var JTB = function() {
 
                 /* show the child */
                 this.vis_tb_child = childToolbar;
+                childToolbar.setState(JTB.STATE_VIS);
                 this.refreshGfx();
 
                 return this;
@@ -748,12 +755,8 @@ var JTB = function() {
                 if(e.tb_parent !== null) {
                     if(e.tb_parent.vis_tb_child == e) {
                         e.tb_parent.vis_tb_child = null;
+                        e.setState(JTB.STATE_INVIS);
                         e.tb_parent.refreshGfx();
-
-                        var container = e.tb_parent.getContainer();
-                        if(container !== null) {
-                            container.removeChild(e.e_tb);
-                        }
                     }
                 }
             };
