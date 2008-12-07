@@ -392,16 +392,14 @@ var JTB = function() {
 
             /* set the natural size override based on the style values */
             if(e.style.width !== '') {
-                var w = parseInt(e.style.width, 10);
-                this.float_width = this.vert_orient_width = w;
+                this.float_width = this.vert_orient_width = e.style.width;
             }
             else if(tb === null) {
                 this.float_width = this.e.offsetWidth;
             }
 
             if(e.style.height !== '') {
-                var h = parseInt(e.style.height, 10);
-                this.float_height = this.horiz_orient_height = h;
+                this.float_height = this.horiz_orient_height = e.style.height;
             }
             else if(tb === null) {
                 this.float_height = this.e.offsetHeight;
