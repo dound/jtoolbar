@@ -1464,10 +1464,20 @@ var JTB = function() {
                 this.anim_start = new Date().getTime();
                 if(this.isSideOriented()) {
                     this.anim_src_width = this.sz_tb.getCurrentWidth();
-                    this.anim_src_height = sz_container_h + getExtraHeight(this.getContent());
+                    if(this.isChildToolbar()) {
+                        this.anim_src_height = this.sz_tb.getCurrentHeight();
+                    }
+                    else {
+                        this.anim_src_height = sz_container_h + getExtraHeight(this.getContent());
+                    }
                 }
                 else {
-                    this.anim_src_width = sz_container_w + getExtraWidth(this.getContent());
+                    if(this.isChildToolbar()) {
+                        this.anim_src_width = sz_container_w + getExtraWidth(this.getContent());
+                    }
+                    else {
+                        this.anim_src_width = this.sz_tb.getCurrentWidth();
+                    }
                     this.anim_src_height = this.sz_tb.getCurrentHeight();
                 }
                 this.anim_first_half = true;
