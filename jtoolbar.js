@@ -542,8 +542,9 @@ var JTB = function() {
                 var isFloat;
 
                 if(this.tb !== null) {
-                    orient = this.tb.getOrientation();
-                    isFloat = this.tb.isFloating();
+                    var rt = this.tb.getRootToolbar();
+                    orient = rt.getOrientation();
+                    isFloat = rt.isFloating();
                 }
                 else {
                     orient = null;
@@ -771,6 +772,15 @@ var JTB = function() {
                 this.tb_parent = tb;
                 return this;	
             };	
+
+            JTB.Toolbar.prototype.getRootToolbar = function () {
+                if(this.tb_parent === null) {
+                    return this;
+                }
+                else {
+                    return this.tb_parent.getRootToolbar();
+                }
+            };			
 			
             /** get the name of the element the toolbar is attached to (may be null) */
             JTB.Toolbar.prototype.getContentName = function() {
