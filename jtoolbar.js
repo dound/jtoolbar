@@ -1838,8 +1838,8 @@ var JTB = function() {
                 }
                 var cw = container.offsetWidth;
                 var ch = container.offsetHeight;
-                var tw = this.sz_tb.getPreferredWidth();
-                var th = this.sz_tb.getPreferredHeight();
+                var tw = this.sz_tb.vert_orient_width;
+                var th = this.sz_tb.horiz_orient_height;
 
                 /* compute distance to the docking locations */
                 var dl = distanceSqToRectangle(x, y, 0, 0, tw, ch);
