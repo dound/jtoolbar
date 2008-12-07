@@ -617,8 +617,8 @@ var JTB = function() {
                      * otherwise screw us up)
                      */
                     var maxXY = computeMaxXY(this.e, true);
-                    this.width  = maxXY.x;
-                    this.height = maxXY.y;
+                    this.width  = ((w===0) ? maxXY.x : w);
+                    this.height = ((h===0) ? maxXY.y : h);
                     this.first = false;
                 }
 
