@@ -757,13 +757,13 @@ var JTB = function() {
                	var displayStyle = (orient == JTB.ORIENT_LEFT || orient == JTB.ORIENT_RIGHT) ? "block" : "table-cell";
                	if (typeof(this.link) == "string") {
                		// normal link           		       		
-               		return '<div class=\"JTB_link\" style=\"display: ' + displayStyle + '\"> <a href=\"' + this.link + '\">' + this.name + '</a> </div>';  			
+               		return '<div class=\"JTB_button\" style=\"display: ' + displayStyle + '\"> <a href=\"' + this.link + '\">' + this.name + '</a> </div>';  			
                	}
                 else {
                 	// link is actually a nested toolbar            	
                 	var tbName = this.link.getToolbarName();
                 	//return '<div onmouseover=\"JTB.showChildToolbar(\'' + tbName + '\', 100, 100)\">' + this.name + '</div>'; 	
-               		return '<div class=\"JTB_button\"onmouseover=\"JTB.showChildToolbar(\'' + tbName + '\', JTB.findXOffset(\'' + tbName + '\', event)' + ', JTB.findYOffset(\'' + tbName + '\', event))\" style=\"display: ' + displayStyle + '">' + '&gt; ' + this.name + '</div>';
+               		return '<div class=\"JTB_button\"onmouseover=\"JTB.showChildToolbar(\'' + tbName + '\', JTB.findXOffset(\'' + tbName + '\', event)' + ', JTB.findYOffset(\'' + tbName + '\', event))\" style=\"display: ' + displayStyle + '">' + '&#187 ' + this.name + '</div>';
             	}
             };
 
@@ -2223,6 +2223,11 @@ var JTB = function() {
             	// Remove the units from the width string
             	var w = parentToolbar.e_tb.style.width;
             	w = w.substr(0,w.length-2);
+            	var bw = parentToolbar.e_tb.style.borderWidth;
+            	
+            	document.getElementById('debug').innerHTML = bw;
+            	
+            	
             	if (orient == JTB.ORIENT_LEFT) {
             		return linkDiv.offsetLeft + (+w);
             	} else if (orient == JTB.ORIENT_RIGHT) {

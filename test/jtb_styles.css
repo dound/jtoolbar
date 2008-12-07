@@ -1,0 +1,29 @@
+a:link {
+	color: Gold
+}
+a:visited {
+	color: LightSkyBlue
+}
+
+.JTB_toolbar {
+	background-color: IndianRed;
+	width: 100px;
+	border-style: solid;
+	border-color: white;
+	border-width: thin;
+	padding-top: 50px
+}
+
+.JTB_button {
+	background-color: IndianRed;
+	color: white;
+	width: 100%;
+	border-top-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-right-style: solid;
+	border-width: thin;
+	border-color: white;
+	font-weight: bold;
+	padding: 5px;
+}
