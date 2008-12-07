@@ -757,13 +757,13 @@ var JTB = function() {
                	var displayStyle = (orient == JTB.ORIENT_LEFT || orient == JTB.ORIENT_RIGHT) ? "block" : "table-cell";
                	if (typeof(this.link) == "string") {
                		// normal link           		       		
-               		return '<div style="display: ' + displayStyle + '"> <a href="' + this.link + '">' + this.name + '</a> </div>';  			
+               		return '<div class=\"JTB_link\" style=\"display: ' + displayStyle + '\"> <a href=\"' + this.link + '\">' + this.name + '</a> </div>';  			
                	}
                 else {
                 	// link is actually a nested toolbar            	
                 	var tbName = this.link.getToolbarName();
                 	//return '<div onmouseover=\"JTB.showChildToolbar(\'' + tbName + '\', 100, 100)\">' + this.name + '</div>'; 	
-               		return '<div onmouseover=\"JTB.showChildToolbar(\'' + tbName + '\', JTB.findXOffset(\'' + tbName + '\', event)' + ', JTB.findYOffset(\'' + tbName + '\', event))\" style=\"display: ' + displayStyle + '">' + this.name + '</div>';
+               		return '<div class=\"JTB_button\"onmouseover=\"JTB.showChildToolbar(\'' + tbName + '\', JTB.findXOffset(\'' + tbName + '\', event)' + ', JTB.findYOffset(\'' + tbName + '\', event))\" style=\"display: ' + displayStyle + '">' + '&gt; ' + this.name + '</div>';
             	}
             };
 
@@ -1830,6 +1830,7 @@ var JTB = function() {
                     /* create the toolbar if it doesn't exist */
                     this.e_tb = document.createElement("div");
                     this.e_tb.setAttribute('id', this.tb_id);
+                    this.e_tb.setAttribute('class', 'JTB_toolbar');
                 }
                 else {
                     /* remove the toolbar from its current parent */
