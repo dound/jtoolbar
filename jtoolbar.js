@@ -1653,7 +1653,7 @@ var JTB = function() {
             /** Notify orientation listeners that an orientation change has occurred. */
             JTB.Toolbar.prototype.fireOrientationListeners = function(oldOrientation) {
                 var i;
-                for(var i in this.orientation_listeners) {
+                for(i=0; i<this.orientation_listeners.length; i++) {
                     var f = this.orientation_listeners[i];
                     f(this, oldOrientation);
                 }
@@ -1679,7 +1679,7 @@ var JTB = function() {
             /** Notify visibility listeners that a visibility change has occurred. */
             JTB.Toolbar.prototype.fireVisibilityListeners = function() {
                 var i;
-                for(var i in this.visibility_listeners) {
+                for(i=0; i<this.visibility_listeners.length; i++) {
                     var f = this.visibility_listeners[i];
                     f(this);
                 }
