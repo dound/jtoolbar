@@ -1748,13 +1748,17 @@ var JTB = function() {
 
             /** initialize the container and content divs */
             JTB.Toolbar.prototype.initContainerAndContent = function() {
+                /* get the content and its parent */
+                this.e_content = document.getElementById(this.content_id);
+                if(this.e_content === null) {
+                    this.content_id = null;
+                    return;
+                }
+                var parent = this.e_content.parentNode;
+
                 /* create a div to hold the toolbar and its attached content */
                 this.e_container = document.createElement("div");
                 this.e_container.setAttribute('id', this.tb_id + "_container");
-
-                /* get the content and its parent */
-                this.e_content = document.getElementById(this.content_id);
-                var parent = this.e_content.parentNode;
 
                 /* determine where in the parent's list of children the content is */
                 var childIndex, nextChild = null;
@@ -1819,6 +1823,7 @@ var JTB = function() {
                 var hasContent = (this.content_id !== null);
                 if(hasContent) {
                     this.initContainerAndContent();
+                    hasContent = (this.content_id !== null);
                 }
 				
                 /* create a div to put the links in within the toolbar */
