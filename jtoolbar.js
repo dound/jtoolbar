@@ -554,6 +554,8 @@ var JTB = function() {
                 if(this.cached_isVert===isVert && this.cached_isFloat===isFloat) {
                     return;
                 }
+                this.cached_isVert = isVert;
+                this.cached_isFloat = isFloat;
 
                 /* get the predetermined height and width values (if any) */
                 var w=0, h=0;
