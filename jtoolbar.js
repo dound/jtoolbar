@@ -1905,8 +1905,8 @@ var JTB = function() {
                     var w = lengthToPixels(this.sz_tb.float_width, true);
                     var h = lengthToPixels(this.sz_tb.float_height, false);
 
-                    if(w > h) {
-                        /* horizontal */
+                    if(h > w) {
+                        /* vertical */
                         if(this.e_tb.offsetLeft <= (document.body.offsetWidth / 2)) {
                             this.setOrientation(JTB.ORIENT_LEFT);
                         }
@@ -1914,8 +1914,8 @@ var JTB = function() {
                             this.setOrientation(JTB.ORIENT_RIGHT);
                         }
                     }
-                    else if(h > w) {
-                        /* vertical */
+                    else if(w > h) {
+                        /* horizontal */
                         if(this.e_tb.offsetTop <= (document.body.offsetHeight / 2)) {
                             this.setOrientation(JTB.ORIENT_TOP);
                         }
