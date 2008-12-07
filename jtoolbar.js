@@ -388,9 +388,16 @@ var JTB = function() {
                 var w = parseInt(e.style.width, 10);
                 this.float_width = this.vert_orient_width = w;
             }
+            else if(tb === null) {
+                this.float_width = this.e.offsetWidth;
+            }
+
             if(e.style.height !== '') {
                 var h = parseInt(e.style.height, 10);
                 this.float_height = this.horiz_orient_height = h;
+            }
+            else if(tb === null) {
+                this.float_height = this.e.offsetHeight;
             }
         },
 
