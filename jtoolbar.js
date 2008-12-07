@@ -1670,7 +1670,7 @@ var JTB = function() {
                     parent.insertBefore(this.e_container, nextChild);
                 }
 
-                this.sz_container = new JTB.SizeHelper(this.e_container, this);
+                this.sz_container = new JTB.SizeHelper(this.e_container, null);
             };
 
             /* create and hook the toolbar into the UI (assumes it is not already hooked in */
