@@ -22,22 +22,15 @@ var JTB = function() {
     var toolbars = [];
     var mouseDragX, mouseDragY;
     var mouseX, mouseY;
-    var debugMode = false;
-    var debugLines = [MAX_DEBUG_LINES];
 
+    var debugErrReported = false;
     function debug(newstr) {
-        var i, str="";
-        for(i=MAX_DEBUG_LINES-2; i>=0; i--) {
-            if(debugLines[i] !== undefined) {
-                str = '<br/>' + debugLines[i] + str;
-                debugLines[i+1] = debugLines[i];
-            }
+        if(console) {
+            console.debug("message", newstr);
         }
-        str = '<br/>' + newstr + str;
-        debugLines[0] = newstr;
-
-        if(debugMode) {
-            document.getElementById('debug').innerHTML = str;
+        else if(!debugErrReported) {
+            debugErrReported = true;
+            alert('warning: you need to run firebug and enable the console to see debugging output');
         }
     }
 
@@ -1764,12 +1757,6 @@ var JTB = function() {
                     this.dragging = false;
                     this.refreshGfx();
                 }
-            };
-
-            /** set whether debug mode is on */
-            JTB.Toolbar.prototype.setDebugMode = function(b) {
-                debugMode = b;
-                return this;
             };
 
             /** clears the toolbar's cookies */
