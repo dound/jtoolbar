@@ -90,6 +90,12 @@ var JTB = function() {
         createCookie(name,"",-1);
     }
 
+    /** simple object containing a set of coordinates */
+    function Coords(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
     /** returns the distance squared from a point to a rectangle */
     function distanceSqToRectangle(x, y, rx, ry, rw, rh) {
         var dx, dy;
