@@ -44,6 +44,10 @@
     //setTimeout('t.setOrientation(JTB.ORIENT_RIGHT);', 3000);
     //setTimeout('t.setOrientation(JTB.ORIENT_LEFT);', 4000);
     //t.clearCookies();
+
+    t.addOrientationListener(function f(tb, oldOrient) { document.title = 'orient=' + tb.getOrientation(); });
+    t.addVisibilityListener(function f(tb, oldOrient) { document.title = 'vis=' + tb.isVisible(); });
+
   </script>
 </body>
 </html>

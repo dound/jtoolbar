@@ -513,6 +513,12 @@ var JTB = function() {
             /* path to use to store cookies (page means use the page URL */
             this.cookie_path    = '/';
 
+            /** array of functions to call when orientation changes */
+            this.orientation_listeners = [];
+
+            /** array of functions to call when visibility changes */
+            this.visibility_listeners = [];
+
             /* array of ToolbarLink objects to show in the toolbar div */
             this.links          = [];
 
@@ -923,9 +929,13 @@ var JTB = function() {
             /** set the location of the toolbar on its parent */
             JTB.Toolbar.prototype.setOrientation = function(orient) {
                 if(orient != this.orient) {
+                    var oldOrient = this.orient;
+
                     this.orient = orient;
                     this.refreshGfx();
                     createCookie("orient", this.orient, COOKIE_LIFETIME_DAYS, this.cookie_path);
+
+                    this.fireOrientationListeners(oldOrient);
                 }
                 return this;
             };
@@ -1497,6 +1507,8 @@ var JTB = function() {
                 this.anim_first_half = true;
                 this.anim_split = ((newState==JTB.STATE_VIS) ? (1.0-SPLIT_CLOSE) : SPLIT_CLOSE);
                 handleToolbarAnimation(this);
+
+                this.fireVisibilityListeners();
                 return this;
             };
 
@@ -1618,6 +1630,59 @@ var JTB = function() {
                     this.cookie_path = path;
                 }
                 return this;
+            };
+
+            /**
+             * Register for a callback when orientation changes.  Two arguments
+             * will be passed - the toolbar and the old orientation state.  (The
+             * new state can be determined with toolbar.getOrientation()).
+             */
+            JTB.Toolbar.prototype.addOrientationListener = function(f) {
+                this.orientation_listeners[this.orientation_listeners.length] = f;
+            };
+
+            /** Unregister an orientation listener. */
+            JTB.Toolbar.prototype.removeOrientationListener = function(f) {
+                var i = this.orientation_listeners.indexOf(f);
+                if(i >= 0) {
+                    this.orientation_listeners[i] = this.orientation_listeners[0];
+                    this.orientation_listeners.shift();
+                }
+            };
+
+            /** Notify orientation listeners that an orientation change has occurred. */
+            JTB.Toolbar.prototype.fireOrientationListeners = function(oldOrientation) {
+                var i;
+                for(var i in this.orientation_listeners) {
+                    var f = this.orientation_listeners[i];
+                    f(this, oldOrientation);
+                }
+            };
+
+            /**
+             * Register for a callback when visibility changes.  One argument
+             * will be passed - the toolbar.
+             */
+            JTB.Toolbar.prototype.addVisibilityListener = function(f) {
+                this.visibility_listeners[this.visibility_listeners.length] = f;
+            };
+
+            /** Unregister a visibility listener. */
+            JTB.Toolbar.prototype.removeVisibilityListener = function(f) {
+                var i = this.visibility_listeners.indexOf(f);
+                if(i >= 0) {
+                    this.visibility_listeners[i] = this.visibility_listeners[0];
+                    this.visibility_listeners.shift();
+                }
+            };
+
+            /** Notify visibility listeners that a visibility change has occurred. */
+            JTB.Toolbar.prototype.fireVisibilityListeners = function() {
+                var i;
+                for(var i in this.visibility_listeners) {
+                    var f = this.visibility_listeners[i];
+                    f(this);
+                }
             };
 
             /** get the array of ToolbarLinks links associated with the toolbar */
@@ -1851,7 +1916,7 @@ var JTB = function() {
             /** restores the toolbar's UI-changable options from the cookie */
             JTB.Toolbar.prototype.restoreFromCookie = function() {
                 var orient = readCookie("orient");
-                if(orient !== null) { this.orient = orient; }
+                if(orient !== null) { this.setOrientation(orient); }
 
                 var docked = readBooleanCookie("docked");
                 if(docked !== null) { this.docked = docked; }
