@@ -888,7 +888,7 @@ var JTB = function() {
                 childToolbar.floaty = y;
 
                 /* put the child at the same depth as its parent */
-                childToolbar.e_tb.style.zIndex = this.e_tb.style.zIndex;
+                childToolbar.setZIndex(this.e_tb.style.zIndex);
 
                 /* make sure the child is in the container */
                 var container = this.getContainer();
@@ -1866,8 +1866,8 @@ var JTB = function() {
 
                 if(hasContent) {
                 	var z = findZIndex(this.e_content);
-                	this.e_tb.style.zIndex = z + 1;
                     this.e_content.style.zIndex = z;
+                    this.setZIndex(z + 1);
                 }
 
                 /* make sure the anchor is always in front */
@@ -1887,6 +1887,14 @@ var JTB = function() {
             /** unhook the toolbar from the UI (assumes it is currently hooked in) */
             JTB.Toolbar.prototype.unhook = function() {
                 /* TODO */
+            };
+
+            /** set the zIndex of the toolbar and its icons */
+            JTB.Toolbar.prototype.setZIndex = function(z) {
+                this.e_tb.style.zIndex = z;
+                this.e_icon_drag.style.zIndex = z;
+                this.e_icon_float.style.zIndex = z;
+                this.e_icon_pin.style.zIndex = z;
             };
 
             /** refreshes the toolbar elements to reflect a change in available space */
