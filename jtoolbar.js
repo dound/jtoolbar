@@ -644,7 +644,7 @@ var JTB = function() {
                     this.vert_orient_width = w;
 
                     if(!this.tb.isFloating() || this.float_ignore) {
-                        this.refreshSizeData();
+                        this.invalidateCacheAndRefreshSizeData();
                     }
                 }
             };
@@ -655,7 +655,7 @@ var JTB = function() {
                     this.horiz_orient_height = h;
 
                     if(!this.tb.isFloating() || this.float_ignore) {
-                        this.refreshSizeData();
+                        this.invalidateCacheAndRefreshSizeData();
                     }
                 }
             };
@@ -667,7 +667,7 @@ var JTB = function() {
                     this.horiz_orient_height = h;
 
                     if(!this.tb.isFloating() || this.float_ignore) {
-                        this.refreshSizeData();
+                        this.invalidateCacheAndRefreshSizeData();
                     }
                 }
             };
@@ -678,7 +678,7 @@ var JTB = function() {
                     this.float_width = w;
 
                     if(this.tb.isFloating()) {
-                        this.refreshSizeData();
+                        this.invalidateCacheAndRefreshSizeData();
                     }
                 }
             };
@@ -689,7 +689,7 @@ var JTB = function() {
                     this.float_height = h;
 
                     if(this.tb.isFloating()) {
-                        this.refreshSizeData();
+                        this.invalidateCacheAndRefreshSizeData();
                     }
                 }
             };
@@ -701,7 +701,7 @@ var JTB = function() {
                     this.float_height = h;
 
                     if(this.tb.isFloating()) {
-                        this.refreshSizeData();
+                        this.invalidateCacheAndRefreshSizeData();
                     }
                 }
             };
@@ -713,7 +713,7 @@ var JTB = function() {
                     this.float_ignore = b;
 
                     if(this.tb.isFloating()) {
-                        this.refreshSizeData();
+                        this.invalidateCacheAndRefreshSizeData();
                     }
                 }
             };
