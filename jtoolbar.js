@@ -616,11 +616,8 @@ var JTB = function() {
                 else {
                 	// link is actually a nested toolbar            	
                 	var tbName = this.link.getToolbarName();
-                	//return '<div onmouseover=\"document.write(\'Come on\');\")>' + this.name + '</div>';
-                	
-                	return '<div onmouseover=\"JTB.showChildToolbar(\'' + tbName + '\', 100, 100)\">' + this.name + '</div>';
-                	   	
-               		//return '<div onmouseover=\"JTB.showChildToolbar(' + tbName + ', JTB.findXOffset(' + tbName + ', event)' + ', JTB.findYOffset(' + tbName + ', event))" style="display: ' + displayStyle + '">' + this.name + '</div>';
+                	//return '<div onmouseover=\"JTB.showChildToolbar(\'' + tbName + '\', 100, 100)\">' + this.name + '</div>'; 	
+               		return '<div onmouseover=\"JTB.showChildToolbar(\'' + tbName + '\', JTB.findXOffset(\'' + tbName + '\', event)' + ', JTB.findYOffset(\'' + tbName + '\', event))\" style=\"display: ' + displayStyle + '">' + this.name + '</div>';
             	}
             };
 
@@ -1890,10 +1887,13 @@ var JTB = function() {
             	var linkDiv = event.target;
             	var parentToolbar = childToolbar.getParentToolbar();
             	var orient = parentToolbar.getOrientation();
+            	// Remove the units from the width string
+            	var w = parentToolbar.e_tb.style.width;
+            	w = w.substr(0,w.length-2);
             	if (orient == JTB.ORIENT_LEFT) {
-            		return (linkDiv.offsetLeft + parentToolbar.e_tb.width);
+            		return linkDiv.offsetLeft + (+w);
             	} else if (orient == JTB.ORIENT_RIGHT) {
-            		return (linkDiv.offsetLeft - childToolbar.e_tb.width);	
+            		return linkDiv.offsetLeft - (+w);	
             	} else {
             		return linkDiv.offsetLeft;
             	}
@@ -1905,10 +1905,12 @@ var JTB = function() {
             	var linkDiv = event.target;
             	var parentToolbar = childToolbar.getParentToolbar();
             	var orient = parentToolbar.getOrientation();
+            	var h = parentToolbar.e_tb.style.height;
+            	h = h.substr(0,h.length-2);
             	if (orient == JTB.ORIENT_TOP) {
-            		return (linkDiv.offsetTop + parentToolbar.e_tb.height);
+            		return linkDiv.offsetTop + (+h);
             	} else if (orient == JTB.ORIENT_BOTTOM) {
-            		return (linkDiv.offsetTop - childToolbar.e_tb.height);	
+            		return linkDiv.offsetTop - (+h);	
             	} else {
             		return linkDiv.offsetTop;
             	}

@@ -1,0 +1,54 @@
+<html>
+<body>
+  <div id="tempest" style="border: 1px solid #000; background-color: #AAAAAA;
+                           padding: 0 10px 0 10px; width: 800px; height: 350px;">
+    <p style="text-align:center"><b><u>The Tempest</u></b></p>
+
+    <p>
+      Now would I give a thousand furlongs of sea for an
+      acre of barren ground, long heath, brown furze, any
+      thing. The wills above be done! but I would fain
+      die a dry death.
+    </p>
+
+    <p>
+      I prithee, let me bring thee where crabs grow;
+      And I with my long nails will dig thee pignuts;
+      Show thee a jay's nest and instruct thee how
+      To snare the nimble marmoset; I'll bring thee
+      To clustering filberts and sometimes I'll get thee
+      Young scamels from the rock. Wilt thou go with me?
+    </p>
+
+    <p>
+      How many goodly creatures are there here!
+      How beauteous mankind is! O brave new world,
+      That has such people in't!
+    </p>
+  </div>
+
+  <div id="custom_toolbar" style="width:100px; background-color:#FAA;">
+    <p align="center"><b>LINKS</b></p>
+  </div>
+
+  <div id="debug" style="position:absolute; top:500px; background-color:#777777" onmouseover="document.getElementById('debug').innerHTML = 'hello world!'"> hello </div>
+
+  <script src="../jtoolbar.js"></script>
+  <script>
+    var parentName  = "tempest";
+    var toolbarName = "custom_toolbar";
+    var nt = new JTB.Toolbar(null, "nested_tb1", "Stanford", "http://www.stanford.edu", "Berkeley", "http://www.berkeley.edu");
+    nt.setImagePath('../images/');
+    var nt2 = new JTB.Toolbar(null, "nested_tb2", "Google", "http://www.google.com", "Yahoo", "http://www.yahoo.com");
+    nt2.setImagePath('../images/');
+    var t = new JTB.Toolbar(parentName, toolbarName, "dound", "http://www.dound.com", "Schools", nt, "Search", nt2);
+    t.setImagePath('../images/');
+    //t.setDebugMode(true);
+    //t.setFloatPos(50,50).setDocked(false);
+    //setTimeout('t.setOrientation(JTB.ORIENT_TOP);', 1000);
+    //setTimeout('t.setOrientation(JTB.ORIENT_BOTTOM);', 2000);
+    //setTimeout('t.setOrientation(JTB.ORIENT_RIGHT);', 3000);
+    //setTimeout('t.setOrientation(JTB.ORIENT_LEFT);', 4000);
+  </script>
+</body>
+</html>
