@@ -262,6 +262,26 @@ var JTB = function() {
         }
     }
 
+    /** Compute the size in pixels of some length field. */
+    function lengthToPixels(len, max) {
+        var i;
+        if(len===null || len==='') {
+            return 0;
+        }
+
+        if(typeof(len) == 'string') {
+            if(len.indexOf('%') >= 0) {
+                return Math.ceil(parseInt(len, 10) * max / 100);
+            }
+        }
+
+        /* assume pixels as units */
+        return parseInt(len, 10);
+    }
+
+
+
+
     /** sets the style parameters of an icon div */
     function setupIconDiv(e) {
         e.style.backgroundRepeat = 'no-repeat';
