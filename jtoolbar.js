@@ -342,43 +342,61 @@ var JTB = function() {
          * and/or the height dimensions to be forced to a specific value if
          * desired.
          */
-        SizeHelper : function(e) {
+        SizeHelper : function(e, tb) {
             /** the element this handles size for */
             this.e = e;
 
-            /** true if width refers to a forced width, else a natural one */
-            this.forced_width = false;
+            /** the toolbar this is associated with */
+            this.tb = tb;
 
-            /** true if height refers to a forced height, else a natural one */
-            this.forced_height = false;
-
-            /** the width of this element when it is visible */
+            /** the current intended width of this element */
             this.width = 0;
 
-            /** the height of this element when it is visible */
+            /** the current intended height of this element */
             this.height = 0;
 
-            /** the default width of this element when it is visible */
-            this.default_width = '';
+            /**
+             * The width of this element when it is in a vertical orientation.
+             * If empty, then the "natural" width is used.  If a percentage is
+             * specified, then it will be a percentage of the container.
+             */
+            this.vert_orient_width = '';
 
-            /** the default height of this element when it is visible */
-            this.default_height = '';
+            /**
+             * The height of this element when it is in a horizontal
+             * orientation.  If empty, then the "natural" width is used.  If a
+             * percentage is specified, then it will be a percentage of the
+             * container.
+             */
+            this.horiz_orient_height = '';
 
-            /* set the forced sizes if they exist */
+            /**
+             * The width and height of this element when it is floating.  If
+             * empty, then the "natural" width is used.  If a percentage is
+             * specified, then it will be a percentage of the container.
+             */
+            this.float_width = '';
+            this.float_height = '';
+
+            /**
+             * Whether to have size based on orientation even if in float mode
+             * (e.g. whether to ignore the float_width and float_height fields).
+             */
+            this.float_ignore = true;
+
+            /** cached parameters to enable quick bailout from size computation */
+            this.cached_isVert  = null;
+            this.cached_isFloat = null;
+
+            /* set the natural size override based on the style values */
             if(e.style.width !== '') {
-                this.forced_width = true;
                 var w = parseInt(e.style.width, 10);
-                this.width = w;
-                this.default_width = w;
+                this.float_width = this.vert_orient_width = w;
             }
             if(e.style.height !== '') {
-                this.forced_height = true;
                 var h = parseInt(e.style.height, 10);
-                this.height = h;
-                this.default_height = h;
+                this.float_height = this.horiz_orient_height = h;
             }
-
-            this.refreshSizeData();
         },
 
         /**
@@ -509,150 +527,203 @@ var JTB = function() {
         },
 
         init : function() {
-            /** refresh the internal data about how much space this elt uses */
+            /** Compute the size for this element based on the reference toolbar's status. */
             JTB.SizeHelper.prototype.refreshSizeData = function() {
-                if(this.forced_width && this.forced_height) {
-                    /* nothing to do: just go with the forced values */
+                var orient;
+                var isFloat;
+
+                if(this.tb !== null) {
+                    orient = this.tb.getOrientation();
+                    isFloat = this.tb.isFloating();
+                }
+                else {
+                    orient = null;
+                    isFloat = true;
+                }
+
+                this.refreshSizeDataFull(orient, isFloat);
+            };
+
+            /** Compute the size for this element based on the specified toolbar
+             * status. */
+            JTB.SizeHelper.prototype.refreshSizeDataFull = function(orient, isFloat) {
+                var isVert  = (orient==JTB.ORIENT_LEFT || orient==JTB.ORIENT_RIGHT);
+                var isHoriz = (orient==JTB.ORIENT_TOP  || orient==JTB.ORIENT_BOTTOM);
+
+                /* stop now if the parameters have not changed */
+                if(this.cached_isVert===isVert && this.cached_isFloat===isFloat) {
                     return;
                 }
 
-                /* unset any dimensions which are not forced */
-                var w = this.e.style.width;
-                var h = this.e.style.height;
-                if(!this.forced_width) {
-                    this.e.style.width = '';
+                /* get the predetermined height and width values (if any) */
+                var w=0, h=0;
+                if((!isFloat || this.float_ignore) && this.tb!==null) {
+                    if(isVert) {
+                        w = lengthToPixels(this.vert_orient_width, true);
+                    }
+                    else if(isHoriz) {
+                        h = lengthToPixels(this.horiz_orient_height, false);
+                    }
                 }
-                if(!this.forced_height) {
-                    this.e.style.height = '';
+                else {
+                    w = lengthToPixels(this.float_width,  true);
+                    h = lengthToPixels(this.float_height, false);
                 }
 
-                /* make sure the element is visible and unrestricted so we can
-                   get its preferred size */
-                var dis = this.e.style.display;
-                var pos = this.e.style.position;
-                if(dis == 'none') { this.e.style.display = 'block'; }
-                this.e.style.position = 'absolute';
+                /* save the current values: we're just getting not setting sizes */
+                var es       = this.e.style;
+                var orig_w   = es.width;
+                var orig_h   = es.height;
+                var orig_dis = es.display;
+                var orig_pos = es.position;
 
-                /* get the preferred sizes */
-                if(!this.forced_width) {
+                /* prepare each dimension */
+                es.width  = ((w===0) ? '' : (w + 'px'));
+                es.height = ((h===0) ? '' : (h + 'px'));
+
+                /* make sure the element is visible and unrestricted in size */
+                es.display = 'block';
+                es.position = 'absolute';
+
+                /* get the preferred sizes: incorrect if there absolutely
+                 * positioned elements inside of us */
+                if(this.assume_no_abs_postioned_elts) {
                     this.width = this.e.offsetWidth;
-                }
-                if(!this.forced_height) {
                     this.height = this.e.offsetHeight;
+                }
+                else {
+                    /* compute the real preferred size by looking at all
+                     * children inside the element (absolute positioned elements
+                     * otherwise screw us up)
+                     */
+                    var maxXY = computeMaxXY(this.e);
+                    this.width  = maxXY.x - this.e.offsetLeft;
+                    this.height = maxXY.y - this.e.offsetTop;
                 }
 
                 /* restore the original style */
-                if(dis == 'none') { this.e.style.display = dis; }
-                this.e.style.position = pos;
-                this.e.style.width = w;
-                this.e.style.height = h;
+                es.width    = orig_w;
+                es.height   = orig_h;
+                es.display  = orig_dis;
+                es.position = orig_pos;
             };
 
-            /** require the element to have the specified width */
-            JTB.SizeHelper.prototype.forceWidth = function(w) {
-                if(w === '') {
-                    this.useNaturalWidth();
-                }
-                else if(!this.forced_width || this.width!=w) {
-                    this.forced_width = true;
-                    this.width = w;
-                    this.refreshSizeData();
-                }
+            /**
+             * Invalidates any cached values.  Should be called whenever the
+             * content of a toolbar changes.
+             */
+            JTB.SizeHelper.prototype.invalidateCacheAndRefreshSizeData = function() {
+                this.cached_isVert = this.cached_isFloat = null;
+                this.refreshSizeData();
             };
 
-            /** require the element to have the specified height */
-            JTB.SizeHelper.prototype.forceHeight = function(h) {
-                if(h === '') {
-                    this.useNaturalHeight();
-                }
-                else if(!this.forced_height || this.height!=h) {
-                    this.forced_height = true;
-                    this.height = h;
-                    this.refreshSizeData();
+            /** Sets the width of the element when it is vertically orientated */
+            JTB.SizeHelper.prototype.setVertOrientWidth = function(w) {
+                if(this.vert_orient_width != w) {
+                    this.vert_orient_width = w;
+
+                    if(!this.tb.isFloating() || this.float_ignore) {
+                        this.refreshSizeData();
+                    }
                 }
             };
 
-            /** require the element to have the specified size */
-            JTB.SizeHelper.prototype.forceSize = function(w, h) {
-                this.forceWidth(w);
-                this.forceHeight(h);
-            };
+            /** Sets the height of the element when it is horizontally orientated */
+            JTB.SizeHelper.prototype.setHorizOrientHeight = function(h) {
+                if(this.horiz_orient_height != h) {
+                    this.horiz_orient_height = h;
 
-            /** make the current width the required width */
-            JTB.SizeHelper.prototype.forceCurrentWidth = function() {
-                this.forced_width = true;
-            };
-
-            /** make the current height the required height */
-            JTB.SizeHelper.prototype.forceCurrentHeight = function() {
-                this.forced_height = true;
-            };
-
-            /** make the current width and height the required size */
-            JTB.SizeHelper.prototype.forceCurrent = function() {
-                this.forceCurrentWidth();
-                this.forceCurrentHeight();
-            };
-
-            /** make the current forced width the default width */
-            JTB.SizeHelper.prototype.resetToDefaultWidth = function() {
-                this.forceWidth(this.default_width);
-            };
-
-            /** make the current forced height the default height */
-            JTB.SizeHelper.prototype.resetToDefaultHeight = function() {
-                this.forceHeight(this.default_height);
-            };
-
-            /** make the element use whatever its natural width is */
-            JTB.SizeHelper.prototype.useNaturalWidth = function() {
-                if(this.forced_width) {
-                    this.forced_width = false;
-                    this.refreshSizeData();
+                    if(!this.tb.isFloating() || this.float_ignore) {
+                        this.refreshSizeData();
+                    }
                 }
             };
 
-            /** make the element use whatever its natural height is */
-            JTB.SizeHelper.prototype.useNaturalHeight = function() {
-                if(this.forced_height) {
-                    this.forced_height = false;
-                    this.refreshSizeData();
+            /** Sets the orientation-specific dimension sizes. */
+            JTB.SizeHelper.prototype.setOrientSpecificSize = function(w, h) {
+                if(this.vert_orient_width!=w && this.horiz_orient_height!=h) {
+                    this.vert_orient_width = w;
+                    this.horiz_orient_height = h;
+
+                    if(!this.tb.isFloating() || this.float_ignore) {
+                        this.refreshSizeData();
+                    }
                 }
             };
 
-            /** update the size of the element based on our data */
-            JTB.SizeHelper.prototype.setToBestSize = function() {
-                this.e.style.width  = this.width  + 'px';
-                this.e.style.height = this.height + 'px';
+            /** Sets the width of the element when it is floating */
+            JTB.SizeHelper.prototype.setFloatWidth = function(w) {
+                if(this.float_width != w) {
+                    this.float_width = w;
+
+                    if(this.tb.isFloating()) {
+                        this.refreshSizeData();
+                    }
+                }
             };
 
-            /** gets the width the element uses when it is visible */
-            JTB.SizeHelper.prototype.getVisWidth = function() {
+            /** Sets the height of the element when it is floating */
+            JTB.SizeHelper.prototype.setFloatHeight = function(h) {
+                if(this.float_height != h) {
+                    this.float_height = h;
+
+                    if(this.tb.isFloating()) {
+                        this.refreshSizeData();
+                    }
+                }
+            };
+
+            /** Sets the orientation-specific dimension sizes. */
+            JTB.SizeHelper.prototype.setFloatSize = function(w, h) {
+                if(this.float_width!=w && this.float_height!=h) {
+                    this.float_width = w;
+                    this.float_height = h;
+
+                    if(this.tb.isFloating()) {
+                        this.refreshSizeData();
+                    }
+                }
+            };
+
+            /** Sets whether floating should not be taken into account when
+             * determining size (e.g. true=ignore setFloatXXX values). */
+            JTB.SizeHelper.prototype.setFloatIgnore = function(b) {
+                if(this.float_ignore != b) {
+                    this.float_ignore = b;
+
+                    if(this.tb.isFloating()) {
+                        this.refreshSizeData();
+                    }
+                }
+            };
+
+            /** gets the preferred width of the element */
+            JTB.SizeHelper.prototype.getPreferredWidth = function() {
                 return this.width;
             };
 
-            /** gets the height the element uses when it is visible */
-            JTB.SizeHelper.prototype.getVisHeight = function() {
+            /** gets the preferred height of the element */
+            JTB.SizeHelper.prototype.getPreferredHeight = function() {
                 return this.height;
             };
 
             /** gets the current width of the element */
-            JTB.SizeHelper.prototype.getCurWidth = function() {
+            JTB.SizeHelper.prototype.getCurrentWidth = function() {
                 return this.e.offsetWidth;
             };
 
             /** gets the current height of the element */
-            JTB.SizeHelper.prototype.getCurHeight = function() {
+            JTB.SizeHelper.prototype.getCurrentHeight = function() {
                 return this.e.offsetHeight;
             };
 
             /** string representation */
             JTB.SizeHelper.prototype.toString = function() {
                 return this.e.getAttribute('id') + ': ' +
-                  'forc=' + this.forced_width  + '/' + this.forced_height  + '  ' +
-                  'size=' + this.width         + '/' + this.height         + '  ' +
-                  'curr=' + this.getCurWidth() + '/' + this.getCurHeight() + '  ' +
-                  'defa=' + this.default_width + '/' + this.default_height;
+                  'pref='   + this.width + '/' + this.height + '  ' +
+                  'curr='   + this.getCurrentWidth() + '/' + this.getCurrentHeight() + '  ' +
+                  'orient=' + this.vert_orient_width + '/' + this.horiz_orient_height + '  ' +
+                  'float='  + this.float_width + '/' + this.float_height + '  ' + '(' + this.float_ignore + ')';
             };
 
 
@@ -918,8 +989,9 @@ var JTB = function() {
                 var sz_container = this.getContainerSize();
                 var sz_container_w=0, sz_container_h=0;
                 if(sz_container !== null) {
-                    sz_container_w = sz_container.width;
-                    sz_container_h = sz_container.height;
+                    sz_container.refreshSizeData();
+                    sz_container_w = sz_container.getPreferredWidth();
+                    sz_container_h = sz_container.getPreferredHeight();
                 }
                 else {
                     sz_container_w = 0;
@@ -938,18 +1010,27 @@ var JTB = function() {
                 var extraH = getExtraHeight(content);
 
                 /* coerce the toolbar to a reasonable size */
+                this.sz_tb.refreshSizeData();
+
+                /* if the toolbar is docked, make sure the content and toolbar
+                 * are the same size on the docked dimension */
                 var sideOriented = this.isSideOriented();
-                if(sideOriented) {
-                    this.sz_tb.resetToDefaultWidth();
-                    this.sz_tb.forceHeight(sz_container_h + extraH);
-                } else {
-                    this.sz_tb.forceWidth(sz_container_w + getExtraWidth(content));
-                    this.sz_tb.resetToDefaultHeight();
+                if(this.isDocked()) {
+                    if(sideOriented) {
+                        var extraH_tb = getExtraHeight(this.e_tb);
+                        var maxh = Math.max(sz_container.height+extraH, this.sz_tb.height+extraH_tb);
+                        sz_container.height = this.sz_tb.height = maxh;
+                    }
+                    else {
+                        var extraW_tb = getExtraWidth(this.e_tb);
+                        var maxw = Math.max(sz_container.width+extraW, this.sz_tb.width+extraH_tb);
+                        sz_container.width = this.sz_tb.width = maxw;
+                    }
                 }
 
                 /* determine the toolbar's current size */
-                var tw = this.sz_tb.width;
-                var th = this.sz_tb.height;
+                var tw = this.sz_tb.getPreferredWidth();
+                var th = this.sz_tb.getPreferredHeight();
                 var vis = (this.getState() == JTB.STATE_VIS);
                 if(this.isAnimating()) {
                     /* always visible during the animation */
@@ -982,8 +1063,8 @@ var JTB = function() {
                         else {
                             if(this.anim_first_half) {
                                 this.anim_first_half = false;
-                                this.anim_src_width = this.sz_tb.getCurWidth();
-                                this.anim_src_height = this.sz_tb.getCurHeight();
+                                this.anim_src_width = this.sz_tb.getCurrentWidth();
+                                this.anim_src_height = this.sz_tb.getCurrentHeight();
                             }
 
                             /* second part: go to final dst */
@@ -1336,8 +1417,8 @@ var JTB = function() {
                 var sz_container = this.getContainerSize();
                 var sz_container_w=0, sz_container_h=0;
                 if(sz_container !== null) {
-                    sz_container_w = sz_container.width;
-                    sz_container_h = sz_container.height;
+                    sz_container_w = sz_container.getPreferredWidth();
+                    sz_container_h = sz_container.getPreferredHeight();
                 }
                 else {
                     sz_container_w = 0;
@@ -1347,12 +1428,12 @@ var JTB = function() {
                 /* perform the transition animation */
                 this.anim_start = new Date().getTime();
                 if(this.isSideOriented()) {
-                    this.anim_src_width = this.sz_tb.getCurWidth();
+                    this.anim_src_width = this.sz_tb.getCurrentWidth();
                     this.anim_src_height = sz_container_h + getExtraHeight(this.getContent());
                 }
                 else {
                     this.anim_src_width = sz_container_w + getExtraWidth(this.getContent());
-                    this.anim_src_height = this.sz_tb.getCurHeight();
+                    this.anim_src_height = this.sz_tb.getCurrentHeight();
                 }
                 this.anim_first_half = true;
                 this.anim_split = ((newState==JTB.STATE_VIS) ? (1.0-SPLIT_CLOSE) : SPLIT_CLOSE);
@@ -1372,16 +1453,16 @@ var JTB = function() {
                 var vis = (this.getState() == JTB.STATE_VIS);
                 var maxdx, maxdy;
                 if(vis || this.isFloating()) {
-                    maxdx = this.sz_tb.width;
-                    maxdy = this.sz_tb.height;
+                    maxdx = this.sz_tb.getPreferredWidth();
+                    maxdy = this.sz_tb.getPreferredHeight();
                 }
                 else {
                     if(this.isSideOriented()) {
                         maxdx = this.trigger_dist;
-                        maxdy = this.sz_tb.height;
+                        maxdy = this.sz_tb.getPreferredHeight();
                     }
                     else {
-                        maxdx = this.sz_tb.width;
+                        maxdx = this.sz_tb.getPreferredWidth();
                         maxdy = this.trigger_dist;
                     }
                 }
@@ -1404,10 +1485,10 @@ var JTB = function() {
                     }
 
                     if(this.orient == JTB.ORIENT_RIGHT) {
-                        x = findPosX(content) + cw - this.sz_tb.width;
+                        x = findPosX(content) + cw - this.sz_tb.getPreferredWidth();
                     }
                     else if(this.orient == JTB.ORIENT_BOTTOM) {
-                        y = findPosY(content) + ch - this.sz_tb.height;
+                        y = findPosY(content) + ch - this.sz_tb.getPreferredHeight();
                     }
                 }
                 else {
@@ -1516,7 +1597,7 @@ var JTB = function() {
                     this.e_links.innerHTML += this.links[i].makeLink();
                 }
 
-                this.sz_tb.refreshSizeData();
+                this.sz_tb.invalidateCacheAndRefreshSizeData();
                 this.refreshGfx();
             };
 
@@ -1571,7 +1652,7 @@ var JTB = function() {
                     parent.insertBefore(this.e_container, nextChild);
                 }
 
-                this.sz_container = new JTB.SizeHelper(this.e_container);
+                this.sz_container = new JTB.SizeHelper(this.e_container, this);
             };
 
             /* create and hook the toolbar into the UI (assumes it is not already hooked in */
@@ -1650,7 +1731,7 @@ var JTB = function() {
                 }
 
                 /* create size helpers */
-                this.sz_tb = new JTB.SizeHelper(this.e_tb);
+                this.sz_tb = new JTB.SizeHelper(this.e_tb, this);
 
                 /* build the toolbar links (triggers a ui redraw too) */
                 this.refreshLinks();
@@ -1665,10 +1746,11 @@ var JTB = function() {
 
             /** refreshes the toolbar elements to reflect a change in available space */
             JTB.Toolbar.prototype.handleResizing = function() {
-                if(this.sz_container !== null) {
-                    this.sz_container.refreshSizeData();
+                this.sz_tb.invalidateCacheAndRefreshSizeData();
+                var sz_container = this.getContainerSize();
+                if(sz_container !== null) {
+                    sz_container.invalidateCacheAndRefreshSizeData();
                 }
-                this.sz_tb.refreshSizeData();
                 this.refreshGfx();
             };
 
