@@ -254,10 +254,10 @@ var JTB = function() {
             setTimeout(function(){JTB.handleAnimationCallback(tb.tb_id);},
                        JTB.ANIM_INTERVAL_MSEC);
         }
-        else if(tb.isChildToolbar()) {
+        else if(tb.isChildToolbar() && tb.getState()==JTB.STATE_INVIS) {
             var container = tb.tb_parent.getContainer();
             if(container !== null) {
-                container.removeChild(tb.e_tb);
+                try { container.removeChild(tb.e_tb); } catch(err) { /* ignore */ }
             }
         }
     }
