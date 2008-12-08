@@ -1798,29 +1798,29 @@ var JTB = function() {
 
             /** refresh the links shown in the toolbar */
             JTB.Toolbar.prototype.refreshLinks = function() {
-                var i, len;
-				if (this.orient == JTB.ORIENT_LFET || this.orient == JTB.ORIENT_RIGHT) {
+                var i, len, str;
+				if (this.isSideOriented()) {
 	                
 	                document.title= "LR";
 	                
-	                this.e_links.innerHTML = "";
+	                str = "";
 	                len = this.links.length;
 	                for(i=0; i<len; i++) {
-	                    this.e_links.innerHTML += this.links[i].makeLink();
+	                    str += this.links[i].makeLink();
 	                }				
 				} else {
 					
 					document.title= "BLAH";
  						
-					this.e_links.innerHTML = "<table> <tr>";
+					str = "<table cellspacing=0> <tbody> <tr>";
 					len = this.links.length;
 					for(i=0; i<len; i++) {
-						this.e_links.innerHTML += "<td>";
-	                    this.e_links.innerHTML += this.links[i].makeLink();
-	                    this.e_links.innerHTML += "</td>";
-	                }	
-					this.e_links.innerHTML += "</tr> </table>";	
+						str = str + "<td style=\"padding: 0\">" + this.links[i].makeLink() + "</td>"; 
+	                }
+	                str += "</tr> </tbody> </table>";
 				}
+				this.e_links.innerHTML = str;
+				
                 this.sz_tb.invalidateCacheAndRefreshSizeData();
                 this.refreshGfx();
             };
