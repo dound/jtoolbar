@@ -363,6 +363,7 @@ var JTB = function() {
              * specified, then it will be a percentage of the container.
              */
             this.vert_orient_width = '';
+            this.real_vert_orient_width = 0;
 
             /**
              * The height of this element when it is in a horizontal
@@ -371,6 +372,7 @@ var JTB = function() {
              * container.
              */
             this.horiz_orient_height = '';
+            this.real_horiz_orient_height = 0;
 
             /**
              * The width and height of this element when it is floating.  If
@@ -625,6 +627,13 @@ var JTB = function() {
                     this.first = false;
                 }
 
+                if(isVert) {
+                    this.real_vert_orient_width = this.width;
+                }
+                else {
+                    this.real_horiz_orient_height = this.height;
+                }
+
                 /* restore the original style */
                 es.width    = orig_w;
                 es.height   = orig_h;
@@ -641,6 +650,12 @@ var JTB = function() {
                 this.refreshSizeData();
             };
 
+            /** Returns the effective vertical orientation width. */
+            JTB.SizeHelper.prototype.getVertOrientWidth = function() {
+                var w = lengthToPixels(this.vert_orient_width, true);
+                return ((w === 0)  ? this.real_vert_orient_width : w);
+            };
+
             /** Sets the width of the element when it is vertically orientated */
             JTB.SizeHelper.prototype.setVertOrientWidth = function(w) {
                 if(this.vert_orient_width != w) {
@@ -650,6 +665,12 @@ var JTB = function() {
                         this.invalidateCacheAndRefreshSizeData();
                     }
                 }
+            };
+
+            /** Returns the effective horization orientation height. */
+            JTB.SizeHelper.prototype.getHorizOrientHeight = function() {
+                var h = lengthToPixels(this.horiz_orient_height, true);
+                return ((h === 0)  ? this.real_horiz_orient_height : h);
             };
 
             /** Sets the height of the element when it is horizontally orientated */
@@ -1929,6 +1950,14 @@ var JTB = function() {
                 /* build the toolbar links (triggers a ui redraw too) */
                 this.refreshLinks();
 
+                /* ensure we have reasonable width/height values for docked toolbars */
+                if(this.sz_tb.getVertOrientWidth() === 0) {
+                    this.sz_tb.refreshSizeDataFull(JTB.ORIENT_LEFT, false);
+                }
+                if(this.sz_tb.getHorizOrientHeight() === 0) {
+                    this.sz_tb.refreshSizeDataFull(JTB.ORIENT_TOP, false);
+                }
+
                 this.restoreFromCookie();
             };
 
@@ -2008,8 +2037,8 @@ var JTB = function() {
                 }
                 var cw = container.offsetWidth;
                 var ch = container.offsetHeight;
-                var tw = lengthToPixels(this.sz_tb.vert_orient_width, true);
-                var th = lengthToPixels(this.sz_tb.horiz_orient_height, false);
+                var tw = this.sz_tb.getVertOrientWidth();
+                var th = this.sz_tb.getHorizOrientHeight();
 
                 /* compute distance to the docking locations */
                 var dl = distanceSqToRectangle(x, y, 0, 0, tw, ch);
