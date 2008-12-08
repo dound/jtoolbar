@@ -1,7 +1,7 @@
 <html>
 <body>
   <div id="tempest" style="border: 1px solid #000; background-color: #AAAAAA;
-                           padding: 0 10px 0 10px; width: 800px; height: 500px;">
+                           padding: 0 10px 0 10px; position:absolute; left:10px; top:50px; width: 800px; height: 500px;">
     <p style="text-align:center"><b><u>The Tempest</u></b></p>
 
     <p>
@@ -42,7 +42,7 @@
     //setTimeout('t.setOrientation(JTB.ORIENT_BOTTOM);', 2000);
     //setTimeout('t.setOrientation(JTB.ORIENT_RIGHT);', 3000);
     //setTimeout('t.setOrientation(JTB.ORIENT_LEFT);', 4000);
-    //t.clearCookies();
+    t.clearCookies();
 
     t.addOrientationListener(function f(tb, oldOrient) { document.title = 'orient=' + tb.getOrientation(); });
     t.addVisibilityListener(function f(tb, oldOrient) { document.title = 'vis=' + tb.isVisible(); });
