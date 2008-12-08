@@ -525,6 +525,7 @@ var JTB = function() {
 
             /* pixels from the edge which triggers the toolbar to show */
             this.trigger_dist   = 100;
+            this.use_trigger_dist = false;
 
             /* path to use to store cookies (page means use the page URL */
             this.cookie_path    = '/';
@@ -1605,61 +1606,14 @@ var JTB = function() {
                     return;
                 }
 
-                /* determine the max deviation from the top-left corner of the toolbar */
-                var vis = (this.getState() == JTB.STATE_VIS);
-                var maxdx, maxdy;
-                if(vis || this.isFloating()) {
-                    maxdx = this.sz_tb.getPreferredWidth();
-                    maxdy = this.sz_tb.getPreferredHeight();
-                }
-                else {
-                    if(this.isSideOriented()) {
-                        maxdx = this.trigger_dist;
-                        maxdy = this.sz_tb.getPreferredHeight();
-                    }
-                    else {
-                        maxdx = this.sz_tb.getPreferredWidth();
-                        maxdy = this.trigger_dist;
-                    }
+                if(this.isVisible() && !this.isFloating()) {
+                    this.use_trigger_dist = true;
                 }
 
-                /* get the position of the toolbar */
-                var x = findPosX(this.e_tb);
-                var y = findPosY(this.e_tb);
-                if(this.isDocked()) {
-                    /* adjust based on orientation */
-                    var content = this.getContent();
-                    var cw, ch;
-                    if(content === null) {
-                        cw = ch = 0;
-                    }
-                    else {
-                        cw = content.offsetWidth;
-                        ch = content.offsetHeight;
-                    }
+                vis = this.isMouseOverMeOrParents();
+                this.setVisible(vis);
 
-                    if(this.orient == JTB.ORIENT_RIGHT) {
-                        x = findPosX(content) + cw - this.sz_tb.getPreferredWidth();
-                    }
-                    else if(this.orient == JTB.ORIENT_BOTTOM) {
-                        y = findPosY(content) + ch - this.sz_tb.getPreferredHeight();
-                    }
-                }
-
-                /* determine whether the mouse is over this toolbar's area */
-                vis = (mouseX>=x && mouseX<x+maxdx && mouseY>=y && mouseY<y+maxdy);
-
-                if(this.isChildToolbar() && this.tb_parent!==null && !vis) {
-                    /* only popout children if the mouse is also not over its parents */
-                    vis = this.tb_parent.isMouseOverMeOrParents();
-                    if(!vis) {
-                        this.hideFromParentToolbar();
-                    }
-                }
-                else {
-                    /* display the toolbar iff the mouse is within the maximum deviation */
-                    this.setVisible(vis);
-                }
+                this.use_trigger_dist = false;
             };
 
             /** get the number of milliseconds the animation will last */
@@ -1863,6 +1817,7 @@ var JTB = function() {
                 this.e_container.style.top     = this.e_content.style.top;
                 this.e_container.style.width   = this.e_content.style.width;
                 this.e_container.style.zIndex  = this.e_content.style.zIndex;
+                this.e_container.style.position = this.e_content.style.position;
 
                 /* clear the copied properties from the content */
                 this.e_content.style.display = 'block';
@@ -2085,20 +2040,34 @@ var JTB = function() {
              * curAdvantageMultiple (e.g. higher number => greater preference).
              */
             JTB.Toolbar.prototype.getClosestDock = function(x, y, thresh, curAdvantageMultiple) {
-                var sz_container = this.getContainerSize();
-                if(sz_container === null) {
+                var root_tb = this.getRootToolbar();
+                var sz_container = root_tb.sz_container;
+                var container = root_tb.e_container;
+                if(sz_container===null || container===null) {
                     return null;
                 }
+
+                var cl = container.offsetLeft;
+                var ct = container.offsetTop;
                 var cw = sz_container.float_width;
                 var ch = sz_container.float_height;
                 var tw = this.sz_tb.getVertOrientWidth();
                 var th = this.sz_tb.getHorizOrientHeight();
 
+                if(this.use_trigger_dist) {
+                    if(this.isSideOriented()) {
+                        tw = this.trigger_dist;
+                    }
+                    else {
+                        th = this.trigger_dist;
+                    }
+                }
+
                 /* compute distance to the docking locations */
-                var dl = distanceSqToRectangle(x, y, 0, 0, tw, ch);
-                var dt = distanceSqToRectangle(x, y, 0, 0, cw, th);
-                var dr = distanceSqToRectangle(x, y, cw - tw, 0, tw, ch);
-                var db = distanceSqToRectangle(x, y, 0, ch - th, cw, th);
+                var dl = distanceSqToRectangle(x, y, cl, ct, tw, ch);
+                var dt = distanceSqToRectangle(x, y, cl, cl, cw, th);
+                var dr = distanceSqToRectangle(x, y, cl + cw - tw, ct, tw, ch);
+                var db = distanceSqToRectangle(x, y, cl, ct + ch - th, cw, th);
 
                 /* compute the minimum distance */
                 var minDist = Math.min(dl, Math.min(dt, Math.min(dr, db)));
