@@ -522,7 +522,7 @@ var JTB = function() {
             this.animation_len_msec = 200;
 
             /* whether to use the spring animation or not */
-            this.anim_springy   = true;
+            this.anim_springy   = false;
 
             /* pixels from the edge which triggers the toolbar to show */
             this.trigger_dist   = 100;
