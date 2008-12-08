@@ -2328,7 +2328,7 @@ var JTB = function() {
             	var childToolbar = JTB.getToolbar(childToolbarName);
             	var linkDiv = event.target;
             	var parentToolbar = childToolbar.getParentToolbar();
-            	var orient = parentToolbar.getOrientation();
+            	var orient = childToolbar.getRootToolbar().getOrientation();
             	
             	// Remove the units from the width string
             	var w = parentToolbar.e_tb.style.width;
@@ -2348,7 +2348,7 @@ var JTB = function() {
             	var childToolbar = JTB.getToolbar(childToolbarName);
             	var linkDiv = event.target;
             	var parentToolbar = childToolbar.getParentToolbar();
-            	var orient = parentToolbar.getOrientation();
+            	var orient = childToolbar.getRootToolbar().getOrientation();
             	var h = parentToolbar.e_tb.style.height;
             	h = h.substr(0,h.length-2);
             	if (orient == JTB.ORIENT_TOP) {
