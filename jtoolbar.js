@@ -1108,7 +1108,7 @@ var JTB = function() {
                 if(this.isDocked()) {
                     if(sideOriented) {
                         var extraH_tb = getExtraHeight(this.e_tb);
-                        var c_toth = sz_container.height + extraH;
+                        var c_toth = sz_container.height;
                         var t_toth = this.sz_tb.height + extraH_tb;
                         var maxh = Math.max(c_toth, t_toth);
                         if(c_toth == maxh) {
@@ -1120,7 +1120,7 @@ var JTB = function() {
                     }
                     else {
                         var extraW_tb = getExtraWidth(this.e_tb);
-                        var c_totw = sz_container.width + extraW;
+                        var c_totw = container.offsetWidth;
                         var t_totw = this.sz_tb.width + extraW_tb;
                         var maxw = Math.max(c_totw, t_totw);
                         if(c_totw == maxw) {
