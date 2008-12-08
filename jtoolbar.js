@@ -1594,11 +1594,9 @@ var JTB = function() {
                 }
 
                 /* get the position of the toolbar */
-                var x, y;
+                var x = findPosX(this.e_tb);
+                var y = findPosY(this.e_tb);
                 if(this.isDocked()) {
-                    x = findPosX(this.e_tb);
-                    y = findPosY(this.e_tb);
-
                     /* adjust based on orientation */
                     var content = this.getContent();
                     var cw, ch;
@@ -1616,10 +1614,6 @@ var JTB = function() {
                     else if(this.orient == JTB.ORIENT_BOTTOM) {
                         y = findPosY(content) + ch - this.sz_tb.getPreferredHeight();
                     }
-                }
-                else {
-                    x = this.floatx;
-                    y = this.floaty;
                 }
 
                 /* determine whether the mouse is over this toolbar's area */
