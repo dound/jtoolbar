@@ -279,6 +279,15 @@ var JTB = function() {
                 }
                 return parseInt(val * max / 100, 10);
             }
+            else if(len.toLowerCase() === 'thin') {
+                return 1;
+            }
+            else if(len.toLowerCase() === 'medium') {
+                return 2;
+            }
+            else if(len.toLowerCase() === 'thick') {
+                return 3;
+            }
         }
 
         /* assume pixels as units */
