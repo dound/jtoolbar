@@ -411,10 +411,9 @@ var JTB = function() {
         /**
          * Toolbar link constructor
          */
-        ToolbarLink : function(name, link, encToolbar) {
+        ToolbarLink : function(name, link) {
             this.name = name;
             this.link = link;
-            this.encToolbar = encToolbar;
         },
 
         /**
@@ -543,7 +542,7 @@ var JTB = function() {
                     	// link is actually a nested toolar
                     	link.setParentToolbar(this);	
                     }
-                    this.links[i-1] = new JTB.ToolbarLink(name, link, this);
+                    this.links[i-1] = new JTB.ToolbarLink(name, link);
                 }
             }
 
@@ -777,20 +776,16 @@ var JTB = function() {
 
             /** return the HTML representation of this link object */
             JTB.ToolbarLink.prototype.makeLink = function() {            	
-               	var orient = this.encToolbar.getOrientation();
-               	var displayStyle = (orient == JTB.ORIENT_LEFT || orient == JTB.ORIENT_RIGHT) ? "block" : "table-cell";
                	if (typeof(this.link) == "string") {
-               		// normal link           		       		
-               		return '<div class=\"JTB_button\" style=\"display: ' + displayStyle + '\"> <a href=\"' + this.link + '\">' + this.name + '</a> </div>';  			
-               	}
-                else {
-                	// link is actually a nested toolbar            	
-                	var tbName = this.link.getToolbarName();
-                	//return '<div onmouseover=\"JTB.showChildToolbar(\'' + tbName + '\', 100, 100)\">' + this.name + '</div>'; 	
-               		return '<div class=\"JTB_button\"onmouseover=\"JTB.showChildToolbar(\'' + tbName + '\', JTB.findXOffset(\'' + tbName + '\', event)' + ', JTB.findYOffset(\'' + tbName + '\', event))\" style=\"display: ' + displayStyle + '">' + '&#187 ' + this.name + '</div>';
-            	}
+	            	// normal link           		       		
+	               	return '<div class=\"JTB_button\"> <a href=\"' + this.link + '\">' + this.name + '</a> </div>';  			
+	            }
+	            else {
+	                // link is actually a nested toolbar            	
+	                var tbName = this.link.getToolbarName();
+	               	return '<div class=\"JTB_button\"onmouseover=\"JTB.showChildToolbar(\'' + tbName + '\', JTB.findXOffset(\'' + tbName + '\', event)' + ', JTB.findYOffset(\'' + tbName + '\', event))\">' + '&#187 ' + this.name + '</div>';
+	            }
             };
-
 
             JTB.Toolbar.prototype.getParentToolbar = function () {
                 return this.tb_parent;	
@@ -1804,14 +1799,28 @@ var JTB = function() {
             /** refresh the links shown in the toolbar */
             JTB.Toolbar.prototype.refreshLinks = function() {
                 var i, len;
-
-                this.e_links.innerHTML = "";
-
-                len = this.links.length;
-                for(i=0; i<len; i++) {
-                    this.e_links.innerHTML += this.links[i].makeLink();
-                }
-
+				if (this.orient == JTB.ORIENT_LFET || this.orient == JTB.ORIENT_RIGHT) {
+	                
+	                document.title= "LR";
+	                
+	                this.e_links.innerHTML = "";
+	                len = this.links.length;
+	                for(i=0; i<len; i++) {
+	                    this.e_links.innerHTML += this.links[i].makeLink();
+	                }				
+				} else {
+					
+					document.title= "BLAH";
+ 						
+					this.e_links.innerHTML = "<table> <tr>";
+					len = this.links.length;
+					for(i=0; i<len; i++) {
+						this.e_links.innerHTML += "<td>";
+	                    this.e_links.innerHTML += this.links[i].makeLink();
+	                    this.e_links.innerHTML += "</td>";
+	                }	
+					this.e_links.innerHTML += "</tr> </table>";	
+				}
                 this.sz_tb.invalidateCacheAndRefreshSizeData();
                 this.refreshGfx();
             };
@@ -2307,20 +2316,17 @@ var JTB = function() {
             	var linkDiv = event.target;
             	var parentToolbar = childToolbar.getParentToolbar();
             	var orient = parentToolbar.getOrientation();
+            	
             	// Remove the units from the width string
             	var w = parentToolbar.e_tb.style.width;
-            	w = w.substr(0,w.length-2);
-            	var bw = parentToolbar.e_tb.style.borderWidth;
-            	
-            	document.getElementById('debug').innerHTML = bw;
-            	
-            	
+            	w = w.substr(0,w.length-2);            	
             	if (orient == JTB.ORIENT_LEFT) {
             		return linkDiv.offsetLeft + (+w);
             	} else if (orient == JTB.ORIENT_RIGHT) {
             		return linkDiv.offsetLeft - (+w);	
             	} else {
-            		return linkDiv.offsetLeft;
+            		// combined offset of the div, td and tr
+            		return linkDiv.offsetLeft+ linkDiv.parentNode.offsetLeft + linkDiv.parentNode.parentNode.offsetLeft;
             	}
             };
 
@@ -2333,9 +2339,9 @@ var JTB = function() {
             	var h = parentToolbar.e_tb.style.height;
             	h = h.substr(0,h.length-2);
             	if (orient == JTB.ORIENT_TOP) {
-            		return linkDiv.offsetTop + (+h);
+            		return linkDiv.offsetTop + linkDiv.parentNode.offsetTop + linkDiv.parentNode.parentNode.offsetTop + (+h);
             	} else if (orient == JTB.ORIENT_BOTTOM) {
-            		return linkDiv.offsetTop - (+h);	
+            		return linkDiv.offsetTop + linkDiv.parentNode.offsetTop + linkDiv.parentNode.parentNode.offsetTop - (+h);	
             	} else {
             		return linkDiv.offsetTop;
             	}
