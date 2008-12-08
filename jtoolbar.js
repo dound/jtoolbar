@@ -2128,11 +2128,18 @@ var JTB = function() {
                     return false;
                 }
 
-                var d = this.getClosestDock(mouseX-findPosX(container),
-                                            mouseY-findPosY(container),
-                                            0,
-                                            1);
-                return (d == this.getOrientation());
+                var x = mouseX - findPosX(container);
+                var y = mouseY - findPosY(container);
+                var ret;
+                if(this.isDocked()) {
+                    var d = this.getClosestDock(x, y, 0, 1);
+                    return (d == this.getOrientation());
+                }
+                else {
+                    var e = this.e_tb;
+                    var dist = distanceSqToRectangle(x, y, e.offsetLeft, e.offsetTop, e.offsetWidth, e.offsetHeight);
+                    return (dist == 0);
+                }
             };
 
             /**
@@ -2142,6 +2149,10 @@ var JTB = function() {
              */
             JTB.Toolbar.prototype.isMouseOverMeOrParents = function() {
                 var b = this.isMouseOver();
+
+                if(b) {
+                }
+
                 if(!b && this.tb_parent!==null && this.tb_parent.vis_tb_child===this) {
                     return this.tb_parent.isMouseOverMeOrParents();
                 }
