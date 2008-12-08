@@ -1791,6 +1791,7 @@ var JTB = function() {
                     return;
                 }
                 var parent = this.e_content.parentNode;
+                var max = computeMaxXY(this.e_content, false);
 
                 /* create a div to hold the toolbar and its attached content */
                 this.e_container = document.createElement("div");
@@ -1838,6 +1839,14 @@ var JTB = function() {
                 }
 
                 this.sz_container = new JTB.SizeHelper(this.e_container, null);
+
+                /* make the container at least as big as its content */
+                if(lengthToPixels(this.sz_container.float_width, true) <= max.x) {
+                    this.sz_container.float_width = max.x;
+                }
+                if(lengthToPixels(this.sz_container.float_height, false) <= max.y) {
+                    this.sz_container.float_height = max.y;
+                }
             };
 
             /* create and hook the toolbar into the UI (assumes it is not already hooked in */
