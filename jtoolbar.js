@@ -1303,6 +1303,7 @@ var JTB = function() {
             JTB.Toolbar.prototype.refreshIconsGfx = function() {
                 var imgName;
                 var iconTotalSize = ICON_SIZE + 2*ICON_MARGIN + 2*ICON_BORDER_SIZE;
+                var iconsTotalSize = iconTotalSize * ICON_COUNT;
 
                 var esd = this.e_icon_drag.style;
                 var esf = this.e_icon_float.style;
@@ -1316,10 +1317,25 @@ var JTB = function() {
                     return;
                 }
 
+                var orient = this.getOrientation();
+                var sideOriented = this.isSideOriented();
+                if(sideOriented) {
+                    if(this.e_tb.offsetWidth < iconsTotalSize) {
+                        orient = JTB.ORIENT_BOTTOM;
+                        sideOriented = false;
+                    }
+                }
+                else {
+                    if(this.e_tb.offsetHeight < iconsTotalSize) {
+                        orient = JTB.ORIENT_LEFT;
+                        sideOriented = true;
+                    }
+                }
+
                 var x = 0;
                 var y = 0;
                 var dx, dy;
-                if(this.isSideOriented()) {
+                if(sideOriented) {
                     dx = iconTotalSize;
                     dy = 0;
                 }
@@ -1329,7 +1345,7 @@ var JTB = function() {
                     x -= iconTotalSize;
 
 
-                    if(this.getOrientation() == JTB.ORIENT_BOTTOM) {
+                    if(orient == JTB.ORIENT_BOTTOM) {
                         dy = -dy;
                         y = ICON_COUNT * iconTotalSize;
                     }
@@ -1337,9 +1353,9 @@ var JTB = function() {
                         y = this.e_tb.offsetHeight - (ICON_COUNT+1) * iconTotalSize;
                     }
                 }
-                if(this.getOrientation() != JTB.ORIENT_RIGHT) {
+                if(orient != JTB.ORIENT_RIGHT) {
                     x += this.e_tb.offsetWidth + getExtraWidth(this.e_tb) / 2;
-                    if(this.getOrientation() == JTB.ORIENT_LEFT) {
+                    if(orient == JTB.ORIENT_LEFT) {
                         x -= ((ICON_COUNT+1) * iconTotalSize);
                     }
                 }
