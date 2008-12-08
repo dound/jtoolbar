@@ -177,7 +177,7 @@ var JTB = function() {
      * padding, and margin)
      */
     function getExtraWidth(e) {
-        if(e === null) {
+        if(e === null || e.style===undefined) {
             return 0;
         }
 
@@ -188,6 +188,7 @@ var JTB = function() {
         ret += parseInt(findValue(e, 'style.marginRight',      false), 10);
         ret += parseInt(findValue(e, 'style.borderLeftWidth',  false), 10);
         ret += parseInt(findValue(e, 'style.borderRightWidth', false), 10);
+
         return ret;
     }
 
@@ -196,7 +197,7 @@ var JTB = function() {
      * padding, and margin)
      */
     function getExtraHeight(e) {
-        if(e === null) {
+        if(e === null || e.style===undefined) {
             return 0;
         }
 
