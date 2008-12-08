@@ -2139,7 +2139,9 @@ var JTB = function() {
                 }
                 else {
                     var e = this.e_tb;
-                    var dist = distanceSqToRectangle(x, y, e.offsetLeft, e.offsetTop, e.offsetWidth, e.offsetHeight);
+                    var w = ((e.offsetWidth > this.sz_tb.getPreferredWidth()) ? e.offsetWidth : this.sz_tb.getPreferredWidth());
+                    var h = ((e.offsetHeight > this.sz_tb.getPreferredHeight()) ? e.offsetHeight : this.sz_tb.getPreferredHeight());
+                    var dist = distanceSqToRectangle(x, y, e.offsetLeft, e.offsetTop, w, h);
                     return (dist == 0);
                 }
             };
