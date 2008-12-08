@@ -940,7 +940,7 @@ var JTB = function() {
                     var oldOrient = this.orient;
 
                     this.orient = orient;
-                    this.refreshGfx();
+                    this.refreshLinks();
                     createCookie("orient", this.orient, COOKIE_LIFETIME_DAYS, this.cookie_path);
 
                     this.fireOrientationListeners(oldOrient);
