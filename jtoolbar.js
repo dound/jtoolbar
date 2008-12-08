@@ -1332,6 +1332,16 @@ var JTB = function() {
                     }
                 }
 
+                /* clear links margin */
+                if(sideOriented) {
+                    this.e_links.style.marginRight = '0px';
+                    this.e_links.style.marginTop = iconTotalSize;
+                }
+                else {
+                    this.e_links.style.marginRight = iconTotalSize;
+                    this.e_links.style.marginTop = '0px';
+                }
+
                 var x = 0;
                 var y = 0;
                 var dx, dy;
