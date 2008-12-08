@@ -1244,15 +1244,13 @@ var JTB = function() {
                     cw = sz_container_w;
                     ch = sz_container_h;
                 }
-
-                /* set the toolbar's and content's sizes and positions */
-                var px = container.offsetLeft;
-                var py = container.offsetTop;
+                cw -= extraW;
+                ch -= extraH;
 
                 /* the root toolbar handles the content style */
                 if(!this.isChildToolbar()) {
-                    content.style.left   = (px + cx) + 'px';
-                    content.style.top    = (py + cy) + 'px';
+                    content.style.left   = cx + 'px';
+                    content.style.top    = cy + 'px';
                     content.style.width  = cw + 'px';
                     content.style.height = ch + 'px';
                 }
@@ -1283,11 +1281,11 @@ var JTB = function() {
 
                 /* use offset relative to parent toolbar if there is one (vice container) */
                 if(this.tb_parent !== null) {
-                    px = this.tb_parent.e_tb.offsetLeft;
-                    py = this.tb_parent.e_tb.offsetTop;
+                    tx += this.tb_parent.e_tb.offsetLeft;
+                    ty += this.tb_parent.e_tb.offsetTop;
                 }
-                this.e_tb.style.left = (px + tx) + 'px';
-                this.e_tb.style.top  = (py + ty) + 'px';
+                this.e_tb.style.left = tx + 'px';
+                this.e_tb.style.top  = ty + 'px';
                 this.e_tb.style.width  = tw + 'px';
                 this.e_tb.style.height = th + 'px';
 
@@ -1552,9 +1550,12 @@ var JTB = function() {
                 }
 
                 /* if we're hiding this toolbar, hide its child too */
-                if(newState == JTB.STATE_INVIS && this.vis_tb_child) {
-                    this.vis_tb_child.setVisible(false);
-                    this.vis_tb_child = null;
+                if(newState == JTB.STATE_INVIS) {
+                    if(this.vis_tb_child !== null) {
+                        this.vis_tb_child.setVisible(false);
+                        this.vis_tb_child = null;
+                    }
+                    this.hideFromParentToolbar();
                 }
 
                 this.state = newState;
@@ -1604,6 +1605,11 @@ var JTB = function() {
                 /* always show if pinned or if a child is active */
                 if(this.isPinned() || this.vis_tb_child!==null) {
                     this.setVisible(true);
+                    return;
+                }
+
+                /* child toolbar only pops up with showChildToolbar call, not mouse over */
+                if(this.isChildToolbar() && !this.isVisible()) {
                     return;
                 }
 
@@ -1791,7 +1797,6 @@ var JTB = function() {
                     return;
                 }
                 var parent = this.e_content.parentNode;
-                var max = computeMaxXY(this.e_content, false);
 
                 /* create a div to hold the toolbar and its attached content */
                 this.e_container = document.createElement("div");
@@ -1809,14 +1814,16 @@ var JTB = function() {
                 }
 
                 /* remove the content for now */
+                var cw = this.e_content.offsetWidth; // for some reason offsetWidth includes margin/padding/etc here
+                var ch = this.e_content.offsetHeight;
                 parent.removeChild(this.e_content);
 
                 /* give container position, size, and layout properties of orig content */
                 this.e_container.style.display = this.e_content.style.display;
-                this.e_container.style.height  = this.e_content.style.height;
+                this.e_container.style.height  = ch + 'px';
                 this.e_container.style.left    = this.e_content.style.left;
                 this.e_container.style.top     = this.e_content.style.top;
-                this.e_container.style.width   = this.e_content.style.width;
+                this.e_container.style.width   = cw + 'px';
                 this.e_container.style.zIndex  = this.e_content.style.zIndex;
                 this.e_container.style.position = this.e_content.style.position;
 
@@ -1842,11 +1849,11 @@ var JTB = function() {
                 this.sz_container = new JTB.SizeHelper(this.e_container, null);
 
                 /* make the container at least as big as its content */
-                if(lengthToPixels(this.sz_container.float_width, true) <= max.x) {
-                    this.sz_container.float_width = max.x;
+                if(lengthToPixels(this.sz_container.float_width, true) <= cw) {
+                    this.sz_container.float_width = cw;
                 }
-                if(lengthToPixels(this.sz_container.float_height, false) <= max.y) {
-                    this.sz_container.float_height = max.y;
+                if(lengthToPixels(this.sz_container.float_height, false) <= ch) {
+                    this.sz_container.float_height = ch;
                 }
             };
 
@@ -2048,14 +2055,14 @@ var JTB = function() {
                     return null;
                 }
 
-                var cl = container.offsetLeft;
-                var ct = container.offsetTop;
-                var cw = sz_container.float_width;
-                var ch = sz_container.float_height;
+                var cl = findPosX(container);
+                var ct = findPosY(container);
+                var cw = container.offsetWidth + getExtraWidth(container);
+                var ch = container.offsetHeight + getExtraHeight(container);
                 var tw = this.sz_tb.getVertOrientWidth();
                 var th = this.sz_tb.getHorizOrientHeight();
 
-                if(this.use_trigger_dist) {
+                if(false && this.use_trigger_dist) {
                     if(this.isSideOriented()) {
                         tw = this.trigger_dist;
                     }
@@ -2066,7 +2073,7 @@ var JTB = function() {
 
                 /* compute distance to the docking locations */
                 var dl = distanceSqToRectangle(x, y, cl, ct, tw, ch);
-                var dt = distanceSqToRectangle(x, y, cl, cl, cw, th);
+                var dt = distanceSqToRectangle(x, y, cl, ct, cw, th);
                 var dr = distanceSqToRectangle(x, y, cl + cw - tw, ct, tw, ch);
                 var db = distanceSqToRectangle(x, y, cl, ct + ch - th, cw, th);
 
@@ -2100,8 +2107,8 @@ var JTB = function() {
                     return false;
                 }
 
-                var x = mouseX - findPosX(container);
-                var y = mouseY - findPosY(container);
+                var x = mouseX;
+                var y = mouseY;
                 var ret;
                 if(this.isDocked()) {
                     var d = this.getClosestDock(x, y, 0, 1);
@@ -2109,9 +2116,13 @@ var JTB = function() {
                 }
                 else {
                     var e = this.e_tb;
+                    var l = findPosX(container) + parseInt(e.style.left,10);
+                    var t = findPosY(container) + parseInt(e.style.top,10);
                     var w = ((e.offsetWidth > this.sz_tb.getPreferredWidth()) ? e.offsetWidth : this.sz_tb.getPreferredWidth());
                     var h = ((e.offsetHeight > this.sz_tb.getPreferredHeight()) ? e.offsetHeight : this.sz_tb.getPreferredHeight());
-                    var dist = distanceSqToRectangle(x, y, e.offsetLeft, e.offsetTop, w, h);
+                    w += getExtraWidth(e);
+                    h += getExtraHeight(e);
+                    var dist = distanceSqToRectangle(x, y, l, t, w, h);
                     return (dist == 0);
                 }
             };
@@ -2161,8 +2172,8 @@ var JTB = function() {
                             var d;
                             var container = tb.getContainer();
                             if(container !== null) {
-                                d = tb.getClosestDock(mouseX-findPosX(container),
-                                                      mouseY-findPosY(container),
+                                d = tb.getClosestDock(mouseX,
+                                                      mouseY,
                                                       tb.docking_threshold,
                                                       JTB.DOCK_CLOSEST_INCUMBENT_ADVANTAGE);
                                 if(d !== null) {
@@ -2213,13 +2224,13 @@ var JTB = function() {
 
                 if(tb.isDocked()) {
                     /* if we undock, start floating in our current position */
-                    var x = tb.e_tb.offsetLeft - tb.e_tb.parentNode.offsetLeft;
-                    var y = tb.e_tb.offsetTop - tb.e_tb.parentNode.offsetTop;
+                    var x = tb.e_tb.offsetLeft;
+                    var y = tb.e_tb.offsetTop;
                     tb.setFloatPos(x, y);
                 }
                 else {
                     /* if we dock, snap to the dock closest to our floating position */
-                    var d = tb.getClosestDock(tb.floatx, tb.floaty,
+                    var d = tb.getClosestDock(findPosX(tb.e_tb), findPosY(tb.e_tb),
                                               tb.docking_threshold,
                                               JTB.DOCK_CLOSEST_INCUMBENT_ADVANTAGE);
                     if(d !== null) {
