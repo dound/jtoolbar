@@ -37,9 +37,9 @@
     var toolbarName = "custom_toolbar";
     var nt = new JTB.Toolbar(null, "nested_tb1", "Stanford", "http://www.stanford.edu", "Berkeley", "http://www.berkeley.edu");
     nt.setImagePath('../images/');
-    var nt2 = new JTB.Toolbar(null, "nested_tb2", "Google", "http://www.google.com", "Yahoo", "http://www.yahoo.com");
+    var nt2 = new JTB.Toolbar(null, "nested_tb2", "Google", "http://www.google.com", "Yahoo", "http://www.yahoo.com", "Schools", nt);
     nt2.setImagePath('../images/');
-    var t = new JTB.Toolbar(parentName, toolbarName, "dound", "http://www.dound.com", "Schools", nt, "Search", nt2);
+    var t = new JTB.Toolbar(parentName, toolbarName, "dound", "http://www.dound.com", "Search", nt2);
     t.setImagePath('../images/');
     t.clearCookies();
     t.setAnimationSpringy(false);
