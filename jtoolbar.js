@@ -538,9 +538,9 @@ var JTB = function() {
                 for(i=1; i<arguments.length/2; i+=1) {
                     name = arguments[2*i];
                     link = arguments[2*i+1];
-                    if (typeof(link) != "string") {                   	
-                    	// link is actually a nested toolar
-                    	link.setParentToolbar(this);	
+                    if (typeof(link) != "string") {
+                        // link is actually a nested toolar
+                        link.setParentToolbar(this);
                     }
                     this.links[i-1] = new JTB.ToolbarLink(name, link);
                 }
@@ -775,22 +775,22 @@ var JTB = function() {
 
 
             /** return the HTML representation of this link object */
-            JTB.ToolbarLink.prototype.makeLink = function() {            	
+            JTB.ToolbarLink.prototype.makeLink = function() {
                	if (typeof(this.link) == "string") {
-	            	// normal link           		       		
-	               	return '<div class=\"JTB_button\"> <a href=\"' + this.link + '\">' + this.name + '</a> </div>';  			
-	            }
-	            else {
-	                // link is actually a nested toolbar            	
-	                var tbName = this.link.getToolbarName();
-	               	return '<div class=\"JTB_button\"onmouseover=\"JTB.showChildToolbar(\'' + tbName + '\', JTB.findXOffset(\'' + tbName + '\', event)' + ', JTB.findYOffset(\'' + tbName + '\', event))\">' + '&#187 ' + this.name + '</div>';
-	            }
+                        // normal link
+                        return '<div class=\"JTB_button\"> <a href=\"' + this.link + '\">' + this.name + '</a> </div>';
+                    }
+                    else {
+                        // link is actually a nested toolbar            	
+                        var tbName = this.link.getToolbarName();
+                        return '<div class=\"JTB_button\"onmouseover=\"JTB.showChildToolbar(\'' + tbName + '\', JTB.findXOffset(\'' + tbName + '\', event)' + ', JTB.findYOffset(\'' + tbName + '\', event))\">' + '&#187 ' + this.name + '</div>';
+                    }
             };
 
             JTB.Toolbar.prototype.getParentToolbar = function () {
                 return this.tb_parent;	
             };
-			
+
             JTB.Toolbar.prototype.setParentToolbar = function (tb) {
                 this.tb_parent = tb;
                 return this;	
@@ -803,8 +803,8 @@ var JTB = function() {
                 else {
                     return this.tb_parent.getRootToolbar();
                 }
-            };			
-			
+            };
+
             /** get the name of the element the toolbar is attached to (may be null) */
             JTB.Toolbar.prototype.getContentName = function() {
                 if(this.tb_parent === null) {
@@ -1799,28 +1799,21 @@ var JTB = function() {
             /** refresh the links shown in the toolbar */
             JTB.Toolbar.prototype.refreshLinks = function() {
                 var i, len, str;
-				if (this.isSideOriented()) {
-	                
-	                document.title= "LR";
-	                
-	                str = "";
-	                len = this.links.length;
-	                for(i=0; i<len; i++) {
-	                    str += this.links[i].makeLink();
-	                }				
-				} else {
-					
-					document.title= "BLAH";
- 						
-					str = "<table cellspacing=0> <tbody> <tr>";
-					len = this.links.length;
-					for(i=0; i<len; i++) {
-						str = str + "<td style=\"padding: 0\">" + this.links[i].makeLink() + "</td>"; 
-	                }
-	                str += "</tr> </tbody> </table>";
-				}
-				this.e_links.innerHTML = str;
-				
+                if (this.isSideOriented()) {
+                    str = "";
+                    len = this.links.length;
+                    for(i=0; i<len; i++) {
+                        str += this.links[i].makeLink();
+                    }
+                } else {
+                    str = "<table cellspacing=0> <tbody> <tr>";
+                    len = this.links.length;
+                    for(i=0; i<len; i++) {
+                        str = str + "<td style=\"padding: 0\">" + this.links[i].makeLink() + "</td>";
+                    }
+                    str += "</tr> </tbody> </table>";
+                }
+                this.e_links.innerHTML = str;
                 this.sz_tb.invalidateCacheAndRefreshSizeData();
                 this.refreshGfx();
             };
