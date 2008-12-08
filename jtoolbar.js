@@ -2040,12 +2040,12 @@ var JTB = function() {
              * curAdvantageMultiple (e.g. higher number => greater preference).
              */
             JTB.Toolbar.prototype.getClosestDock = function(x, y, thresh, curAdvantageMultiple) {
-                var container = this.getContainer();
-                if(container === null) {
+                var sz_container = this.getContainerSize();
+                if(sz_container === null) {
                     return null;
                 }
-                var cw = container.offsetWidth;
-                var ch = container.offsetHeight;
+                var cw = sz_container.float_width;
+                var ch = sz_container.float_height;
                 var tw = this.sz_tb.getVertOrientWidth();
                 var th = this.sz_tb.getHorizOrientHeight();
 
