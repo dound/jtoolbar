@@ -1617,7 +1617,7 @@ var JTB = function() {
                     this.use_trigger_dist = true;
                 }
 
-                vis = this.isMouseOverMeOrParents();
+                var vis = this.isMouseOverMeOrParents();
                 this.setVisible(vis);
 
                 this.use_trigger_dist = false;
@@ -2123,7 +2123,7 @@ var JTB = function() {
                     w += getExtraWidth(e);
                     h += getExtraHeight(e);
                     var dist = distanceSqToRectangle(x, y, l, t, w, h);
-                    return (dist == 0);
+                    return (dist === 0);
                 }
             };
 
