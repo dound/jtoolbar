@@ -506,6 +506,9 @@ var JTB = function() {
             /* whether the toolbar is visible, invis, or transitioning */
             this.state          = JTB.STATE_VIS;
 
+            /* state to transition to (delayed) */
+            this.state_delayed  = null;
+
             /* number of milliseconds for the toolbar to slide in/out */
             this.animation_len_msec = 400;
 
@@ -1493,6 +1496,15 @@ var JTB = function() {
                 return this;
             };
 
+            /** enqueue a delayed state change */
+            JTB.Toolbar.prototype.setStateDelayed = function(newState, delay_ms) {
+                if(this.state_delayed === null) {
+                    var tb_id = this.tb_id;
+                    setTimeout(function(){JTB.setDelayedState(tb_id);}, delay_ms);
+                }
+                this.state_delayed = newState;
+            };
+
             /** update the state and make the transition as appropriate */
             JTB.Toolbar.prototype.setState = function(newState) {
                 /* do nothing if the state has not changed */
@@ -1502,6 +1514,8 @@ var JTB = function() {
 
                 /* reject state changes which try to occur during an animation */
                 if(this.isAnimating()) {
+                    /* finish the state change after the animation is done */
+                    this.setStateDelayed(newState, this.animation_len_msec+20);
                     return false;
                 }
 
@@ -2250,6 +2264,21 @@ var JTB = function() {
                 }
 
                 c.tb_parent.showChildToolbar(c, x, y);
+            };
+
+            /** sets the toolbar state to the delayed value it was waiting on (if any) */
+            JTB.setDelayedState = function(tb_id) {
+                var tb = JTB.getToolbar(tb_id);
+                if(tb === null) {
+                    return;
+                }
+
+                /* set the delayed state */
+                if(tb.state_delayed !== null) {
+                    var s = tb.state_delayed;
+                    tb.state_delayed = null;
+                    tb.setState(s);
+                }
             };
 
             /** calculates the x-offset of a child toolbar from its parent toolbar */
