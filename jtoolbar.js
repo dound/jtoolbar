@@ -519,7 +519,7 @@ var JTB = function() {
             this.state_delayed  = null;
 
             /* number of milliseconds for the toolbar to slide in/out */
-            this.animation_len_msec = 400;
+            this.animation_len_msec = 200;
 
             /* whether to use the spring animation or not */
             this.anim_springy   = true;
